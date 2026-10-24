@@ -1,0 +1,6 @@
+proyek_id,kategori,deskripsi,status,hari_lalu,foto_path,catatan_status
+demo-jalan-lingkungan,kerusakan,"(Contoh demo) Aspal di dekat persimpangan sudah berlubang di beberapa titik, padahal proyek tercatat selesai.",ditindaklanjuti,40,,"Diteruskan ke satker terkait (simulasi)."
+demo-jalan-lingkungan,kerusakan,"(Contoh demo) Permukaan jalan retak memanjang sekitar 10 meter dan mulai mengelupas di bagian tepi.",diverifikasi,25,,
+demo-jalan-lingkungan,kerusakan,"(Contoh demo) Genangan air muncul setiap hujan karena permukaan jalan amblas di tengah ruas.",diverifikasi,12,,
+demo-jalan-lingkungan,kerusakan,"(Contoh demo) Ada lubang baru di depan gang, cukup dalam dan berbahaya bagi pengendara motor.",diterima,3,,
+demo-saluran-drainase,belum_dikerjakan,"(Contoh demo) Sudah dua bulan tidak terlihat aktivitas pekerjaan di lokasi saluran ini.",ditolak,20,,"Pekerjaan dijadwalkan ulang sesuai kontrak (simulasi)."

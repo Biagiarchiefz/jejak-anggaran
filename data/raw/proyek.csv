@@ -1,0 +1,4 @@
+id,kode_rup,nama_paket,satker,kecamatan,kelurahan,pagu,nilai_kontrak,pelaksana,tahun_anggaran,status_proyek,lat,lng,sumber_rup_url,sumber_lpse_url,diakses_pada,is_demo,foto_path
+demo-jalan-lingkungan,,Proyek Demo: Rehabilitasi Jalan Lingkungan (fiktif),Satker Demo (fiktif),Coblong,,1250000000,1180000000,CV Contoh Demo (fiktif),2025,selesai,-6.8935,107.6130,,,,true,
+demo-saluran-drainase,,Proyek Demo: Pembangunan Saluran Drainase (fiktif),Satker Demo (fiktif),Kiaracondong,,870000000,812500000,CV Contoh Demo (fiktif),2026,berjalan,-6.9225,107.6420,,,,true,
+demo-taman-kelurahan,,Proyek Demo: Penataan Taman Kelurahan (fiktif),Satker Demo (fiktif),Buahbatu,,450000000,,,2026,direncanakan,-6.9480,107.6530,,,,true,

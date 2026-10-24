@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+@theme {
+  /* Inter (OFL), di-host sendiri lewat @fontsource-variable. Bobot tersedia 100–900. */
+  --font-sans: "Inter Variable", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+
+  /* Satu ukuran sudut untuk seluruh UI (gambar, tombol, kartu, badge, input): kelas `rounded-ui`. */
+  --radius-ui: 7px;
+
+  /* Warna merek: biru navy. merek-800 di atas putih ≈ 12:1 (WCAG AAA). */
+  --color-merek-50: #eef3fb;
+  --color-merek-100: #d9e4f5;
+  --color-merek-200: #b3c8ea;
+  --color-merek-600: #1e4fa0;
+  --color-merek-700: #173f82;
+  --color-merek-800: #12326a;
+  --color-merek-900: #0b2149;
+  --color-merek-950: #06142e;
+
+  /* Aksen emas: hanya untuk dekorasi (garis, titik, ornamen), bukan warna teks di atas putih. */
+  --color-aksen: #d4a72c;
+
+  /* Warna status proyek di peta (palet kategorikal, urutan tetap). */
+  --color-status-direncanakan: #2a78d6;
+  --color-status-berjalan: #eb6834;
+  --color-status-selesai: #1baf7a;
+
+  /* Red flag = "perlu perhatian". Selalu disertai ikon + teks, tidak hanya warna. */
+  --color-redflag: #b42318;
+  --color-redflag-bg: #fef3f2;
+
+  /* Seri grafik anggaran. */
+  --color-seri-anggaran: #2a78d6;
+  --color-seri-realisasi: #eb6834;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
+
+  /* Gaya teks seragam: tidak ada teks yang lebih tebal dari medium (500). */
+  strong,
+  b,
+  th {
+    font-weight: 500;
+  }
+
+  /* Sistem tipografi satu keluarga (Inter):
+     - heading: medium (500) + tracking-tight; heading kecil (text-sm) memakai `tracking-normal`.
+     - paragraf/deskripsi: regular (400) + `text-slate-600` (diset per komponen). */
+  h1,
+  h2,
+  h3 {
+    letter-spacing: var(--tracking-tight);
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-merek-700;
+  }
+}
+
+/* Leaflet: pakai font aplikasi dan jangan menutupi header/menu. */
+.leaflet-container {
+  font: inherit;
+  z-index: 0;
+}
+
+/* Popup peta bawaannya bersudut 12px; samakan dengan sudut UI. */
+.leaflet-popup-content-wrapper {
+  border-radius: var(--radius-ui);
+}
+
+/* Tombol zoom Leaflet bawaannya tebal (700); samakan dengan gaya teks medium. */
+.leaflet-control-zoom a {
+  font-weight: 500;
+}
