@@ -27,7 +27,9 @@ file_size_limit = "5MiB"
 
 [auth]
 site_url = "http://localhost:5173"
-additional_redirect_urls = ["http://localhost:5173/**", "http://127.0.0.1:5173/**"]
+# Project remote diatur di Dashboard → Authentication → URL Configuration: Site URL = domain produksi, dan
+# Redirect URLs memuat domain produksi + localhost. Tanpa itu, tautan masuk jatuh ke Site URL (localhost).
+additional_redirect_urls = ["http://localhost:5173/**", "http://127.0.0.1:5173/**", "https://jejak-anggaran.vercel.app/**"]
 enable_signup = true
 
 [auth.email]
