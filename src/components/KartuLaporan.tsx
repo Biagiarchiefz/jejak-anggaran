@@ -1,9 +1,12 @@
+import { useId, useState } from 'react'
 import { Check } from 'lucide-react'
 import { BadgeStatusLaporan } from './BadgeStatus'
 import { LinimasaStatus } from './LinimasaStatus'
 import { TeruskanKeLapor } from './TeruskanKeLapor'
 import { Badge } from './ui/Badge'
 import { Button } from './ui/Button'
+import { Lipatan } from './ui/Lipatan'
+import { TombolLipat } from './ui/TombolLipat'
 import { formatTanggal } from '../lib/format'
 import { LABEL_KATEGORI } from '../lib/label'
 import type { LaporanDenganRiwayat } from '../services/proyekService'
@@ -28,6 +31,8 @@ export function KartuLaporan({
   onKonfirmasi,
 }: KartuLaporanProps) {
   const ditolak = laporan.status === 'ditolak'
+  const idRiwayat = useId()
+  const [riwayatTerbuka, setRiwayatTerbuka] = useState(false)
 
   return (
     <article className="rounded-lg border border-border bg-surface p-5 shadow-edge sm:p-6" aria-labelledby={`laporan-${laporan.id}`}>
@@ -82,17 +87,20 @@ export function KartuLaporan({
         </p>
       )}
 
-      <details className="mt-4 border-t border-border-soft pt-4">
-        <summary className="cursor-pointer text-sm font-medium text-link hover:underline">
+      <div className="mt-4 border-t border-border-soft pt-2">
+        <TombolLipat terbuka={riwayatTerbuka} onClick={() => setRiwayatTerbuka((t) => !t)} aria-controls={idRiwayat}>
           Riwayat status ({laporan.riwayat.length})
-        </summary>
-        <div className="mt-3">
-          <LinimasaStatus riwayat={laporan.riwayat} />
-          {laporan.catatan_status && laporan.riwayat.length === 0 && (
-            <p className="mt-2 text-sm text-ink-muted">Catatan: {laporan.catatan_status}</p>
-          )}
-        </div>
-      </details>
+        </TombolLipat>
+        <Lipatan terbuka={riwayatTerbuka} id={idRiwayat}>
+          {/* pl-1 + pt-1: ruang untuk titik linimasa yang menjorok keluar garis, agar tidak terpotong overflow. */}
+          <div className="pt-1 pb-1 pl-1">
+            <LinimasaStatus riwayat={laporan.riwayat} />
+            {laporan.catatan_status && laporan.riwayat.length === 0 && (
+              <p className="mt-2 text-sm text-ink-muted">Catatan: {laporan.catatan_status}</p>
+            )}
+          </div>
+        </Lipatan>
+      </div>
 
       {!ditolak && (
         <div className="mt-4">

@@ -102,6 +102,11 @@
     @apply bg-canvas font-sans text-ink antialiased;
   }
 
+  /* Tombol × bawaan kolom cari (Chrome/Safari) berwarna biru dan tidak bisa diwarnai; diganti tombol di <KolomCari>. */
+  input[type="search"]::-webkit-search-cancel-button {
+    appearance: none;
+  }
+
   /* Bobot maksimal 600; bawaan browser untuk strong/b/th adalah 700. */
   strong,
   b,

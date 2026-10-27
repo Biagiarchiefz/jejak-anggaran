@@ -5,7 +5,7 @@ import { BadgeRedFlag, IkonBendera } from './BadgeRedFlag'
 import { BadgeStatusProyek } from './BadgeStatus'
 import { CuplikanPeta } from './CuplikanPeta'
 import { SumberData } from './SumberData'
-import { Button, TautanTombol } from './ui/Button'
+import { TautanTombol } from './ui/Button'
 import { Laci } from './ui/Laci'
 import { formatRupiah } from '../lib/format'
 import type { ProyekDenganRedFlag } from '../services/proyekService'
@@ -43,7 +43,7 @@ export function DialogProyek({ proyek: p, terbuka, onTutup }: DialogProyekProps)
           type="button"
           onClick={onTutup}
           aria-label="Tutup"
-          className="absolute top-3 right-3 grid size-11 place-items-center rounded-full border border-border-strong bg-surface text-ink efek-tekan hover:bg-canvas-soft"
+          className="absolute top-3 right-3 z-1000 grid size-11 place-items-center rounded-md border border-border bg-surface/95 text-ink shadow-edge efek-tekan hover:bg-canvas-soft"
         >
           <X className="size-5" strokeWidth={1.5} aria-hidden />
         </button>
@@ -94,11 +94,9 @@ export function DialogProyek({ proyek: p, terbuka, onTutup }: DialogProyekProps)
           <Info label="Satuan kerja">{p.satker}</Info>
         </dl>
 
-        <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <Button varian="tipis" ukuran="sm" onClick={onTutup}>
-            Tutup
-          </Button>
-          <TautanTombol to={`/proyek/${p.id}`} ukuran="sm">
+        {/* Tanpa tombol "Tutup": dialog sudah bisa ditutup lewat ikon × di pojok peta, Esc, atau klik di luar. */}
+        <div className="mt-6 flex sm:justify-end">
+          <TautanTombol to={`/proyek/${p.id}`} ukuran="sm" className="w-full sm:w-auto">
             Lihat detail proyek
             <ArrowRight className="size-4 transition-transform duration-150 group-hover:translate-x-0.5 motion-reduce:transition-none" strokeWidth={1.5} aria-hidden />
           </TautanTombol>

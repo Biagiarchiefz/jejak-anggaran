@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { ArrowRight, Search, SlidersHorizontal, X } from 'lucide-react'
-import { Link } from 'react-router'
+import { ArrowRight, SlidersHorizontal, X } from 'lucide-react'
+import { Link, useSearchParams } from 'react-router'
 import { BadgeRedFlag } from '../components/BadgeRedFlag'
 import { BadgeStatusProyek } from '../components/BadgeStatus'
 import { LembarProyek } from '../components/LembarProyek'
@@ -10,6 +10,7 @@ import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
 import { ErrorState } from '../components/ui/ErrorState'
 import { KepalaHalaman } from '../components/ui/KepalaHalaman'
+import { KolomCari } from '../components/ui/KolomCari'
 import { Laci } from '../components/ui/Laci'
 import { Pilihan } from '../components/ui/Pilihan'
 import { Skeleton } from '../components/ui/Skeleton'
@@ -120,7 +121,16 @@ function ChipStatus({ filter, setFilter }: ChipStatusProps) {
 export default function PetaPage() {
   const { data, error, memuat, muatUlang } = useProyekList()
   const [filter, setFilter] = useState<FilterProyek>(FILTER_AWAL)
-  const [kata, setKata] = useState('')
+  // Kata kunci awal dari `?cari=` (dikirim tombol Cari di panel pencarian header). Bila URL berubah saat halaman
+  // ini sudah terbuka, kolom cari ikut diperbarui.
+  const [params] = useSearchParams()
+  const cariUrl = params.get('cari') ?? ''
+  const [cariUrlSebelumnya, setCariUrlSebelumnya] = useState(cariUrl)
+  const [kata, setKata] = useState(cariUrl)
+  if (cariUrl !== cariUrlSebelumnya) {
+    setCariUrlSebelumnya(cariUrl)
+    setKata(cariUrl)
+  }
   const [terpilihId, setTerpilihId] = useState<string | null>(null)
   const [fokus, setFokus] = useState<PermintaanFokus | null>(null)
   const [lembarFilter, setLembarFilter] = useState(false)
@@ -162,18 +172,13 @@ export default function PetaPage() {
 
       <form className="space-y-3" onSubmit={(e) => e.preventDefault()} aria-label="Saring proyek">
         <div className="flex gap-2 sm:gap-3">
-          <label className="flex min-h-11 min-w-0 flex-1 items-center gap-3 rounded-md border border-border bg-surface px-3.5 transition-colors hover:border-border-strong focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/30">
-            <Search className="size-5 shrink-0 text-ink-subtle" strokeWidth={1.5} aria-hidden />
-            <span className="sr-only">Cari proyek</span>
-            <input
-              type="search"
-              value={kata}
-              onChange={(e) => setKata(e.target.value)}
-              placeholder="Cari nama proyek, kelurahan, atau pelaksana…"
-              autoComplete="off"
-              className="min-w-0 flex-1 bg-transparent py-2.5 text-base outline-none placeholder:text-ink-subtle"
-            />
-          </label>
+          <KolomCari
+            label="Cari proyek"
+            nilai={kata}
+            onUbah={setKata}
+            placeholder="Cari nama proyek, kelurahan, atau pelaksana…"
+            className="min-h-11 flex-1"
+          />
 
           {/* Ponsel: kecamatan dan status dipindah ke lembar saringan, dibuka lewat satu ikon di samping kolom cari. */}
           <button

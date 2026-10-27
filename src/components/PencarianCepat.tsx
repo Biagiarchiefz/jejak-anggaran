@@ -1,9 +1,9 @@
-import { useState } from 'react'
-import { Search } from 'lucide-react'
-import { Link } from 'react-router'
+import { useState, type FormEvent } from 'react'
+import { Link, useNavigate } from 'react-router'
 import { BadgeStatusProyek } from './BadgeStatus'
 import { Button } from './ui/Button'
 import { ErrorState } from './ui/ErrorState'
+import { KolomCari } from './ui/KolomCari'
 import { Skeleton } from './ui/Skeleton'
 import { useProyekList } from '../hooks/useProyekList'
 import { cariProyek } from '../lib/filterProyek'
@@ -22,32 +22,34 @@ export function PencarianCepat({ onTutup }: { onTutup: () => void }) {
   const { data, error, memuat, muatUlang } = useProyekList()
   const semuaHasil = cariProyek(data ?? [], kata)
   const hasil = semuaHasil.slice(0, JUMLAH_HASIL)
+  const navigate = useNavigate()
+
+  /** Tekan "Cari" atau Enter: buka Peta proyek dengan kata kunci ini, jadi semua hasil (bukan hanya 8) tampil di peta. */
+  function cari(e: FormEvent) {
+    e.preventDefault()
+    const q = kata.trim()
+    if (!q) return
+    navigate(`/peta?cari=${encodeURIComponent(q)}`)
+    onTutup()
+  }
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
-      {/* Input lebih dulu di DOM agar <dialog> langsung memfokuskannya saat dibuka. */}
-      <div className="flex items-center gap-2">
-        <form role="search" onSubmit={(e) => e.preventDefault()} className="min-w-0 flex-1">
-          <label htmlFor="cari-proyek" className="sr-only">
-            Cari proyek
-          </label>
-          <div className="flex min-h-12 items-center gap-3 rounded-md border border-border bg-surface px-3.5 transition-colors hover:border-border-strong focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/30">
-            <Search className="size-5 shrink-0 text-ink-subtle" strokeWidth={1.5} aria-hidden />
-            <input
-              id="cari-proyek"
-              type="search"
-              value={kata}
-              onChange={(e) => setKata(e.target.value)}
-              placeholder="Cari proyek, kecamatan, atau pelaksana…"
-              autoComplete="off"
-              className="min-w-0 flex-1 bg-transparent py-2.5 text-base outline-none placeholder:text-ink-subtle"
-            />
-          </div>
-        </form>
-        <Button varian="tipis" ukuran="sm" onClick={onTutup} className="shrink-0">
-          Tutup
+      {/* Input lebih dulu di DOM agar <dialog> langsung memfokuskannya saat dibuka.
+          Panel ditutup dengan Esc atau klik di luar panel; tombol di samping input menjalankan pencarian. */}
+      <form role="search" onSubmit={cari} className="flex items-center gap-2">
+        <KolomCari
+          id="cari-proyek"
+          label="Cari proyek"
+          nilai={kata}
+          onUbah={setKata}
+          placeholder="Cari proyek, kecamatan, atau pelaksana…"
+          className="min-h-12 flex-1"
+        />
+        <Button type="submit" ukuran="sm" disabled={kata.trim() === ''} className="min-h-12 shrink-0 px-5">
+          Cari
         </Button>
-      </div>
+      </form>
 
       <div className="mt-6" aria-live="polite">
         {kata.trim() === '' ? (
