@@ -2,6 +2,8 @@ import { useId, useState, type FormEvent } from 'react'
 import { useSearchParams } from 'react-router'
 import { Button, TautanTombol } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
+import { KELAS_GALAT, KELAS_INPUT, KELAS_LABEL } from '../components/ui/gayaForm'
+import { KepalaHalaman } from '../components/ui/KepalaHalaman'
 import { SkeletonHalaman } from '../components/ui/Skeleton'
 import { useAuth } from '../hooks/useAuth'
 import { pesanError } from '../lib/errors'
@@ -47,21 +49,21 @@ export default function MasukPage() {
   if (memuat) return <SkeletonHalaman baris={1} />
 
   return (
-    <div className="mx-auto max-w-md space-y-4">
+    <div className="mx-auto max-w-md space-y-6">
       <title>Masuk — Jejak Anggaran</title>
-      <h1 className="text-2xl font-medium">Masuk</h1>
+      <KepalaHalaman judul="Masuk" />
 
       {pengguna ? (
         <Card className="space-y-3">
-          <p>
+          <p className="text-ink">
             Anda sudah masuk sebagai <strong>{pengguna.email}</strong>.
           </p>
           <TautanTombol to={kembali}>Lanjutkan</TautanTombol>
         </Card>
       ) : terkirim ? (
         <Card className="space-y-2" role="status">
-          <p className="font-medium">Cek email Anda</p>
-          <p className="text-sm text-slate-600">
+          <p className="font-medium text-ink-strong">Cek email Anda</p>
+          <p className="text-sm text-ink-muted">
             Kami mengirim tautan masuk ke <strong>{email}</strong>. Buka email tersebut lalu tekan tautannya. Tidak perlu kata
             sandi.
           </p>
@@ -72,12 +74,12 @@ export default function MasukPage() {
       ) : (
         <Card>
           <form onSubmit={kirim} noValidate className="space-y-4">
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-ink-muted">
               Masuk diperlukan untuk melapor dan mengonfirmasi laporan. Kami akan mengirim tautan masuk ke email Anda. Email
               Anda tidak ditampilkan ke publik.
             </p>
             <div>
-              <label htmlFor={idEmail} className="font-medium">
+              <label htmlFor={idEmail} className={KELAS_LABEL}>
                 Email
               </label>
               <input
@@ -89,16 +91,16 @@ export default function MasukPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 aria-invalid={!!errorEmail}
                 aria-describedby={errorEmail ? `${idEmail}-error` : undefined}
-                className="mt-1 min-h-11 w-full rounded-ui border border-slate-300 bg-white px-3"
+                className={`mt-1.5 min-h-11 ${KELAS_INPUT}`}
               />
               {errorEmail && (
-                <p id={`${idEmail}-error`} className="mt-1 text-sm text-redflag">
+                <p id={`${idEmail}-error`} className={KELAS_GALAT}>
                   {errorEmail}
                 </p>
               )}
             </div>
             {errorKirim && (
-              <p role="alert" className="text-sm text-redflag">
+              <p role="alert" className="text-sm text-danger">
                 {errorKirim}
               </p>
             )}

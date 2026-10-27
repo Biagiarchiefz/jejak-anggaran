@@ -1,6 +1,7 @@
 import { supabase } from './supabaseClient'
 import { keLaporanPublik, keRiwayatPublik, type LaporanPublik, type RiwayatPublik } from './laporanService'
 import { AppError, dariErrorSupabase } from '../lib/errors'
+import { tandaiDataDemo } from '../lib/penandaDemo'
 import type { Tables } from '../types/database'
 
 export type Proyek = Tables<'proyek'>
@@ -25,6 +26,7 @@ export async function daftarProyek(): Promise<ProyekDenganRedFlag[]> {
   if (proyek.error) throw dariErrorSupabase(proyek.error, 'daftarProyek')
   if (redFlag.error) throw dariErrorSupabase(redFlag.error, 'daftarProyek: red flag')
 
+  tandaiDataDemo(proyek.data)
   const redFlagPerProyek = new Map(redFlag.data.map((r) => [r.proyek_id, keRedFlag(r)]))
   return proyek.data.map((p) => ({ ...p, redFlag: redFlagPerProyek.get(p.id) ?? null }))
 }
@@ -41,6 +43,7 @@ export async function ambilDetailProyek(id: string): Promise<DetailProyek> {
   if (laporan.error) throw dariErrorSupabase(laporan.error, 'ambilDetailProyek: laporan')
 
   const daftarLaporan = laporan.data.map(keLaporanPublik)
+  tandaiDataDemo([proyek.data, ...daftarLaporan])
   const riwayat = await ambilRiwayat(daftarLaporan.map((l) => l.id))
 
   return {

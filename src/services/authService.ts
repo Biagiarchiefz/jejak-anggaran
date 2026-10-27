@@ -7,15 +7,17 @@ import type { Enums } from '../types/database'
 export type Pengguna = {
   id: string
   email: string | null
+  /** Nama tampilan dari profil (bawaannya bagian depan email). Hanya ditampilkan ke pengguna itu sendiri. */
+  nama: string | null
   peran: Enums<'peran_pengguna'>
 }
 
 async function kePengguna(sesi: Session | null): Promise<Pengguna | null> {
   if (!sesi) return null
-  const { data, error } = await supabase.from('profiles').select('peran').eq('id', sesi.user.id).maybeSingle()
+  const { data, error } = await supabase.from('profiles').select('peran, nama_tampilan').eq('id', sesi.user.id).maybeSingle()
   // Profil gagal dimuat: anggap warga biasa, RLS tetap menjaga akses admin.
   if (error) logger.error('kePengguna: profil', error)
-  return { id: sesi.user.id, email: sesi.user.email ?? null, peran: data?.peran ?? 'warga' }
+  return { id: sesi.user.id, email: sesi.user.email ?? null, nama: data?.nama_tampilan ?? null, peran: data?.peran ?? 'warga' }
 }
 
 /** Memantau status masuk. Callback langsung dipanggil sekali dengan sesi saat ini. */

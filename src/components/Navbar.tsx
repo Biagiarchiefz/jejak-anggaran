@@ -1,105 +1,110 @@
 import { useState } from 'react'
+import { BookOpen, House, Landmark, Map as IkonPeta, Megaphone, Menu, Search, UserRound, X, type LucideIcon } from 'lucide-react'
 import { Link, NavLink, useLocation } from 'react-router'
+import { MenuAkun } from './MenuAkun'
+import { PencarianCepat } from './PencarianCepat'
+import { Laci } from './ui/Laci'
 import { useAuth } from '../hooks/useAuth'
+import { useDigulir } from '../hooks/useDigulir'
 import { logger } from '../lib/logger'
 import { URL_LAPOR } from '../lib/ringkasanLapor'
 import { keluar } from '../services/authService'
 
-const MENU = [
-  { ke: '/', label: 'Beranda' },
-  { ke: '/anggaran', label: 'Anggaran' },
-  { ke: '/peta', label: 'Peta Proyek' },
-  { ke: '/tentang-data', label: 'Tentang Data' },
+/** `pendek`: label di bottom navigation yang sempit. */
+type ItemMenu = { ke: string; label: string; pendek?: string; ikon: LucideIcon }
+
+const MENU: ItemMenu[] = [
+  { ke: '/', label: 'Beranda', ikon: House },
+  { ke: '/anggaran', label: 'Anggaran', ikon: Landmark },
+  { ke: '/peta', label: 'Peta Proyek', pendek: 'Peta', ikon: IkonPeta },
+  { ke: '/tentang-data', label: 'Tentang Data', pendek: 'Data', ikon: BookOpen },
 ]
 
-function IkonMegafon({ className }: { className?: string }) {
+/** Logo teks + ikon sendiri (DESIGN.md §7.2). */
+function Logo({ onClick }: { onClick?: () => void }) {
   return (
-    <svg viewBox="0 0 20 20" fill="currentColor" className={className ?? 'size-4'} aria-hidden>
-      <path d="M13.92 3.85a.75.75 0 0 1 1.08.67v10.96a.75.75 0 0 1-1.08.67L9.5 13.97V17a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-3.25H5a3 3 0 0 1-3-3v-1.5a3 3 0 0 1 3-3h4.5l4.42-2.4ZM16.5 8a.75.75 0 0 1 .75.75v2.5a.75.75 0 0 1-1.5 0v-2.5A.75.75 0 0 1 16.5 8Z" />
-    </svg>
+    <Link to="/" onClick={onClick} className="inline-flex min-h-11 shrink-0 items-center gap-2.5 rounded-md">
+      <img src="/favicon.svg" alt="" className="size-7" />
+      <span className="text-lg font-medium text-ink-strong">Jejak Anggaran</span>
+    </Link>
   )
 }
 
-function IkonMenu({ terbuka }: { terbuka: boolean }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" className="size-6" aria-hidden>
-      {terbuka ? <path d="M6 6l12 12M18 6 6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
-    </svg>
-  )
+// Item aktif: teks ink-strong + garis bawah 2px brand. Hover: garis abu tumbuh dari kiri.
+function kelasTautanDesktop({ isActive }: { isActive: boolean }) {
+  return `relative inline-flex h-16 items-center px-3 text-sm font-medium transition-colors duration-150 after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:origin-left after:bg-brand after:transition-transform after:duration-[240ms] after:ease-(--ease-standard) motion-reduce:after:transition-none ${
+    isActive ? 'text-ink-strong after:scale-x-100' : 'text-ink-muted after:scale-x-0 hover:text-ink-strong hover:after:scale-x-100 hover:after:bg-border-strong'
+  }`
 }
 
-function kelasMenu({ isActive }: { isActive: boolean }) {
-  return `relative block rounded-ui px-3 py-2 text-sm font-medium transition-colors ${
-    isActive ? 'text-merek-800 lg:after:absolute lg:after:inset-x-3 lg:after:-bottom-[13px] lg:after:h-[3px] lg:after:rounded-full lg:after:bg-aksen' : 'text-slate-600 hover:text-slate-900'
-  } ${isActive ? 'max-lg:bg-merek-50' : 'max-lg:hover:bg-slate-50'}`
+function kelasTautanLaci({ isActive }: { isActive: boolean }) {
+  return `flex min-h-12 items-center gap-3 rounded-md px-3 text-lg font-medium efek-tekan ${
+    isActive ? 'bg-brand-soft text-ink-strong' : 'text-ink-muted hover:bg-recessed hover:text-ink-strong'
+  }`
 }
 
+function kelasTautanBawah({ isActive }: { isActive: boolean }) {
+  return `flex h-full flex-col items-center justify-center gap-1 text-xs font-medium efek-tekan ${
+    isActive ? 'text-link' : 'text-ink-muted hover:text-ink-strong'
+  }`
+}
+
+// Item di laci muncul bergantian (fade + geser 8px) setiap kali laci dibuka.
+const MASUK_BERTAHAP =
+  'transition-[opacity,translate] duration-[320ms] ease-(--ease-out-soft) starting:translate-y-2 starting:opacity-0 motion-reduce:transition-none'
+const jeda = (urutan: number) => ({ transitionDelay: `${100 + urutan * 40}ms` })
+
+/**
+ * Header yang menempel: logo kiri, tautan (desktop), cari, masuk. Di Beranda sebelum digulir warnanya sama dengan
+ * hero tanpa garis bawah; setelah digulir berubah ke `surface` dengan garis bawah.
+ * Di ponsel/tablet: logo + cari + tombol menu, dan navigasi utama pindah ke bottom navigation.
+ */
 export function Navbar() {
   const { pengguna } = useAuth()
   const { pathname } = useLocation()
-  const [terbuka, setTerbuka] = useState(false)
-  const [pathMenu, setPathMenu] = useState(pathname)
+  const digulir = useDigulir()
+  // Di Beranda sebelum digulir: header menyatu dengan hero (warna sama, tanpa garis bawah).
+  const menyatuDenganHero = pathname === '/' && !digulir
+  const [panel, setPanel] = useState<'menu' | 'cari' | null>(null)
+  const [pathPanel, setPathPanel] = useState(pathname)
 
-  // Tutup menu ponsel saat pindah halaman.
-  if (pathMenu !== pathname) {
-    setPathMenu(pathname)
-    setTerbuka(false)
+  // Tutup panel saat pindah halaman.
+  if (pathPanel !== pathname) {
+    setPathPanel(pathname)
+    setPanel(null)
   }
+
+  const tutup = () => setPanel(null)
 
   async function tanganiKeluar() {
     try {
       await keluar()
+      tutup()
     } catch (e) {
       logger.error('Navbar: keluar', e)
     }
   }
 
-  const menu = [...MENU, ...(pengguna?.peran === 'admin' ? [{ ke: '/admin', label: 'Admin' }] : [])]
+  const menu = [...MENU, ...(pengguna?.peran === 'admin' ? [{ ke: '/admin', label: 'Admin', ikon: UserRound }] : [])]
 
-  const tombolAkun = pengguna ? (
-    <button type="button" onClick={tanganiKeluar} className="rounded-ui px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:text-slate-900">
-      Keluar
-    </button>
-  ) : (
-    <NavLink to="/masuk" className="rounded-ui px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:text-slate-900">
-      Masuk
-    </NavLink>
-  )
+  const tombolIkon =
+    'inline-flex size-11 items-center justify-center rounded-full text-ink efek-tekan hover:bg-recessed'
 
   return (
-    <header className="relative z-[1100]">
-      {/* Pita atas: penegasan status situs + kanal pengaduan resmi. */}
-      <div className="bg-merek-900 text-xs text-merek-100">
-        <div className="mx-auto flex max-w-[88rem] flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-2">
-          <p>Situs warga independen, bukan situs resmi Pemerintah Kota Bandung.</p>
-          <a
-            href={URL_LAPOR}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 font-medium text-white hover:underline"
-          >
-            <span className="size-1.5 rounded-full bg-aksen" aria-hidden />
-            Pengaduan resmi: lapor.go.id
-            <span className="sr-only">(membuka tab baru)</span>
-          </a>
-        </div>
-      </div>
+    <>
+      <header
+        className={`sticky top-0 z-[1100] h-16 border-b transition-[background-color,border-color] duration-[240ms] ease-(--ease-standard) ${
+          menyatuDenganHero ? 'border-transparent bg-canvas-blue' : 'border-border bg-surface'
+        }`}
+      >
+        <div className="mx-auto flex h-full max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
+          <Logo />
 
-      <div className="border-b border-slate-200/80 bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-[88rem] items-center justify-between gap-4 px-4 py-3">
-          <Link to="/" className="flex min-w-0 items-center gap-3">
-            <img src="/favicon.svg" alt="" className="size-10 shrink-0" />
-            <span className="min-w-0 leading-tight">
-              <span className="block text-sm font-medium tracking-wide text-slate-900 sm:text-base">JEJAK ANGGARAN</span>
-              <span className="block truncate text-xs text-slate-500">Transparansi Uang Publik · Kota Bandung</span>
-            </span>
-          </Link>
-
-          <nav aria-label="Menu utama" className="hidden lg:block">
-            <ul className="flex items-center gap-1">
+          <nav aria-label="Menu utama" className="ml-6 hidden lg:block">
+            <ul className="flex">
               {menu.map((m) => (
                 <li key={m.ke}>
-                  <NavLink to={m.ke} end={m.ke === '/'} className={kelasMenu}>
+                  <NavLink to={m.ke} end={m.ke === '/'} className={kelasTautanDesktop}>
                     {m.label}
                   </NavLink>
                 </li>
@@ -107,50 +112,133 @@ export function Navbar() {
             </ul>
           </nav>
 
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="hidden lg:block">{tombolAkun}</div>
-            <Link
-              to="/peta"
-              className="hidden items-center gap-2 rounded-ui bg-merek-800 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-merek-900 hover:shadow-md sm:inline-flex"
-            >
-              <IkonMegafon />
-              Lapor Kondisi Proyek
-            </Link>
+          <div className="ml-auto flex items-center gap-1">
             <button
               type="button"
-              className="rounded-ui p-2 text-merek-900 hover:bg-slate-100 lg:hidden"
-              aria-expanded={terbuka}
-              aria-controls="menu-ponsel"
-              aria-label={terbuka ? 'Tutup menu' : 'Buka menu'}
-              onClick={() => setTerbuka((t) => !t)}
+              className={tombolIkon}
+              aria-haspopup="dialog"
+              aria-expanded={panel === 'cari'}
+              onClick={() => setPanel('cari')}
             >
-              <IkonMenu terbuka={terbuka} />
+              <Search className="size-5" strokeWidth={1.5} aria-hidden />
+              <span className="sr-only">Cari proyek</span>
+            </button>
+
+            {/* Sudah masuk: avatar berinisial + menu akun (semua ukuran layar). Belum: tombol Masuk (desktop). */}
+            {pengguna ? (
+              <MenuAkun pengguna={pengguna} onKeluar={tanganiKeluar} className="lg:ml-1" />
+            ) : (
+              <Link
+                to="/masuk"
+                className="ml-2 hidden min-h-11 items-center rounded-full border border-border-strong bg-surface px-5 text-sm font-medium text-ink efek-tekan hover:bg-canvas-soft lg:inline-flex"
+              >
+                Masuk
+              </Link>
+            )}
+
+            <button
+              type="button"
+              className={`-mr-2.5 lg:hidden ${tombolIkon}`}
+              aria-haspopup="dialog"
+              aria-expanded={panel === 'menu'}
+              onClick={() => setPanel('menu')}
+            >
+              <Menu className="size-6" strokeWidth={1.5} aria-hidden />
+              <span className="sr-only">Buka menu</span>
             </button>
           </div>
         </div>
+      </header>
 
-        {terbuka && (
-          <nav id="menu-ponsel" aria-label="Menu utama" className="border-t border-slate-200 px-4 pt-2 pb-4 lg:hidden">
+      {/* Bottom navigation (ponsel & tablet): ikon + label 12px, tinggi 64px. */}
+      <nav aria-label="Navigasi bawah" className="fixed inset-x-0 bottom-0 z-[1100] h-16 border-t border-border bg-surface lg:hidden">
+        <ul className="mx-auto grid h-full max-w-xl grid-cols-5">
+          {[...MENU, { ke: '/masuk', label: 'Akun', ikon: UserRound }].map((m) => (
+            <li key={m.ke}>
+              <NavLink to={m.ke} end={m.ke === '/'} className={kelasTautanBawah}>
+                <m.ikon className="size-5" strokeWidth={1.5} aria-hidden />
+                {m.pendek ?? m.label}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <Laci
+        terbuka={panel === 'menu'}
+        onTutup={tutup}
+        label="Menu utama"
+        arah="kiri"
+        className="fixed inset-y-0 left-0 h-dvh w-[min(22rem,88vw)]"
+      >
+        <div className="flex h-full flex-col overflow-y-auto px-5 pt-3 pb-6">
+          <div className="flex items-center justify-between gap-3">
+            <Logo onClick={tutup} />
+            <button type="button" onClick={tutup} className={`-mr-2.5 ${tombolIkon}`} aria-label="Tutup menu">
+              <X className="size-6" strokeWidth={1.5} aria-hidden />
+            </button>
+          </div>
+
+          <nav aria-label="Menu utama" className="mt-6">
             <ul className="space-y-1">
-              {menu.map((m) => (
-                <li key={m.ke}>
-                  <NavLink to={m.ke} end={m.ke === '/'} className={kelasMenu}>
+              {menu.map((m, i) => (
+                <li key={m.ke} className={MASUK_BERTAHAP} style={jeda(i)}>
+                  <NavLink to={m.ke} end={m.ke === '/'} className={kelasTautanLaci} onClick={tutup}>
+                    <m.ikon className="size-5" strokeWidth={1.5} aria-hidden />
                     {m.label}
                   </NavLink>
                 </li>
               ))}
-              <li>{tombolAkun}</li>
             </ul>
+          </nav>
+
+          <div className={`mt-6 space-y-3 border-t border-border pt-6 ${MASUK_BERTAHAP}`} style={jeda(menu.length)}>
             <Link
               to="/peta"
-              className="mt-3 flex items-center justify-center gap-2 rounded-ui bg-merek-800 px-4 py-3 text-sm font-medium text-white sm:hidden"
+              onClick={tutup}
+              className="flex min-h-11 items-center justify-center gap-2 rounded-full bg-action px-6 text-sm font-medium text-white efek-tekan hover:bg-action-hover"
             >
-              <IkonMegafon />
-              Lapor Kondisi Proyek
+              <Megaphone className="size-4" strokeWidth={1.5} aria-hidden />
+              Laporkan kondisi proyek
             </Link>
-          </nav>
-        )}
-      </div>
-    </header>
+            {pengguna ? (
+              <button
+                type="button"
+                onClick={tanganiKeluar}
+                className="flex min-h-11 w-full items-center justify-center rounded-full border border-border-strong px-6 text-sm font-medium text-ink efek-tekan hover:bg-canvas-soft"
+              >
+                Keluar
+              </button>
+            ) : (
+              <Link
+                to="/masuk"
+                onClick={tutup}
+                className="flex min-h-11 items-center justify-center rounded-full border border-border-strong px-6 text-sm font-medium text-ink efek-tekan hover:bg-canvas-soft"
+              >
+                Masuk
+              </Link>
+            )}
+          </div>
+
+          <p className="mt-auto pt-8 text-xs text-ink-subtle">
+            Situs warga independen. Tindak lanjut resmi tetap melalui{' '}
+            <a href={URL_LAPOR} target="_blank" rel="noopener noreferrer" className="font-medium text-link hover:underline">
+              lapor.go.id ↗<span className="sr-only"> (membuka tab baru)</span>
+            </a>
+            .
+          </p>
+        </div>
+      </Laci>
+
+      <Laci
+        terbuka={panel === 'cari'}
+        onTutup={tutup}
+        label="Cari proyek"
+        arah="atas"
+        className="fixed inset-x-0 top-0 max-h-[85dvh] w-full overflow-y-auto border-b border-border"
+      >
+        <PencarianCepat onTutup={tutup} />
+      </Laci>
+    </>
   )
 }

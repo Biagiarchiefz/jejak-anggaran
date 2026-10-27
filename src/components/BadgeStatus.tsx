@@ -2,16 +2,16 @@ import { Badge, type NadaBadge } from './ui/Badge'
 import { LABEL_STATUS_LAPORAN, LABEL_STATUS_PROYEK } from '../lib/label'
 import type { Enums } from '../types/database'
 
-const WARNA_TITIK: Record<Enums<'status_proyek'>, string> = {
-  direncanakan: 'bg-status-direncanakan',
-  berjalan: 'bg-status-berjalan',
-  selesai: 'bg-status-selesai',
+// DESIGN.md §7.6: direncanakan/berjalan netral, selesai hijau.
+const NADA_PROYEK: Record<Enums<'status_proyek'>, NadaBadge> = {
+  direncanakan: 'netral',
+  berjalan: 'netral',
+  selesai: 'sukses',
 }
 
-export function BadgeStatusProyek({ status }: { status: Enums<'status_proyek'> }) {
+export function BadgeStatusProyek({ status, ringkas }: { status: Enums<'status_proyek'>; ringkas?: boolean }) {
   return (
-    <Badge>
-      <span className={`size-2 rounded-full ${WARNA_TITIK[status]}`} aria-hidden />
+    <Badge nada={NADA_PROYEK[status]} ringkas={ringkas}>
       {LABEL_STATUS_PROYEK[status]}
     </Badge>
   )
@@ -20,9 +20,10 @@ export function BadgeStatusProyek({ status }: { status: Enums<'status_proyek'> }
 const NADA_LAPORAN: Record<Enums<'status_laporan'>, NadaBadge> = {
   diterima: 'netral',
   diverifikasi: 'info',
-  ditindaklanjuti: 'peringatan',
+  ditindaklanjuti: 'info',
   selesai: 'sukses',
-  ditolak: 'bahaya',
+  // Merah hanya untuk red flag dan galat (DESIGN.md §2), jadi "ditolak" netral.
+  ditolak: 'netral',
 }
 
 export function BadgeStatusLaporan({ status }: { status: Enums<'status_laporan'> }) {

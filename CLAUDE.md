@@ -37,6 +37,7 @@ Sebelum menganggap tugas selesai: `npm run typecheck && npm run lint && npm run 
 | Styling | Tailwind CSS | 4.x |
 | Font | Inter, di-host sendiri via `@fontsource-variable/inter` (tanpa Google Fonts) | 5.x |
 | Grafik | Recharts | 3.x |
+| Ikon | lucide-react (stroke 1.5, satu-satunya set ikon) | 1.x |
 | Peta | Leaflet + react-leaflet, tile OpenStreetMap | Leaflet 1.9, react-leaflet 5 |
 | Backend | Supabase (Postgres, Auth, Storage) via `@supabase/supabase-js` | 2.x |
 | Validasi | zod (form + validasi CSV) | 3.x |
@@ -65,25 +66,25 @@ Jangan menambah dependensi baru tanpa alasan jelas. Tidak ada Redux, TanStack Qu
 - Komponen fungsi + hooks. Logika murni (red flag, format rupiah, kalkulasi rapor) ada di `src/lib/` dan wajib punya unit test.
 - Format uang selalu memakai `formatRupiah()` / `formatRupiahRingkas()` dari `src/lib/format.ts` (contoh: `Rp 1,2 M`).
 - **Setiap angka anggaran, pagu, atau kontrak yang tampil wajib disertai komponen `<SumberData>`** (nama sumber + tanggal akses + link). Ini fitur inti, bukan hiasan.
-- **Data demo wajib berlabel.** Baris dengan `is_demo = true` selalu menampilkan `<BadgeDemo>`.
+- **Data demo wajib diberitahukan, tetapi tidak per item.** Service memanggil `tandaiDataDemo()` (`src/lib/penandaDemo.ts`) saat memuat data; begitu ada baris `is_demo = true`, `useAdaDataDemo()` menampilkan satu catatan di bagian bawah footer. Tidak ada badge "Data demo", dan angka demo tidak diberi baris `<SumberData>` (komponennya mengembalikan `null` untuk `demo`).
 - **Laporan negatif simulasi hanya boleh menempel ke proyek `is_demo = true`.** Jangan membuat laporan palsu pada proyek nyata. `scripts/build-seed.ts` menolak data yang melanggar aturan ini.
 - Ambang red flag hanya didefinisikan di `src/lib/redFlag.ts` dan view SQL `v_red_flag_proyek`. Keduanya harus sinkron.
 - Mobile-first: setiap halaman dicek di lebar 375px. Peta dan grafik tidak boleh menyebabkan scroll horizontal.
 - Jangan menampilkan data pribadi: nama/ID pelapor tidak tampil di halaman publik, tidak ada NIK atau data penerima bantuan.
 - Foto dikompres di klien (canvas → WebP, maks 1600px, maks 5 MB) sebelum upload. Proses ini sekaligus membuang metadata EXIF/GPS.
 
-## Gaya visual (design language ala Stripe)
+## Gaya visual
 
-- Kontainer halaman: `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8` (sudah ada di `Layout` dan `Footer`). Pengecualian: `Navbar` dan hero Beranda selebar maks 86rem dan saling sejajar (Navbar `max-w-[88rem] px-4`; hero memakai margin negatif + unit `cqw` dari `@container` di `Layout`).
-- Sudut: satu ukuran untuk semua elemen (gambar, tombol, kartu, badge, input, hero, popup peta) = `rounded-ui` (token `--radius-ui: 7px` di `index.css`). Jangan pakai `rounded-sm`…`rounded-3xl`. `rounded-full` hanya untuk bentuk yang memang lingkaran/garis: titik status, spinner, legenda peta, batang grafik.
+**Sumber kebenaran gaya visual adalah `DESIGN.md`** (gaya ala cloudflare.com dengan aksen biru langit). Baca sebelum mengubah UI. Ringkasan penerapannya di kode:
+
+- Token warna, radius, bayangan, dan easing ada di `@theme` pada `src/index.css` (Tailwind v4, tanpa `tailwind.config.js`). Komponen hanya memakai token (`bg-canvas`, `bg-surface`, `text-ink-muted`, `bg-action`, `border-border`, …), bukan palet bawaan Tailwind atau hex. Pustaka yang butuh hex (Recharts, Leaflet) memakai `src/lib/warna.ts`.
+- Kontainer halaman: `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8` (di `Layout`, `Navbar`, `Footer`). Section dengan latar selebar layar memakai `<PitaPenuh>` (`src/components/ui/PitaPenuh.tsx`, margin negatif + unit `cqw` dari `@container` di `Layout`).
+- Header putih menempel (logo kiri, tautan di desktop, cari, Masuk). Di bawah `lg`: tombol menu (laci kiri) + bottom navigation 5 item. Tidak ada pita di atas header: status "bukan situs resmi", tautan LAPOR!, dan catatan data demo ada di footer. Animasi laci/dialog ada di `index.css` (`dialog[data-laci]`).
+- Beranda mengikuti urutan DESIGN.md §8, dengan hero `<FlatProjectMap>` (teks kiri + peta titik berbentuk batas Kota Bandung di kanan, berisi pin proyek; batas dari OpenStreetMap di `src/data/batasKotaBandung.ts`) → `<PitaStatistik>` (band) → `<SeksiAnggaran>` → `<SeksiProyek>` → `<SeksiCaraKerja>` → `<CtaPenutup>` (band). Pita gelap maksimal dua per halaman.
+- Komponen bersama: `<KepalaHalaman>` (H1 halaman), `<JudulSeksi>` (H2 section), `<LabelSeksi>` (eyebrow), `gayaForm.ts` (kelas input/select/label/galat), `Button`/`TautanTombol` (pil).
+- Ikon hanya dari `lucide-react`, stroke 1.5.
+- Animasi (DESIGN.md §10): pindah halaman = fade di `Layout` (`animate-halaman-masuk`, hanya opacity). Muncul saat digulir = beri atribut `data-muncul=""` (elemen itu) atau `data-muncul-anak=""` (anak-anaknya bergantian); `useAnimasiMuncul` di `Layout` yang memicunya. Jangan pasang di elemen `sticky`/hero. Tombol, chip, dan ikon memakai utilitas `efek-tekan` (bukan `transition-colors`). Semua mati saat "kurangi gerak".
 - Foto Unsplash tidak diberi keterangan sumber di halaman (lisensinya tidak mewajibkan atribusi). Sumber tiap foto dicatat sebagai data/komentar di komponennya.
-- Border tipis `border-slate-200/80`, bayangan lembut `shadow-sm`; kartu yang bisa diklik memakai `hover:shadow-xl transition-all duration-300`.
-- Di atas judul seksi boleh ada label kecil `<LabelSeksi>` (`text-sm font-medium text-merek-700`, tanpa bingkai/ikon). Jangan kembali memakai badge berbingkai untuk label seksi.
-- Judul seksi dan paragraf pengantar memakai `<JudulSeksi utama pelengkap>` (`src/components/ui/JudulSeksi.tsx`): `text-2xl sm:text-3xl font-medium`, kalimat utama `slate-900` + pelengkap `slate-500`, huruf kapital hanya di awal kalimat.
-- Tipografi satu keluarga (Inter, self-host). Konfigurasi ada di `@theme` pada `src/index.css` (Tailwind v4, tanpa `tailwind.config.js`). Heading `h1`–`h3`: medium + `tracking-tight` (aturan dasar di `index.css`; heading `text-sm` pakai `tracking-normal`). Paragraf/deskripsi: regular + `text-slate-600`.
-- Bobot huruf: teks paling tebal adalah `font-medium` (500). Jangan pakai `font-semibold`, `font-bold`, atau `font-extrabold`; `<strong>`, `<b>`, dan `<th>` juga diset 500 di `index.css`. Hierarki dibangun lewat ukuran dan warna, bukan ketebalan.
-- Warna: abu-abu memakai palet `slate`. Judul `text-slate-900`, deskripsi `text-slate-600`. Aksen merek navy (`merek-*`) untuk tombol utama dan tautan, emas (`aksen`) hanya untuk dekorasi.
-- Jarak antar seksi di Beranda lega: `pt-20 lg:pt-28`.
 
 ## Standar error handling
 

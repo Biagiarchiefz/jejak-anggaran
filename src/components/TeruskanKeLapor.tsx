@@ -23,11 +23,11 @@ export function TeruskanKeLapor({ ringkasan }: { ringkasan: string }) {
         Teruskan ke LAPOR!
       </Button>
       {terbuka && (
-        <div id={idPanel} className="mt-3 space-y-3 rounded-ui bg-slate-50 p-3">
-          <p className="text-sm text-slate-600">
+        <div id={idPanel} className="mt-3 space-y-3 rounded-lg border border-border bg-canvas-soft p-4">
+          <p className="text-sm text-ink-muted">
             Tindak lanjut resmi dilakukan lewat LAPOR!. Salin ringkasan ini, lalu tempelkan di formulir pengaduan LAPOR!.
           </p>
-          <label className="block text-xs font-medium text-slate-700" htmlFor={`${idPanel}-teks`}>
+          <label className="block text-sm font-medium text-ink" htmlFor={`${idPanel}-teks`}>
             Ringkasan laporan
           </label>
           <textarea
@@ -35,7 +35,7 @@ export function TeruskanKeLapor({ ringkasan }: { ringkasan: string }) {
             readOnly
             value={ringkasan}
             rows={8}
-            className="w-full rounded-ui border border-slate-200 bg-white p-3 font-mono text-xs"
+            className="w-full rounded-md border border-border bg-recessed p-3 font-mono text-xs text-ink"
             onFocus={(e) => e.currentTarget.select()}
           />
           <div className="flex flex-wrap gap-2">
@@ -46,7 +46,7 @@ export function TeruskanKeLapor({ ringkasan }: { ringkasan: string }) {
               Buka lapor.go.id
             </TautanLuarTombol>
           </div>
-          <p className="text-xs text-slate-600" role="status">
+          <p className="text-xs text-ink-subtle" role="status">
             {status === 'tersalin' && 'Ringkasan sudah disalin.'}
             {status === 'gagal' && 'Gagal menyalin otomatis. Pilih teks di atas lalu salin manual.'}
           </p>

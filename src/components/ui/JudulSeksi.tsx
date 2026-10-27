@@ -1,30 +1,27 @@
 import type { ReactNode } from 'react'
 
 type JudulSeksiProps = {
-  /** Kalimat utama (slate-900). */
+  /** Kalimat utama (ink-strong). */
   utama: ReactNode
-  /** Kalimat pelengkap yang lebih redup (slate-500). */
+  /** Kalimat pelengkap yang lebih redup (ink-subtle). */
   pelengkap?: ReactNode
   as?: 'h1' | 'h2' | 'p'
   id?: string
   className?: string
 }
 
-/**
- * Gaya teks judul/pengantar seksi yang seragam: ukuran besar, bobot medium,
- * dua nada warna. Dipakai paragraf pengantar dan judul seksi di Beranda.
- */
+/** Judul section H2 (DESIGN.md §4): 28/40px, bobot 500, line-height 1.12, tracking -0.015em. */
 export function JudulSeksi({ utama, pelengkap, as: Tag = 'h2', id, className }: JudulSeksiProps) {
   return (
     <Tag
       id={id}
-      className={`text-2xl leading-snug font-medium tracking-tight text-balance text-slate-900 sm:text-3xl ${className ?? ''}`}
+      className={`text-[28px] leading-[1.12] font-medium tracking-[-0.015em] text-balance text-ink-strong md:text-[40px] ${className ?? ''}`}
     >
       {utama}
       {pelengkap && (
         <>
           {' '}
-          <span className="text-slate-500">{pelengkap}</span>
+          <span className="text-ink-subtle">{pelengkap}</span>
         </>
       )}
     </Tag>

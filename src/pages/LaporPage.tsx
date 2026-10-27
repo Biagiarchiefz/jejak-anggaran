@@ -1,9 +1,11 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
+import { Camera, CircleAlert, Lock, X } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router'
-import { BadgeDemo } from '../components/BadgeDemo'
 import { Button, TautanTombol } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { ErrorState } from '../components/ui/ErrorState'
+import { KELAS_GALAT, KELAS_INPUT, KELAS_LABEL } from '../components/ui/gayaForm'
+import { KepalaHalaman } from '../components/ui/KepalaHalaman'
 import { SkeletonHalaman } from '../components/ui/Skeleton'
 import { useAuth } from '../hooks/useAuth'
 import { useProyekDetail } from '../hooks/useProyekDetail'
@@ -19,7 +21,8 @@ type Tahap = 'isi' | 'mengompres' | 'mengirim'
 function PesanField({ id, pesan }: { id: string; pesan?: string }) {
   if (!pesan) return null
   return (
-    <p id={id} className="mt-1 text-sm text-redflag">
+    <p id={id} className={`flex items-center gap-1.5 ${KELAS_GALAT}`}>
+      <CircleAlert className="size-4 shrink-0" strokeWidth={1.5} aria-hidden />
       {pesan}
     </p>
   )
@@ -37,6 +40,7 @@ function FormLapor({ proyekId }: { proyekId: string }) {
   const [tahap, setTahap] = useState<Tahap>('isi')
   // Simpan hasil kompres agar "coba lagi" tidak perlu mengompres ulang.
   const fotoTerkompres = useRef<{ sumber: File; hasil: FotoTerkompres } | null>(null)
+  const inputFoto = useRef<HTMLInputElement>(null)
 
   const urlPratinjau = useRef<string | null>(null)
 
@@ -49,6 +53,8 @@ function FormLapor({ proyekId }: { proyekId: string }) {
     urlPratinjau.current = file ? URL.createObjectURL(file) : null
     setFoto(file)
     setPratinjau(urlPratinjau.current)
+    // Kosongkan input agar file yang sama bisa dipilih lagi setelah dihapus.
+    if (!file && inputFoto.current) inputFoto.current.value = ''
   }
 
   async function kirim(e: FormEvent) {
@@ -82,15 +88,17 @@ function FormLapor({ proyekId }: { proyekId: string }) {
   const idError = (f: string) => `${idForm}-${f}-error`
 
   return (
-    <form onSubmit={kirim} noValidate className="space-y-6">
+    <form onSubmit={kirim} noValidate className="space-y-8">
       <fieldset aria-describedby={errorField.kategori ? idError('kategori') : undefined}>
-        <legend className="font-medium">Apa yang Anda lihat?</legend>
-        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+        <legend className={KELAS_LABEL}>
+          Apa yang Anda lihat? <span className="text-ink-subtle">*</span>
+        </legend>
+        <div className="mt-2 grid gap-2">
           {Constants.public.Enums.kategori_laporan.map((k) => (
             <label
               key={k}
-              className={`flex cursor-pointer gap-3 rounded-ui border p-3 ${
-                kategori === k ? 'border-merek-700 bg-merek-50' : 'border-slate-300 bg-white'
+              className={`flex cursor-pointer gap-3 rounded-md border p-3.5 efek-tekan has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand ${
+                kategori === k ? 'border-brand bg-brand-soft/60' : 'border-border bg-surface hover:border-border-strong'
               }`}
             >
               <input
@@ -99,11 +107,11 @@ function FormLapor({ proyekId }: { proyekId: string }) {
                 value={k}
                 checked={kategori === k}
                 onChange={() => setKategori(k)}
-                className="mt-1 accent-merek-800"
+                className="mt-1 accent-action focus-visible:outline-none"
               />
               <span>
-                <span className="block font-medium">{LABEL_KATEGORI[k]}</span>
-                <span className="block text-sm text-slate-600">{PENJELASAN_KATEGORI[k]}</span>
+                <span className="block font-medium text-ink-strong">{LABEL_KATEGORI[k]}</span>
+                <span className="block text-sm text-ink-muted">{PENJELASAN_KATEGORI[k]}</span>
               </span>
             </label>
           ))}
@@ -112,10 +120,10 @@ function FormLapor({ proyekId }: { proyekId: string }) {
       </fieldset>
 
       <div>
-        <label htmlFor={`${idForm}-deskripsi`} className="font-medium">
-          Ceritakan kondisinya
+        <label htmlFor={`${idForm}-deskripsi`} className={KELAS_LABEL}>
+          Ceritakan kondisinya <span className="text-ink-subtle">*</span>
         </label>
-        <p className="text-sm text-slate-600">Sebutkan lokasi persisnya dan apa yang terlihat. Hindari menyebut nama orang.</p>
+        <p className="mt-0.5 text-sm text-ink-muted">Sebutkan lokasi persisnya dan apa yang terlihat. Hindari menyebut nama orang.</p>
         <textarea
           id={`${idForm}-deskripsi`}
           value={deskripsi}
@@ -124,51 +132,76 @@ function FormLapor({ proyekId }: { proyekId: string }) {
           maxLength={DESKRIPSI_MAKS}
           aria-invalid={!!errorField.deskripsi}
           aria-describedby={errorField.deskripsi ? idError('deskripsi') : undefined}
-          className="mt-2 w-full rounded-ui border border-slate-300 bg-white p-3"
+          className={`mt-2 ${KELAS_INPUT}`}
         />
-        <p className="text-right text-xs text-slate-600">
+        <p className="mt-1 text-right text-xs text-ink-subtle tabular-nums">
           {deskripsi.trim().length}/{DESKRIPSI_MAKS}
         </p>
         <PesanField id={idError('deskripsi')} pesan={errorField.deskripsi} />
       </div>
 
       <div>
-        <label htmlFor={`${idForm}-foto`} className="font-medium">
-          Foto kondisi (wajib)
-        </label>
-        <p className="text-sm text-slate-600">
-          Foto dikompres otomatis sebelum dikirim. Data lokasi GPS di dalam foto dihapus.
+        <p className={KELAS_LABEL} id={`${idForm}-foto-label`}>
+          Foto kondisi <span className="text-ink-subtle">*</span>
         </p>
+        {foto && pratinjau ? (
+          <div className="relative mt-2 overflow-hidden rounded-md border border-border">
+            <img src={pratinjau} alt="Pratinjau foto yang akan dikirim" className="aspect-[4/3] w-full bg-recessed object-cover" />
+            <button
+              type="button"
+              onClick={() => pilihFoto(null)}
+              className="absolute top-2 right-2 inline-flex min-h-11 items-center gap-1.5 rounded-full border border-border-strong bg-surface px-4 text-sm font-medium text-ink efek-tekan hover:bg-canvas-soft"
+            >
+              <X className="size-4" strokeWidth={1.5} aria-hidden />
+              Hapus foto
+            </button>
+          </div>
+        ) : (
+          <label
+            htmlFor={`${idForm}-foto`}
+            className="mt-2 flex cursor-pointer flex-col items-center gap-2 rounded-lg border border-dashed border-border-strong bg-canvas-soft px-4 py-8 text-center efek-tekan hover:bg-recessed has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand"
+          >
+            <Camera className="size-6 text-action" strokeWidth={1.5} aria-hidden />
+            <span className="text-sm font-medium text-ink">Ambil foto atau pilih dari galeri (maks. 5 MB)</span>
+            <span className="text-xs text-ink-subtle">Foto dikompres otomatis dan data lokasi GPS di dalamnya dihapus.</span>
+          </label>
+        )}
         <input
+          ref={inputFoto}
           id={`${idForm}-foto`}
           type="file"
           accept="image/*"
           onChange={(e) => pilihFoto(e.target.files?.[0] ?? null)}
+          aria-labelledby={`${idForm}-foto-label`}
           aria-invalid={!!errorField.foto}
           aria-describedby={errorField.foto ? idError('foto') : undefined}
-          className="mt-2 block w-full text-sm file:mr-3 file:min-h-11 file:rounded-ui file:border-0 file:bg-merek-50 file:px-4 file:font-medium file:text-merek-900"
+          className="sr-only"
         />
         <PesanField id={idError('foto')} pesan={errorField.foto} />
-        {foto && pratinjau && (
-          <img src={pratinjau} alt="Pratinjau foto yang akan dikirim" className="mt-3 max-h-64 rounded-ui border border-slate-200" />
-        )}
+      </div>
+
+      {/* Kotak privasi. */}
+      <div className="flex gap-3 rounded-lg bg-canvas-blue p-4">
+        <Lock className="mt-0.5 size-5 shrink-0 text-action" strokeWidth={1.5} aria-hidden />
+        <p className="text-sm text-ink-muted">
+          Nama dan email Anda tidak pernah ditampilkan di halaman publik. Laporan bersifat publik dan menjadi pelengkap LAPOR!.
+        </p>
       </div>
 
       {errorKirim && (
-        <div role="alert" className="rounded-ui border border-red-200 bg-redflag-bg p-3 text-sm">
-          <p className="font-medium text-redflag">Laporan belum terkirim</p>
-          <p className="text-slate-600">{errorKirim}</p>
-          <p className="mt-1 text-slate-600">Isian Anda masih tersimpan. Tekan "Kirim laporan" untuk mencoba lagi.</p>
-        </div>
+        <ErrorState
+          judul="Laporan belum terkirim"
+          pesan={`${errorKirim} Isian Anda masih tersimpan. Tekan "Kirim laporan" untuk mencoba lagi.`}
+        />
       )}
 
-      <div className="flex flex-wrap items-center gap-3">
-        <Button type="submit" memuat={sibuk}>
+      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
+        <TautanTombol to={`/proyek/${proyekId}`} varian="tipis" className="w-full sm:w-auto">
+          Batal
+        </TautanTombol>
+        <Button type="submit" memuat={sibuk} className="w-full sm:w-auto">
           {tahap === 'mengompres' ? 'Memproses foto…' : tahap === 'mengirim' ? 'Mengirim…' : 'Kirim laporan'}
         </Button>
-        <Link to={`/proyek/${proyekId}`} className="text-sm font-medium text-slate-700 underline">
-          Batal
-        </Link>
       </div>
     </form>
   )
@@ -186,22 +219,26 @@ export default function LaporPage() {
   const { proyek } = data
 
   return (
-    <div className="mx-auto max-w-2xl space-y-5">
+    <div className="mx-auto max-w-[560px] space-y-6">
       <title>{`Lapor kondisi — ${proyek.nama_paket}`}</title>
-      <Link to={`/proyek/${proyek.id}`} className="inline-block text-sm font-medium text-merek-800 underline-offset-2 hover:underline">
+      <Link to={`/proyek/${proyek.id}`} className="inline-block text-sm font-medium text-link hover:underline">
         ← Kembali ke detail proyek
       </Link>
-      <header>
-        <h1 className="text-2xl font-medium">Laporkan kondisi proyek</h1>
-        <p className="mt-1 text-slate-600">
-          Untuk: <strong>{proyek.nama_paket}</strong> (Kec. {proyek.kecamatan}) {proyek.is_demo && <BadgeDemo />}
-        </p>
-      </header>
+      <KepalaHalaman judul="Laporkan kondisi proyek" />
+
+      {/* Ringkasan proyek yang dilaporkan. */}
+      <div className="rounded-lg border border-border bg-canvas-soft p-4">
+        <p className="text-xs text-ink-subtle">Proyek</p>
+        <p className="mt-0.5 font-semibold text-ink-strong">{proyek.nama_paket}</p>
+        <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-ink-muted">
+          Kec. {proyek.kecamatan} · {proyek.tahun_anggaran}
+        </div>
+      </div>
 
       {!pengguna ? (
         <Card className="space-y-3">
-          <p className="font-medium">Masuk dulu untuk melapor</p>
-          <p className="text-sm text-slate-600">
+          <p className="font-medium text-ink-strong">Masuk dulu untuk melapor</p>
+          <p className="text-sm text-ink-muted">
             Laporan memerlukan akun agar satu orang tidak bisa membanjiri laporan. Nama dan email Anda tidak ditampilkan ke
             publik.
           </p>
@@ -212,9 +249,8 @@ export default function LaporPage() {
           <FormLapor proyekId={proyek.id} />
         </Card>
       )}
-      <p className="text-xs text-slate-600">
-        Laporan di Jejak Anggaran bersifat publik dan menjadi pelengkap LAPOR!. Untuk tindak lanjut resmi, gunakan tombol
-        "Teruskan ke LAPOR!" setelah laporan terkirim.
+      <p className="text-xs text-ink-subtle">
+        Untuk tindak lanjut resmi, gunakan tombol "Teruskan ke LAPOR!" setelah laporan terkirim.
       </p>
     </div>
   )

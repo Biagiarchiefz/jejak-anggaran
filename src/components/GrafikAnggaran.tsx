@@ -1,11 +1,10 @@
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { formatRupiah, formatRupiahRingkas } from '../lib/format'
-
-// Sama dengan token --color-seri-* di index.css.
-const WARNA_ANGGARAN = '#2a78d6'
-const WARNA_REALISASI = '#eb6834'
+import { WARNA } from '../lib/warna'
 
 export type TitikTren = { tahun: number; anggaran: number; realisasi: number | null }
+
+const SUMBU = { fill: WARNA.inkSubtle, fontSize: 12 }
 
 /** Tren total anggaran vs realisasi antar tahun. Memakai Recharts, jadi hanya dimuat di halaman Anggaran. */
 export function GrafikTren({ data }: { data: TitikTren[] }) {
@@ -14,43 +13,60 @@ export function GrafikTren({ data }: { data: TitikTren[] }) {
       <div className="h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 8, right: 4, bottom: 0, left: 0 }} barGap={2}>
-            <CartesianGrid vertical={false} stroke="#e2e8f0" />
-            <XAxis dataKey="tahun" tickLine={false} axisLine={{ stroke: '#94a3b8' }} tick={{ fill: '#475569', fontSize: 12 }} />
+            <CartesianGrid vertical={false} stroke={WARNA.border} />
+            <XAxis dataKey="tahun" tickLine={false} axisLine={{ stroke: WARNA.border }} tick={SUMBU} />
             <YAxis
               width={64}
               tickLine={false}
               axisLine={false}
-              tick={{ fill: '#475569', fontSize: 12 }}
+              tick={SUMBU}
               tickFormatter={(v: number) => formatRupiahRingkas(v).replace('Rp ', '')}
             />
+            {/* Tooltip: kartu putih rounded-md, border, bayangan pop, angka tabular. */}
             <Tooltip
-              cursor={{ fill: '#f1f5f9' }}
+              cursor={{ fill: WARNA.recessed }}
+              contentStyle={{
+                backgroundColor: WARNA.surface,
+                borderRadius: 8,
+                border: `1px solid ${WARNA.border}`,
+                boxShadow: '0 12px 32px -8px rgb(15 59 110 / 0.16)',
+                fontSize: 13,
+                fontVariantNumeric: 'tabular-nums',
+              }}
+              labelStyle={{ color: WARNA.ink, fontWeight: 500 }}
               formatter={(nilai) => formatRupiah(Number(nilai))}
               labelFormatter={(tahun) => `Tahun ${tahun}`}
             />
-            <Legend wrapperStyle={{ fontSize: 13, color: '#1e293b' }} />
-            <Bar dataKey="anggaran" name="Anggaran" fill={WARNA_ANGGARAN} radius={[4, 4, 0, 0]} maxBarSize={40} />
-            <Bar dataKey="realisasi" name="Realisasi" fill={WARNA_REALISASI} radius={[4, 4, 0, 0]} maxBarSize={40} />
+            {/* Legenda di atas grafik, rata kiri, 12px. */}
+            <Legend
+              verticalAlign="top"
+              align="left"
+              iconType="circle"
+              iconSize={8}
+              wrapperStyle={{ fontSize: 12, color: WARNA.inkSubtle, paddingBottom: 12 }}
+            />
+            <Bar dataKey="anggaran" name="Anggaran" fill={WARNA.seriAnggaran} radius={[4, 4, 0, 0]} maxBarSize={40} />
+            <Bar dataKey="realisasi" name="Realisasi" fill={WARNA.seriRealisasi} radius={[4, 4, 0, 0]} maxBarSize={40} />
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <details className="mt-2 text-sm">
-        <summary className="cursor-pointer font-medium text-merek-800">Lihat dalam bentuk tabel</summary>
-        <div className="mt-2 overflow-x-auto">
+      <details className="mt-3 text-sm">
+        <summary className="cursor-pointer font-medium text-link hover:underline">Lihat dalam bentuk tabel</summary>
+        <div className="mt-3 overflow-hidden rounded-md border border-border">
           <table className="w-full text-left">
-            <thead className="text-slate-600">
+            <thead className="border-b border-border bg-canvas-soft text-xs tracking-[0.04em] text-ink-muted uppercase">
               <tr>
-                <th className="py-1 pr-3 font-medium">Tahun</th>
-                <th className="py-1 pr-3 font-medium">Anggaran</th>
-                <th className="py-1 font-medium">Realisasi</th>
+                <th className="px-4 py-3">Tahun</th>
+                <th className="px-4 py-3 text-right">Anggaran</th>
+                <th className="px-4 py-3 text-right">Realisasi</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="tabular-nums">
               {data.map((t) => (
-                <tr key={t.tahun} className="border-t border-slate-200">
-                  <td className="py-1 pr-3">{t.tahun}</td>
-                  <td className="py-1 pr-3">{formatRupiah(t.anggaran)}</td>
-                  <td className="py-1">{t.realisasi === null ? 'Belum tersedia' : formatRupiah(t.realisasi)}</td>
+                <tr key={t.tahun} className="border-b border-border-soft last:border-0 hover:bg-brand-soft/60">
+                  <td className="px-4 py-3">{t.tahun}</td>
+                  <td className="px-4 py-3 text-right">{formatRupiahRingkas(t.anggaran)}</td>
+                  <td className="px-4 py-3 text-right">{t.realisasi === null ? 'Belum ada' : formatRupiahRingkas(t.realisasi)}</td>
                 </tr>
               ))}
             </tbody>

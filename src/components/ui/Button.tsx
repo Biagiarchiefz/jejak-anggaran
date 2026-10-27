@@ -4,23 +4,24 @@ import { Link, type LinkProps } from 'react-router'
 type Varian = 'utama' | 'kedua' | 'tipis' | 'bahaya' | 'terang' | 'garisTerang'
 type Ukuran = 'sm' | 'md'
 
-// Bentuk pil untuk semua tombol aksi (design language ala Stripe).
+// DESIGN.md §7.1: semua tombol berbentuk pil, tinggi minimum 44px, maksimal satu tombol utama per section.
+// `group`: ikon panah di dalam tombol bergeser saat hover; `efek-tekan`: transisi warna + mengecil saat ditekan.
 const DASAR =
-  'inline-flex items-center justify-center gap-2 rounded-ui font-medium transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60'
+  'group inline-flex items-center justify-center gap-2 rounded-full font-medium efek-tekan disabled:cursor-not-allowed disabled:opacity-60'
 
 const VARIAN: Record<Varian, string> = {
-  utama: 'bg-merek-800 text-white shadow-sm hover:bg-merek-900 hover:shadow-md',
-  kedua: 'border border-slate-200 bg-white text-slate-900 shadow-sm hover:border-slate-300 hover:shadow-md',
-  tipis: 'text-merek-800 hover:bg-merek-50',
-  bahaya: 'bg-redflag text-white shadow-sm hover:bg-red-900',
-  // Untuk di atas latar gelap (hero).
-  terang: 'bg-white text-slate-900 shadow-sm hover:bg-merek-50 hover:shadow-md',
-  garisTerang: 'border border-white/50 text-white hover:border-white hover:bg-white/10',
+  utama: 'bg-action text-white hover:bg-action-hover',
+  kedua: 'border border-border-strong bg-surface text-ink hover:bg-canvas-soft',
+  tipis: 'text-ink hover:bg-recessed',
+  bahaya: 'bg-danger text-white hover:bg-danger/90',
+  // Untuk di atas pita gelap (`band`).
+  terang: 'bg-surface text-band hover:bg-brand-soft',
+  garisTerang: 'border border-white/40 text-white hover:border-white hover:bg-white/10',
 }
 
 const UKURAN: Record<Ukuran, string> = {
-  sm: 'min-h-9 px-4 text-sm',
-  md: 'min-h-11 px-6 text-base',
+  sm: 'min-h-11 px-4 text-sm',
+  md: 'min-h-11 px-6 py-3 text-base',
 }
 
 function kelas(varian: Varian, ukuran: Ukuran, tambahan?: string) {
@@ -56,10 +57,12 @@ export function TautanTombol({ varian = 'utama', ukuran = 'md', className, ...re
 
 type TautanLuarProps = { href: string; varian?: Varian; ukuran?: Ukuran; className?: string; children: ReactNode }
 
+/** Tautan keluar (SiRUP, LPSE, LAPOR!) bergaya tombol, dengan ikon ↗. */
 export function TautanLuarTombol({ href, varian = 'kedua', ukuran = 'md', className, children }: TautanLuarProps) {
   return (
     <a href={href} target="_blank" rel="noopener noreferrer" className={kelas(varian, ukuran, className)}>
       {children}
+      <span aria-hidden>↗</span>
       <span className="sr-only">(membuka tab baru)</span>
     </a>
   )

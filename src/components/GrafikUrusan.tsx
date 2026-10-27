@@ -7,7 +7,7 @@ type GrafikUrusanProps = {
   data: BarisUrusan[]
   /** Jumlah urusan yang tampil sebelum diperluas. */
   jumlahAwal?: number
-  /** false = tanpa tombol "Tampilkan semua" (mis. ringkasan di Beranda yang menautkan ke halaman Anggaran). */
+  /** false = tanpa tombol "Tampilkan semua". */
   dapatDiperluas?: boolean
 }
 
@@ -21,17 +21,17 @@ export function GrafikUrusan({ data, jumlahAwal = 8, dapatDiperluas = true }: Gr
 
   return (
     <div>
-      <ol className="space-y-3">
+      <ol className="space-y-4">
         {tampil.map((b) => (
           <li key={b.urusan}>
             <div className="flex items-baseline justify-between gap-3 text-sm">
-              <span className="min-w-0 text-slate-800">{b.urusan}</span>
-              <span className="shrink-0 font-medium tabular-nums">{formatRupiahRingkas(b.anggaran)}</span>
+              <span className="min-w-0 text-ink">{b.urusan}</span>
+              <span className="shrink-0 font-medium text-ink-strong tabular-nums">{formatRupiahRingkas(b.anggaran)}</span>
             </div>
-            <div className="mt-1 h-2.5 w-full rounded-full bg-slate-100" aria-hidden>
+            <div className="mt-1.5 h-2 w-full rounded-full bg-recessed" aria-hidden>
               <div className="h-full rounded-full bg-seri-anggaran" style={{ width: `${Math.max((b.anggaran / maks) * 100, 1)}%` }} />
             </div>
-            <p className="mt-0.5 text-xs text-slate-600">
+            <p className="mt-1 text-xs text-ink-subtle tabular-nums">
               {formatPersen(b.anggaran / total)} dari total
               {b.realisasi !== null && b.anggaran > 0 && <> · terealisasi {formatPersen(b.realisasi / b.anggaran)}</>}
             </p>
@@ -42,7 +42,7 @@ export function GrafikUrusan({ data, jumlahAwal = 8, dapatDiperluas = true }: Gr
         <button
           type="button"
           onClick={() => setSemua((s) => !s)}
-          className="mt-3 text-sm font-medium text-merek-800 underline underline-offset-2"
+          className="mt-4 text-sm font-medium text-link hover:underline"
           aria-expanded={semua}
         >
           {semua ? 'Tampilkan lebih sedikit' : `Tampilkan semua ${urut.length} urusan`}

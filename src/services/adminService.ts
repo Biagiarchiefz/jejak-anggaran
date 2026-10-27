@@ -1,6 +1,7 @@
 import { supabase } from './supabaseClient'
 import { keLaporanPublik, type LaporanPublik } from './laporanService'
 import { AppError, dariErrorSupabase } from '../lib/errors'
+import { tandaiDataDemo } from '../lib/penandaDemo'
 import type { Enums } from '../types/database'
 
 export type LaporanAdmin = LaporanPublik & {
@@ -16,6 +17,7 @@ export async function daftarLaporanAdmin(): Promise<LaporanAdmin[]> {
   if (laporan.error) throw dariErrorSupabase(laporan.error, 'daftarLaporanAdmin')
   if (proyek.error) throw dariErrorSupabase(proyek.error, 'daftarLaporanAdmin: proyek')
 
+  tandaiDataDemo(proyek.data)
   const proyekPerId = new Map(proyek.data.map((p) => [p.id, p]))
   return laporan.data.map((baris) => {
     const l = keLaporanPublik(baris)

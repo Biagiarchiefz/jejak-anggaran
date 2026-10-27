@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { daftarKecamatan, FILTER_AWAL, pilihProyekSorotan, saringProyek } from './filterProyek'
+import { cariProyek, daftarKecamatan, FILTER_AWAL, pilihProyekSorotan, saringProyek } from './filterProyek'
 
 const proyek = [
   { id: 'a', status_proyek: 'selesai' as const, kecamatan: 'Coblong' },
@@ -44,5 +44,27 @@ describe('pilihProyekSorotan', () => {
 describe('daftarKecamatan', () => {
   it('unik dan urut abjad', () => {
     expect(daftarKecamatan(proyek)).toEqual(['Andir', 'Coblong'])
+  })
+})
+
+describe('cariProyek', () => {
+  const daftar = [
+    { id: 'a', nama_paket: 'Rehabilitasi Jalan Dago', kecamatan: 'Coblong', kelurahan: null, satker: 'Dinas SDABM', pelaksana: 'CV Maju' },
+    { id: 'b', nama_paket: 'Pembangunan Taman', kecamatan: 'Andir', kelurahan: 'Ciroyom', satker: 'DPKP', pelaksana: null },
+  ]
+
+  it('kata kunci kosong mengembalikan daftar kosong', () => {
+    expect(cariProyek(daftar, '   ')).toEqual([])
+  })
+
+  it('tidak peka huruf besar dan mencari di wilayah serta pelaksana', () => {
+    expect(cariProyek(daftar, 'JALAN').map((p) => p.id)).toEqual(['a'])
+    expect(cariProyek(daftar, 'ciroyom').map((p) => p.id)).toEqual(['b'])
+    expect(cariProyek(daftar, 'maju').map((p) => p.id)).toEqual(['a'])
+  })
+
+  it('semua kata harus cocok', () => {
+    expect(cariProyek(daftar, 'jalan andir')).toEqual([])
+    expect(cariProyek(daftar, 'taman andir').map((p) => p.id)).toEqual(['b'])
   })
 })

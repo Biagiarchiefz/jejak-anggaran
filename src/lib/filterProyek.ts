@@ -38,3 +38,20 @@ export function pilihProyekSorotan<T extends ProyekSorotan>(proyek: readonly T[]
 export function daftarKecamatan(proyek: readonly { kecamatan: string }[]): string[] {
   return [...new Set(proyek.map((p) => p.kecamatan))].sort((a, b) => a.localeCompare(b, 'id'))
 }
+
+type ProyekDicari = { nama_paket: string; kecamatan: string; kelurahan: string | null; satker: string; pelaksana: string | null }
+
+const normalkan = (s: string) => s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase()
+
+/**
+ * Pencarian cepat di navbar: setiap kata harus muncul di nama paket, wilayah, satker, atau pelaksana.
+ * Urutan asli dipertahankan. Kata kunci kosong → daftar kosong.
+ */
+export function cariProyek<T extends ProyekDicari>(proyek: readonly T[], kataKunci: string): T[] {
+  const kata = normalkan(kataKunci).split(/\s+/).filter(Boolean)
+  if (kata.length === 0) return []
+  return proyek.filter((p) => {
+    const teks = normalkan([p.nama_paket, p.kecamatan, p.kelurahan, p.satker, p.pelaksana].filter(Boolean).join(' '))
+    return kata.every((k) => teks.includes(k))
+  })
+}
