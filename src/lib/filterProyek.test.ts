@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { cariProyek, daftarKecamatan, FILTER_AWAL, pilihProyekSorotan, saringProyek } from './filterProyek'
+import { cariProyek, daftarKecamatan, FILTER_AWAL, jumlahFilterAktif, pilihProyekSorotan, saringProyek } from './filterProyek'
 
 const proyek = [
   { id: 'a', status_proyek: 'selesai' as const, kecamatan: 'Coblong' },
@@ -66,5 +66,13 @@ describe('cariProyek', () => {
   it('semua kata harus cocok', () => {
     expect(cariProyek(daftar, 'jalan andir')).toEqual([])
     expect(cariProyek(daftar, 'taman andir').map((p) => p.id)).toEqual(['b'])
+  })
+})
+
+describe('jumlahFilterAktif', () => {
+  it('menghitung saringan selain "semua"', () => {
+    expect(jumlahFilterAktif(FILTER_AWAL)).toBe(0)
+    expect(jumlahFilterAktif({ status: 'selesai', kecamatan: 'semua' })).toBe(1)
+    expect(jumlahFilterAktif({ status: 'selesai', kecamatan: 'Coblong' })).toBe(2)
   })
 })

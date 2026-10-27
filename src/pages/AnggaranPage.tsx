@@ -95,7 +95,8 @@ function DashboardAnggaran({ data }: { data: AnggaranDaerah[] }) {
         </KartuAngka>
       </section>
 
-      <div data-muncul-anak="" className="grid gap-6 lg:grid-cols-5">
+      {/* items-start: tiap kartu setinggi isinya sendiri, jadi membuka tabel/daftar tidak meregangkan kartu sebelahnya. */}
+      <div data-muncul-anak="" className="grid gap-6 lg:grid-cols-5 lg:items-start">
         <Card className="lg:col-span-3">
           <section aria-labelledby="judul-urusan">
             {/* Judul grafik menyatakan temuan (DESIGN.md §7.11). */}

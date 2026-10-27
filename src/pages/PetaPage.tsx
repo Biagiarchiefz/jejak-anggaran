@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { ArrowRight, Search } from 'lucide-react'
+import { ArrowRight, Search, SlidersHorizontal, X } from 'lucide-react'
 import { Link } from 'react-router'
 import { BadgeRedFlag } from '../components/BadgeRedFlag'
 import { BadgeStatusProyek } from '../components/BadgeStatus'
@@ -10,11 +10,12 @@ import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
 import { ErrorState } from '../components/ui/ErrorState'
 import { KepalaHalaman } from '../components/ui/KepalaHalaman'
+import { Laci } from '../components/ui/Laci'
 import { Pilihan } from '../components/ui/Pilihan'
 import { Skeleton } from '../components/ui/Skeleton'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { useProyekList } from '../hooks/useProyekList'
-import { cariProyek, daftarKecamatan, FILTER_AWAL, saringProyek, type FilterProyek } from '../lib/filterProyek'
+import { cariProyek, daftarKecamatan, FILTER_AWAL, jumlahFilterAktif, saringProyek, type FilterProyek } from '../lib/filterProyek'
 import { formatRupiahRingkas } from '../lib/format'
 import { LABEL_STATUS_PROYEK } from '../lib/label'
 import { Constants } from '../types/database'
@@ -98,13 +99,34 @@ function Chip({ aktif, onClick, children }: { aktif: boolean; onClick: () => voi
   )
 }
 
+type ChipStatusProps = { filter: FilterProyek; setFilter: (ubah: (f: FilterProyek) => FilterProyek) => void }
+
+/** Chip "Semua status" + satu chip per status proyek. Dipakai di baris saringan desktop dan lembar saringan ponsel. */
+function ChipStatus({ filter, setFilter }: ChipStatusProps) {
+  return (
+    <>
+      <Chip aktif={filter.status === 'semua'} onClick={() => setFilter((f) => ({ ...f, status: 'semua' }))}>
+        Semua status
+      </Chip>
+      {Constants.public.Enums.status_proyek.map((s) => (
+        <Chip key={s} aktif={filter.status === s} onClick={() => setFilter((f) => ({ ...f, status: s }))}>
+          {LABEL_STATUS_PROYEK[s]}
+        </Chip>
+      ))}
+    </>
+  )
+}
+
 export default function PetaPage() {
   const { data, error, memuat, muatUlang } = useProyekList()
   const [filter, setFilter] = useState<FilterProyek>(FILTER_AWAL)
   const [kata, setKata] = useState('')
   const [terpilihId, setTerpilihId] = useState<string | null>(null)
   const [fokus, setFokus] = useState<PermintaanFokus | null>(null)
+  const [lembarFilter, setLembarFilter] = useState(false)
   const desktop = useMediaQuery('(min-width: 1024px)')
+  // Mulai `sm` saringan tampil langsung di halaman, jadi lembar saringan ditutup bila layar melebar.
+  const layarSm = useMediaQuery('(min-width: 640px)')
   const refPeta = useRef<HTMLDivElement>(null)
 
   const semua = data ?? []
@@ -112,6 +134,7 @@ export default function PetaPage() {
   const tersaring = kata.trim() ? cariProyek(tersaringFilter, kata) : tersaringFilter
   const kecamatan = daftarKecamatan(semua)
   const jumlahRedFlag = tersaring.filter((p) => p.redFlag).length
+  const jumlahAktif = jumlahFilterAktif(filter)
   // Proyek yang tersaring keluar otomatis tidak lagi terpilih.
   const terpilih = tersaring.find((p) => p.id === terpilihId) ?? null
 
@@ -138,8 +161,8 @@ export default function PetaPage() {
       />
 
       <form className="space-y-3" onSubmit={(e) => e.preventDefault()} aria-label="Saring proyek">
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <label className="flex min-h-11 flex-1 items-center gap-3 rounded-md border border-border bg-surface px-3.5 transition-colors hover:border-border-strong focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/30">
+        <div className="flex gap-2 sm:gap-3">
+          <label className="flex min-h-11 min-w-0 flex-1 items-center gap-3 rounded-md border border-border bg-surface px-3.5 transition-colors hover:border-border-strong focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/30">
             <Search className="size-5 shrink-0 text-ink-subtle" strokeWidth={1.5} aria-hidden />
             <span className="sr-only">Cari proyek</span>
             <input
@@ -151,26 +174,94 @@ export default function PetaPage() {
               className="min-w-0 flex-1 bg-transparent py-2.5 text-base outline-none placeholder:text-ink-subtle"
             />
           </label>
+
+          {/* Ponsel: kecamatan dan status dipindah ke lembar saringan, dibuka lewat satu ikon di samping kolom cari. */}
+          <button
+            type="button"
+            onClick={() => setLembarFilter(true)}
+            aria-haspopup="dialog"
+            aria-label={`Saringan${jumlahAktif > 0 ? `, ${jumlahAktif} aktif` : ''}`}
+            className={`relative grid size-11 shrink-0 place-items-center rounded-md border efek-tekan sm:hidden ${
+              jumlahAktif > 0 ? 'border-brand bg-brand-soft text-action' : 'border-border bg-surface text-ink hover:border-border-strong'
+            }`}
+          >
+            <SlidersHorizontal className="size-5" strokeWidth={1.5} aria-hidden />
+            {jumlahAktif > 0 && (
+              <span
+                className="absolute -top-1.5 -right-1.5 grid size-5 place-items-center rounded-full bg-action text-[11px] font-medium text-white tabular-nums ring-2 ring-canvas"
+                aria-hidden
+              >
+                {jumlahAktif}
+              </span>
+            )}
+          </button>
+
           <Pilihan
             label="Kecamatan"
             labelTersembunyi
             nilai={filter.kecamatan}
             opsi={[{ nilai: 'semua', label: 'Semua kecamatan' }, ...kecamatan.map((k) => ({ nilai: k, label: k }))]}
             onUbah={(k) => setFilter((f) => ({ ...f, kecamatan: k }))}
-            className="sm:w-56"
+            className="hidden sm:block sm:w-56"
           />
         </div>
-        <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Status proyek">
-          <Chip aktif={filter.status === 'semua'} onClick={() => setFilter((f) => ({ ...f, status: 'semua' }))}>
-            Semua status
-          </Chip>
-          {Constants.public.Enums.status_proyek.map((s) => (
-            <Chip key={s} aktif={filter.status === s} onClick={() => setFilter((f) => ({ ...f, status: s }))}>
-              {LABEL_STATUS_PROYEK[s]}
-            </Chip>
-          ))}
+        <div className="hidden flex-wrap items-center gap-2 sm:flex" role="group" aria-label="Status proyek">
+          <ChipStatus filter={filter} setFilter={setFilter} />
         </div>
       </form>
+
+      <Laci
+        terbuka={lembarFilter && !layarSm}
+        onTutup={() => setLembarFilter(false)}
+        label="Saringan proyek"
+        arah="bawah"
+        className="mx-0 mt-auto mb-0 max-h-[85dvh]! w-full overflow-y-auto rounded-t-xl p-0"
+      >
+        <div className="px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <div className="mx-auto h-1 w-10 rounded-full bg-border-strong" aria-hidden />
+          <div className="mt-2 flex items-center justify-between">
+            <h2 className="text-lg font-semibold tracking-normal">Saringan</h2>
+            <button
+              type="button"
+              onClick={() => setLembarFilter(false)}
+              aria-label="Tutup saringan"
+              className="-mr-2 grid size-11 place-items-center rounded-full text-ink hover:bg-recessed"
+            >
+              <X className="size-5" strokeWidth={1.5} aria-hidden />
+            </button>
+          </div>
+
+          <fieldset className="mt-3">
+            <legend className="text-sm font-medium text-ink">Status proyek</legend>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <ChipStatus filter={filter} setFilter={setFilter} />
+            </div>
+          </fieldset>
+
+          <fieldset className="mt-5">
+            <legend className="text-sm font-medium text-ink">Kecamatan</legend>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <Chip aktif={filter.kecamatan === 'semua'} onClick={() => setFilter((f) => ({ ...f, kecamatan: 'semua' }))}>
+                Semua kecamatan
+              </Chip>
+              {kecamatan.map((k) => (
+                <Chip key={k} aktif={filter.kecamatan === k} onClick={() => setFilter((f) => ({ ...f, kecamatan: k }))}>
+                  {k}
+                </Chip>
+              ))}
+            </div>
+          </fieldset>
+
+          <div className="mt-6 flex gap-2 border-t border-border pt-4">
+            <Button varian="tipis" className="px-4" onClick={() => setFilter(FILTER_AWAL)} disabled={jumlahAktif === 0}>
+              Atur ulang
+            </Button>
+            <Button className="flex-1 whitespace-nowrap" onClick={() => setLembarFilter(false)}>
+              Tampilkan {tersaring.length} proyek
+            </Button>
+          </div>
+        </div>
+      </Laci>
 
       {memuat && !data ? (
         <div role="status" className="grid gap-6 lg:grid-cols-3">

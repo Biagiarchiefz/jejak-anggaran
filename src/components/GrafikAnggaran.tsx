@@ -1,4 +1,7 @@
+import { useId, useState } from 'react'
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { Lipatan } from './ui/Lipatan'
+import { TombolLipat } from './ui/TombolLipat'
 import { formatRupiah, formatRupiahRingkas } from '../lib/format'
 import { WARNA } from '../lib/warna'
 
@@ -8,6 +11,9 @@ const SUMBU = { fill: WARNA.inkSubtle, fontSize: 12 }
 
 /** Tren total anggaran vs realisasi antar tahun. Memakai Recharts, jadi hanya dimuat di halaman Anggaran. */
 export function GrafikTren({ data }: { data: TitikTren[] }) {
+  const idTabel = useId()
+  const [tabel, setTabel] = useState(false)
+
   return (
     <figure className="min-w-0">
       <div className="h-72 w-full">
@@ -50,8 +56,10 @@ export function GrafikTren({ data }: { data: TitikTren[] }) {
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <details className="mt-3 text-sm">
-        <summary className="cursor-pointer font-medium text-link hover:underline">Lihat dalam bentuk tabel</summary>
+      <TombolLipat terbuka={tabel} onClick={() => setTabel((t) => !t)} aria-controls={idTabel} className="mt-3">
+        {tabel ? 'Sembunyikan tabel' : 'Lihat dalam bentuk tabel'}
+      </TombolLipat>
+      <Lipatan terbuka={tabel} id={idTabel} className="text-sm">
         <div className="mt-3 overflow-hidden rounded-md border border-border">
           <table className="w-full text-left">
             <thead className="border-b border-border bg-canvas-soft text-xs tracking-[0.04em] text-ink-muted uppercase">
@@ -72,7 +80,7 @@ export function GrafikTren({ data }: { data: TitikTren[] }) {
             </tbody>
           </table>
         </div>
-      </details>
+      </Lipatan>
     </figure>
   )
 }

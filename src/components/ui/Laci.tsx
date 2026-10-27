@@ -5,8 +5,8 @@ type LaciProps = {
   onTutup: () => void
   /** Nama dialog untuk pembaca layar. */
   label: string
-  /** Arah panel masuk: kiri (menu), kanan (panel samping), atas (pencarian), atau tengah (detail). Animasinya di index.css. */
-  arah: 'kiri' | 'kanan' | 'atas' | 'tengah'
+  /** Arah panel masuk: kiri (menu), kanan (panel samping), atas (pencarian), tengah (detail), atau bawah (bottom sheet). Animasinya di index.css. */
+  arah: 'kiri' | 'kanan' | 'atas' | 'tengah' | 'bawah'
   /** Posisi dan ukuran panel. */
   className: string
   children: ReactNode

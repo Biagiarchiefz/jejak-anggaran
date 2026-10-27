@@ -17,7 +17,12 @@ export function saringProyek<T extends ProyekTersaring>(proyek: readonly T[], fi
   )
 }
 
-type ProyekSorotan = { nama_paket: string; is_demo: boolean; redFlag: unknown }
+/** Banyaknya saringan yang sedang dipakai (selain "semua"), untuk lencana tombol filter. */
+export function jumlahFilterAktif(filter: FilterProyek): number {
+  return Number(filter.status !== 'semua') + Number(filter.kecamatan !== 'semua')
+}
+
+type ProyekSorotan ={ nama_paket: string; is_demo: boolean; redFlag: unknown }
 
 /**
  * Proyek untuk disorot di Beranda: yang perlu perhatian lebih dulu, lalu proyek nyata

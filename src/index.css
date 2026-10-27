@@ -130,7 +130,8 @@
   }
 }
 
-/* Laci menu (dari kiri), panel samping (dari kanan), panel cari (dari atas), dan detail proyek (di tengah): geser masuk + latar memudar.
+/* Laci menu (dari kiri), panel samping (dari kanan), panel cari (dari atas), detail proyek (di tengah), dan saringan peta
+   di ponsel (dari bawah): geser masuk + latar memudar.
    allow-discrete + @starting-style membuat <dialog> bisa dianimasikan saat dibuka dan ditutup.
    Browser yang belum mendukung tetap membuka/menutup panel, hanya tanpa animasi. */
 dialog[data-laci] {
@@ -158,6 +159,10 @@ dialog[data-laci="tengah"] {
   opacity: 0;
 }
 
+dialog[data-laci="bawah"] {
+  translate: 0 100%;
+}
+
 dialog[data-laci][open] {
   translate: 0 0;
   opacity: 1;
@@ -180,6 +185,10 @@ dialog[data-laci][open] {
   dialog[data-laci="tengah"][open] {
     translate: 0 0.5rem;
     opacity: 0;
+  }
+
+  dialog[data-laci="bawah"][open] {
+    translate: 0 100%;
   }
 }
 
