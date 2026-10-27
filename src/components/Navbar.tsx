@@ -7,6 +7,7 @@ import { keluar } from '../services/authService'
 
 const MENU = [
   { ke: '/', label: 'Beranda' },
+  { ke: '/anggaran', label: 'Anggaran' },
   { ke: '/peta', label: 'Peta Proyek' },
   { ke: '/tentang-data', label: 'Tentang Data' },
 ]

@@ -10,6 +10,7 @@ const KOLOM: Kolom[] = [
     judul: 'Jelajahi',
     tautan: [
       { label: 'Beranda', ke: '/' },
+      { label: 'Anggaran Kota', ke: '/anggaran' },
       { label: 'Peta Proyek', ke: '/peta' },
       { label: 'Lapor Kondisi', ke: '/peta' },
       { label: 'Masuk', ke: '/masuk' },

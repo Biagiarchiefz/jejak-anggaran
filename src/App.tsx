@@ -5,6 +5,7 @@ import { Layout } from './components/Layout'
 
 // Halaman dimuat terpisah agar Leaflet dan Recharts tidak memperlambat muatan awal.
 const BerandaPage = lazy(() => import('./pages/BerandaPage'))
+const AnggaranPage = lazy(() => import('./pages/AnggaranPage'))
 const PetaPage = lazy(() => import('./pages/PetaPage'))
 const ProyekDetailPage = lazy(() => import('./pages/ProyekDetailPage'))
 const LaporPage = lazy(() => import('./pages/LaporPage'))
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { index: true, element: <BerandaPage /> },
+      { path: 'anggaran', element: <AnggaranPage /> },
       { path: 'peta', element: <PetaPage /> },
       { path: 'proyek/:id', element: <ProyekDetailPage /> },
       { path: 'proyek/:id/lapor', element: <LaporPage /> },

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { totalPerTahun, unikBerdasarkanId, urusanPadaTahun } from './anggaran'
+import { bandingkanTahunSebelumnya, realisasiTerakhir, totalPerTahun, unikBerdasarkanId, urusanPadaTahun } from './anggaran'
 
 const baris = [
   { tahun: 2025, urusan: 'Pendidikan', anggaran: 300, realisasi: 250 },
@@ -32,5 +32,37 @@ describe('urusanPadaTahun', () => {
 describe('unikBerdasarkanId', () => {
   it('membuang duplikat', () => {
     expect(unikBerdasarkanId([{ id: 1 }, { id: 2 }, { id: 1 }])).toEqual([{ id: 1 }, { id: 2 }])
+  })
+})
+
+describe('bandingkanTahunSebelumnya', () => {
+  const tren = totalPerTahun(baris)
+
+  it('mengembalikan tahun yang diminta dan tahun sebelumnya', () => {
+    expect(bandingkanTahunSebelumnya(tren, 2025)).toEqual({ saatIni: tren[1], sebelumnya: tren[0] })
+  })
+
+  it('sebelumnya null untuk tahun pertama', () => {
+    expect(bandingkanTahunSebelumnya(tren, 2024)?.sebelumnya).toBeNull()
+  })
+
+  it('null jika tahun tidak ada', () => {
+    expect(bandingkanTahunSebelumnya(tren, 2030)).toBeNull()
+  })
+})
+
+describe('realisasiTerakhir', () => {
+  const tren = totalPerTahun(baris)
+
+  it('melompati tahun yang realisasinya belum lengkap', () => {
+    expect(realisasiTerakhir(tren, 2026)).toEqual({ tahun: 2025, anggaran: 500, realisasi: 430 })
+  })
+
+  it('tidak memakai tahun setelah tahun yang diminta', () => {
+    expect(realisasiTerakhir(tren, 2024)?.tahun).toBe(2024)
+  })
+
+  it('null jika belum ada realisasi sama sekali', () => {
+    expect(realisasiTerakhir(tren, 2023)).toBeNull()
   })
 })

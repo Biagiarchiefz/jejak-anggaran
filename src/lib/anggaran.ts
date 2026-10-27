@@ -27,3 +27,25 @@ export function urusanPadaTahun<T extends BarisAnggaran>(baris: readonly T[], ta
 export function unikBerdasarkanId<T extends { id: number | string }>(daftar: readonly T[]): T[] {
   return [...new Map(daftar.map((d) => [d.id, d])).values()]
 }
+
+/** Total tahun tertentu beserta tahun sebelumnya (untuk menghitung kenaikan/penurunan). */
+export function bandingkanTahunSebelumnya(
+  tren: readonly TotalTahun[],
+  tahun: number,
+): { saatIni: TotalTahun; sebelumnya: TotalTahun | null } | null {
+  const i = tren.findIndex((t) => t.tahun === tahun)
+  if (i === -1) return null
+  return { saatIni: tren[i], sebelumnya: i > 0 ? tren[i - 1] : null }
+}
+
+/** Tahun terakhir (paling lambat `tahun`) yang realisasinya sudah lengkap. */
+export function realisasiTerakhir(
+  tren: readonly TotalTahun[],
+  tahun: number,
+): (TotalTahun & { realisasi: number }) | null {
+  for (let i = tren.length - 1; i >= 0; i--) {
+    const t = tren[i]
+    if (t.tahun <= tahun && t.realisasi !== null) return { ...t, realisasi: t.realisasi }
+  }
+  return null
+}
