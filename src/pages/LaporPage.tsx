@@ -213,7 +213,7 @@ export default function LaporPage() {
   const { data, error, memuat, muatUlang } = useProyekDetail(id)
 
   if (memuatAuth || (memuat && !data)) return <SkeletonHalaman baris={3} />
-  if (error) return <ErrorState pesan={error.pesan} onCobaLagi={error.code === 'TIDAK_DITEMUKAN' ? undefined : muatUlang} />
+  if (error) return <ErrorState halaman pesan={error.pesan} onCobaLagi={error.code === 'TIDAK_DITEMUKAN' ? undefined : muatUlang} />
   if (!data) return null
 
   const { proyek } = data

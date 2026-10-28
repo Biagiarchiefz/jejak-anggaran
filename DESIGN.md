@@ -47,8 +47,8 @@ Palet ini terang dan nyaman di mata: latar putih lembut, biru cerah yang tegas, 
 | `band-deep` | `#0B2545` | Footer |
 | `ink` | `#1F2937` | Teks utama (abu gelap, bukan hitam) |
 | `ink-strong` | `#111827` | Judul besar |
-| `ink-muted` | `#4B5563` | Teks sekunder |
-| `ink-subtle` | `#5B6576` | Keterangan, caption, label sumber |
+| `ink-muted` | `#374151` | Teks sekunder (gray-700: kontras 10:1 di atas putih) |
+| `ink-subtle` | `#4B5563` | Keterangan, caption, label sumber (kontras 7,5:1) |
 | `on-dark` | `#FFFFFF` | Teks di atas `band` |
 | `on-dark-muted` | `#C7E2FF` | Teks sekunder di atas `band` |
 | `brand` | `#2B8CFF` | **Warna merek, biru cerah**: aksen, ikon, pin peta, seri grafik utama, cincin fokus |
@@ -106,8 +106,8 @@ Taruh di `src/index.css`:
 
   --color-ink: #1F2937;
   --color-ink-strong: #111827;
-  --color-ink-muted: #4B5563;
-  --color-ink-subtle: #5B6576;
+  --color-ink-muted: #374151;
+  --color-ink-subtle: #4B5563;
   --color-on-dark: #FFFFFF;
   --color-on-dark-muted: #C7E2FF;
 

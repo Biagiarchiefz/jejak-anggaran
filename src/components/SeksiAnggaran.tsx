@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, type CSSProperties } from 'react'
 import { ArrowDownRight, ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router'
 import { GrafikTrenMini } from './GrafikTrenMini'
 import { IkonUrusan } from './IkonUrusan'
+import { KonteksWarga } from './KonteksWarga'
 import { SumberAnggaran } from './SumberAnggaran'
 import { Card } from './ui/Card'
 import { EmptyState } from './ui/EmptyState'
@@ -10,25 +11,15 @@ import { ErrorState } from './ui/ErrorState'
 import { JudulSeksi } from './ui/JudulSeksi'
 import { LabelSeksi } from './ui/LabelSeksi'
 import { Skeleton } from './ui/Skeleton'
+import { PENDUDUK_KOTA_BANDUNG } from '../data/pendudukKotaBandung'
 import type { StateMuat } from '../hooks/useMuat'
-import { bandingkanTahunSebelumnya, realisasiTerakhir, totalPerTahun, urusanPadaTahun } from '../lib/anggaran'
+import { anggaranPerWarga, bandingkanTahunSebelumnya, realisasiTerakhir, totalPerTahun, urusanPadaTahun } from '../lib/anggaran'
 import { formatPersen, formatRupiahRingkas } from '../lib/format'
 import type { AnggaranDaerah } from '../services/anggaranService'
 
 const JUMLAH_URUSAN = 5
-
-function Legenda({ butir }: { butir: { label: string; warna: string }[] }) {
-  return (
-    <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-subtle">
-      {butir.map((b) => (
-        <li key={b.label} className="flex items-center gap-1.5">
-          <span className={`size-2 rounded-full ${b.warna}`} aria-hidden />
-          {b.label}
-        </li>
-      ))}
-    </ul>
-  )
-}
+// Kartu bereaksi halus saat disorot: bayangan menebal dan border sedikit menggelap.
+const KELAS_KARTU_HIDUP = 'transition-[box-shadow,border-color] duration-300 hover:border-border-strong hover:shadow-card'
 
 function KartuUrusan({ baris, tahun }: { baris: AnggaranDaerah[]; tahun: number }) {
   const [aktif, setAktif] = useState<string | null>(null)
@@ -36,69 +27,95 @@ function KartuUrusan({ baris, tahun }: { baris: AnggaranDaerah[]; tahun: number 
   const teratas = baris.slice(0, JUMLAH_URUSAN)
   const sisa = baris.slice(JUMLAH_URUSAN).reduce((s, b) => s + b.anggaran, 0)
   const porsiTeratas = teratas.reduce((s, b) => s + b.anggaran, 0) / total
+  const barisAktif = teratas.find((b) => b.urusan === aktif)
 
   return (
-    <Card className="flex min-w-0 flex-col lg:col-span-7">
-      <div className="flex items-start justify-between gap-3">
-        <h3 className="text-xl leading-[1.25] font-semibold md:text-2xl">
-          {teratas[0] ? `${teratas[0].urusan} menyerap anggaran terbesar di ${tahun}` : `Belanja per urusan ${tahun}`}
-        </h3>
-      </div>
+    <Card className={`flex min-w-0 flex-col lg:col-span-7 ${KELAS_KARTU_HIDUP}`}>
+      <h3 className="text-xl leading-tight font-semibold text-ink-strong md:text-2xl">
+        {teratas[0] ? `${teratas[0].urusan} menyerap anggaran terbesar di ${tahun}` : `Belanja per urusan ${tahun}`}
+      </h3>
       <p className="mt-2 text-sm text-ink-muted">
-        {JUMLAH_URUSAN} urusan terbesar memakai <span className="font-medium text-ink tabular-nums">{formatPersen(porsiTeratas)}</span>{' '}
-        dari APBD {tahun}.
+        {JUMLAH_URUSAN} urusan terbesar memakai{' '}
+        <span className="rounded-sm bg-brand-soft px-1 font-semibold text-action tabular-nums">{formatPersen(porsiTeratas)}</span> dari APBD{' '}
+        {tahun}.
       </p>
-      <Legenda
-        butir={[
-          { label: `${JUMLAH_URUSAN} urusan terbesar`, warna: 'bg-seri-anggaran' },
-          { label: 'Urusan lainnya', warna: 'bg-border-strong' },
-        ]}
-      />
 
       {/* Batang distribusi: tiap segmen = porsi satu urusan. Sorot sinkron dengan daftar di bawah. */}
       <div
-        className="mt-3 flex h-3 gap-0.5 overflow-hidden rounded-full"
+        className="animasi-batang mt-5 flex h-3 gap-0.5 overflow-hidden rounded-full"
         role="img"
         aria-label={`Porsi ${JUMLAH_URUSAN} urusan terbesar terhadap total APBD ${tahun}: ${formatPersen(porsiTeratas)}`}
       >
         {teratas.map((b) => (
           <div
             key={b.urusan}
-            title={`${b.urusan}: ${formatPersen(b.anggaran / total)}`}
             onPointerEnter={() => setAktif(b.urusan)}
             onPointerLeave={() => setAktif(null)}
             className={`h-full bg-seri-anggaran transition-opacity duration-150 ${aktif && aktif !== b.urusan ? 'opacity-30' : ''}`}
             style={{ width: `${(b.anggaran / total) * 100}%` }}
           />
         ))}
-        {sisa > 0 && <div title={`Urusan lainnya: ${formatPersen(sisa / total)}`} className="h-full flex-1 bg-border-strong" />}
+        {sisa > 0 && <div className="h-full flex-1 bg-border-strong" />}
       </div>
+      {/* Keterangan batang: berganti mengikuti urusan yang disorot. */}
+      <p className="mt-2 min-h-5 text-xs text-ink-subtle" aria-live="polite">
+        {barisAktif ? (
+          <>
+            <span className="font-medium text-ink">{barisAktif.urusan}</span> ·{' '}
+            <span className="tabular-nums">
+              {formatPersen(barisAktif.anggaran / total)} · {formatRupiahRingkas(barisAktif.anggaran)}
+            </span>
+          </>
+        ) : (
+          <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <span className="flex items-center gap-1.5">
+              <span className="size-2 rounded-full bg-seri-anggaran" aria-hidden />
+              {JUMLAH_URUSAN} urusan terbesar
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="size-2 rounded-full bg-border-strong" aria-hidden />
+              Urusan lainnya
+            </span>
+          </span>
+        )}
+      </p>
 
-      <ol className="mt-5 -mx-2 divide-y divide-border-soft">
-        {teratas.map((b) => {
+      <ol className="-mx-2 mt-4 space-y-1">
+        {teratas.map((b, i) => {
           const porsi = b.anggaran / total
+          const perWarga = anggaranPerWarga(b.anggaran, PENDUDUK_KOTA_BANDUNG.jumlah)
+          const disorot = aktif === b.urusan
           return (
             <li
               key={b.urusan}
               onPointerEnter={() => setAktif(b.urusan)}
               onPointerLeave={() => setAktif(null)}
-              className={`flex items-center gap-3 rounded-md px-2 py-3 transition-colors duration-150 ${aktif === b.urusan ? 'bg-brand-soft/60' : ''}`}
+              className={`group flex items-center gap-3 rounded-md px-2 py-2.5 transition-colors duration-200 ${disorot ? 'bg-brand-soft/60' : ''}`}
             >
-              <span className="grid size-10 shrink-0 place-items-center rounded-md bg-brand-soft text-action">
+              <span
+                className={`grid size-10 shrink-0 place-items-center rounded-md transition-colors duration-200 ${
+                  disorot ? 'bg-action text-white' : 'bg-brand-soft text-action'
+                }`}
+              >
                 <IkonUrusan urusan={b.urusan} className="size-5" />
               </span>
               <div className="min-w-0 flex-1">
-                <div className="flex items-baseline justify-between gap-3 text-sm">
-                  <span className="truncate text-ink" title={b.urusan}>
+                <div className="flex items-start justify-between gap-3">
+                  {/* Nama urusan boleh 2 baris di ponsel agar tidak terpotong ("Pekerjaan Umum dan P…"). */}
+                  <span className="line-clamp-2 min-w-0 text-sm font-medium text-ink" title={b.urusan}>
                     {b.urusan}
                   </span>
-                  <span className="shrink-0 font-medium text-ink-strong tabular-nums">{formatRupiahRingkas(b.anggaran)}</span>
+                  <span className="shrink-0 text-sm font-semibold text-ink-strong tabular-nums">{formatRupiahRingkas(b.anggaran)}</span>
                 </div>
-                <div className="mt-1.5 flex items-center gap-3">
-                  <div className="h-1.5 flex-1 rounded-full bg-recessed" aria-hidden>
-                    <div className="h-full rounded-full bg-seri-anggaran" style={{ width: `${Math.max(porsi * 100, 1)}%` }} />
-                  </div>
-                  <span className="w-10 shrink-0 text-right text-xs text-ink-subtle tabular-nums">{formatPersen(porsi)}</span>
+                <div className="mt-1.5 h-1.5 rounded-full bg-recessed" aria-hidden>
+                  <div
+                    className="animasi-batang h-full rounded-full bg-seri-anggaran"
+                    style={{ width: `${Math.max(porsi * 100, 1)}%`, '--tunda': `${i * 90}ms` } as CSSProperties}
+                  />
+                </div>
+                <div className="mt-1 flex items-center justify-between gap-3 text-xs text-ink-subtle tabular-nums">
+                  <span>{perWarga && <>≈ {formatRupiahRingkas(perWarga.perTahun)} per warga</>}</span>
+                  <span className="rounded-full bg-recessed px-1.5 font-medium text-ink-muted">{formatPersen(porsi)}</span>
                 </div>
               </div>
             </li>
@@ -118,48 +135,58 @@ function KartuTren({ data, tahun }: { data: AnggaranDaerah[]; tahun: number }) {
   const selisih = banding && sebelumnya ? banding.saatIni.anggaran - sebelumnya.anggaran : null
   const realisasi = realisasiTerakhir(tren, tahun)
   const naik = selisih !== null && selisih >= 0
+  const IkonArah = naik ? ArrowUpRight : ArrowDownRight
 
   return (
-    <Card className="flex min-w-0 flex-col lg:col-span-5">
-      <h3 className="text-xl leading-[1.25] font-semibold md:text-2xl">
+    <Card className={`flex min-w-0 flex-col lg:col-span-5 ${KELAS_KARTU_HIDUP}`}>
+      <h3 className="text-xl leading-tight font-semibold text-ink-strong md:text-2xl">
         {selisih !== null && sebelumnya
           ? `APBD ${tahun} ${naik ? 'naik' : 'turun'} ${formatPersen(Math.abs(selisih) / sebelumnya.anggaran)} dari ${sebelumnya.tahun}`
           : `Total APBD per tahun`}
       </h3>
-      <Legenda butir={[{ label: 'Total anggaran', warna: 'bg-seri-anggaran' }]} />
+
+      {banding && (
+        <div className="mt-4 flex flex-wrap items-end gap-x-3 gap-y-2">
+          <p>
+            <span className="block text-xs text-ink-subtle">Total APBD {tahun}</span>
+            <span className="text-3xl leading-none font-semibold tracking-[-0.02em] text-ink-strong tabular-nums">
+              {formatRupiahRingkas(banding.saatIni.anggaran)}
+            </span>
+          </p>
+          {selisih !== null && sebelumnya && (
+            <span className="mb-0.5 inline-flex items-center gap-1 rounded-full bg-brand-soft px-2 py-0.5 text-xs font-medium text-action tabular-nums">
+              <IkonArah className="size-3.5" strokeWidth={1.5} aria-hidden />
+              {naik ? '+' : '−'}
+              {formatRupiahRingkas(Math.abs(selisih))} dari {sebelumnya.tahun}
+            </span>
+          )}
+        </div>
+      )}
 
       {tren.length > 1 && (
-        <div className="mt-6">
+        <div className="mt-5">
           <GrafikTrenMini tren={tren} />
         </div>
       )}
 
-      {(selisih !== null || realisasi) && (
-        <dl className="mt-6 grid grid-cols-2 divide-x divide-border border-y border-border py-4">
-          {selisih !== null && sebelumnya && (
-            <div className="pr-4">
-              <dt className="text-xs text-ink-subtle">Dibanding {sebelumnya.tahun}</dt>
-              <dd className="mt-1 flex items-center gap-1 text-lg font-semibold text-ink-strong tabular-nums">
-                {naik ? (
-                  <ArrowUpRight className="size-4 shrink-0" strokeWidth={1.5} aria-hidden />
-                ) : (
-                  <ArrowDownRight className="size-4 shrink-0" strokeWidth={1.5} aria-hidden />
-                )}
-                {naik ? '+' : '−'}
-                {formatRupiahRingkas(Math.abs(selisih))}
-              </dd>
-            </div>
-          )}
-          {realisasi && (
-            <div className="pl-4">
-              <dt className="text-xs text-ink-subtle">Terealisasi {realisasi.tahun}</dt>
-              <dd className="mt-1 text-lg font-semibold text-ink-strong tabular-nums">
-                {formatPersen(realisasi.realisasi / realisasi.anggaran)}
-              </dd>
-              <dd className="text-xs text-ink-subtle tabular-nums">dari {formatRupiahRingkas(realisasi.anggaran)}</dd>
-            </div>
-          )}
-        </dl>
+      {banding && <KonteksWarga anggaran={banding.saatIni.anggaran} tahun={tahun} className="mt-5" />}
+
+      {realisasi && (
+        <div className="mt-5">
+          <div className="flex items-baseline justify-between gap-3 text-sm">
+            <span className="text-ink-muted">Terealisasi {realisasi.tahun}</span>
+            <span className="font-semibold text-ink-strong tabular-nums">
+              {formatPersen(realisasi.realisasi / realisasi.anggaran)}{' '}
+              <span className="font-normal text-ink-subtle">dari {formatRupiahRingkas(realisasi.anggaran)}</span>
+            </span>
+          </div>
+          <div className="mt-1.5 h-2 rounded-full bg-recessed" aria-hidden>
+            <div
+              className="animasi-batang h-full rounded-full bg-seri-realisasi"
+              style={{ width: `${(realisasi.realisasi / realisasi.anggaran) * 100}%` }}
+            />
+          </div>
+        </div>
       )}
 
       <SumberAnggaran baris={data} dalamKartu />
@@ -186,7 +213,7 @@ export function SeksiAnggaran({ anggaran }: { anggaran: StateMuat<AnggaranDaerah
           id="judul-anggaran"
           className="mt-3"
           utama="Untuk apa APBD Kota Bandung dipakai."
-          pelengkap="Pembagian per urusan dan arahnya dari tahun ke tahun."
+          pelengkap="Per urusan, dari tahun ke tahun, dan artinya bagi warga."
         />
       </div>
 

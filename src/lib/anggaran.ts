@@ -38,6 +38,16 @@ export function bandingkanTahunSebelumnya(
   return { saatIni: tren[i], sebelumnya: i > 0 ? tren[i - 1] : null }
 }
 
+/**
+ * Anggaran dibagi rata ke setiap warga: per tahun dan per hari (365 hari). Hanya ilustrasi skala, bukan uang yang
+ * diterima tiap warga. `null` bila jumlah penduduk tidak valid.
+ */
+export function anggaranPerWarga(anggaran: number, penduduk: number): { perTahun: number; perHari: number } | null {
+  if (!(penduduk > 0)) return null
+  const perTahun = anggaran / penduduk
+  return { perTahun, perHari: perTahun / 365 }
+}
+
 /** Tahun terakhir (paling lambat `tahun`) yang realisasinya sudah lengkap. */
 export function realisasiTerakhir(
   tren: readonly TotalTahun[],

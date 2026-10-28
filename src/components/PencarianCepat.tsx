@@ -6,7 +6,7 @@ import { ErrorState } from './ui/ErrorState'
 import { KolomCari } from './ui/KolomCari'
 import { Skeleton } from './ui/Skeleton'
 import { useProyekList } from '../hooks/useProyekList'
-import { cariProyek } from '../lib/filterProyek'
+import { cariProyek, urlPeta } from '../lib/filterProyek'
 
 const JUMLAH_HASIL = 8
 
@@ -29,7 +29,7 @@ export function PencarianCepat({ onTutup }: { onTutup: () => void }) {
     e.preventDefault()
     const q = kata.trim()
     if (!q) return
-    navigate(`/peta?cari=${encodeURIComponent(q)}`)
+    navigate(urlPeta({ cari: q }))
     onTutup()
   }
 

@@ -1,4 +1,4 @@
-import { Camera, Landmark, MapPin, type LucideIcon } from 'lucide-react'
+import { ArrowRight, Camera, Landmark, MapPin, type LucideIcon } from 'lucide-react'
 import { JudulSeksi } from './ui/JudulSeksi'
 import { LabelSeksi } from './ui/LabelSeksi'
 
@@ -20,7 +20,10 @@ const LANGKAH: { judul: string; isi: string; ikon: LucideIcon }[] = [
   },
 ]
 
-/** "Cara kerja Jejak Anggaran" (DESIGN.md §8): 3 kartu langkah bernomor. */
+/**
+ * "Cara kerja Jejak Anggaran" (DESIGN.md §8): 3 kartu langkah bernomor yang terangkat saat disorot, dengan angka
+ * watermark, lencana langkah, dan panah penghubung antarkartu di desktop.
+ */
 export function SeksiCaraKerja() {
   return (
     <section aria-labelledby="judul-cara-kerja" className="py-16 md:py-24">
@@ -36,15 +39,39 @@ export function SeksiCaraKerja() {
 
       <ol data-muncul-anak="" className="mt-12 grid gap-6 md:grid-cols-3">
         {LANGKAH.map((l, i) => (
-          <li key={l.judul} className="rounded-lg border border-border bg-surface p-6">
-            <div className="flex items-center justify-between">
-              <span className="grid size-10 place-items-center rounded-md bg-brand-soft text-action">
+          <li
+            key={l.judul}
+            className="group relative rounded-lg border border-border bg-surface p-6 shadow-card transition-[translate,box-shadow,border-color] duration-300 ease-(--ease-standard) hover:-translate-y-1 hover:border-brand/40 hover:shadow-pop motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:p-7"
+          >
+            {/* Angka besar transparan di pojok sebagai watermark alur; dipotong oleh pembungkus agar tidak keluar kartu. */}
+            <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-lg" aria-hidden>
+              <span className="absolute -top-3 right-3 text-[112px] leading-none font-semibold tracking-[-0.04em] text-brand/8 tabular-nums transition-colors duration-300 select-none group-hover:text-brand/15">
+                {i + 1}
+              </span>
+              {/* Garis aksen tipis di tepi atas yang menyala saat disorot. */}
+              <span className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-action transition-transform duration-300 ease-(--ease-standard) group-hover:scale-x-100 motion-reduce:transition-none" />
+            </div>
+
+            <div className="relative">
+              <span className="grid size-12 place-items-center rounded-lg bg-brand-soft text-action ring-1 ring-brand/15 transition-colors duration-300 group-hover:bg-action group-hover:text-white">
                 <l.ikon className="size-6" strokeWidth={1.5} aria-hidden />
               </span>
-              <span className="text-sm font-medium text-ink-subtle tabular-nums">Langkah {i + 1}</span>
+              <span className="mt-5 inline-flex items-center rounded-full bg-brand-soft px-2.5 py-0.5 text-xs font-semibold tracking-[0.04em] text-action uppercase tabular-nums">
+                Langkah {i + 1}
+              </span>
+              <h3 className="mt-3 text-xl leading-tight font-semibold text-ink-strong">{l.judul}</h3>
+              <p className="mt-2 leading-relaxed text-ink-muted">{l.isi}</p>
             </div>
-            <h3 className="mt-5 text-xl leading-[1.25] font-semibold">{l.judul}</h3>
-            <p className="mt-2 text-ink-muted">{l.isi}</p>
+
+            {/* Panah penghubung antarkartu (desktop): menegaskan bahwa ketiganya satu alur berurutan. */}
+            {i < LANGKAH.length - 1 && (
+              <span
+                className="absolute top-1/2 -right-7 z-10 hidden size-8 -translate-y-1/2 place-items-center rounded-full border border-border bg-surface text-action shadow-edge md:grid"
+                aria-hidden
+              >
+                <ArrowRight className="size-4" strokeWidth={1.5} />
+              </span>
+            )}
           </li>
         ))}
       </ol>

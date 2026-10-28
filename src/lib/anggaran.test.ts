@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { bandingkanTahunSebelumnya, realisasiTerakhir, totalPerTahun, unikBerdasarkanId, urusanPadaTahun } from './anggaran'
+import { anggaranPerWarga, bandingkanTahunSebelumnya, realisasiTerakhir, totalPerTahun, unikBerdasarkanId, urusanPadaTahun } from './anggaran'
 
 const baris = [
   { tahun: 2025, urusan: 'Pendidikan', anggaran: 300, realisasi: 250 },
@@ -64,5 +64,16 @@ describe('realisasiTerakhir', () => {
 
   it('null jika belum ada realisasi sama sekali', () => {
     expect(realisasiTerakhir(tren, 2023)).toBeNull()
+  })
+})
+
+describe('anggaranPerWarga', () => {
+  it('membagi anggaran ke tiap warga per tahun dan per hari', () => {
+    expect(anggaranPerWarga(730_000, 100)).toEqual({ perTahun: 7_300, perHari: 20 })
+  })
+
+  it('null bila jumlah penduduk tidak valid', () => {
+    expect(anggaranPerWarga(1_000, 0)).toBeNull()
+    expect(anggaranPerWarga(1_000, Number.NaN)).toBeNull()
   })
 })

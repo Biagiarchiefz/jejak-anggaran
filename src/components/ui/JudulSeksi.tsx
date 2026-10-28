@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 type JudulSeksiProps = {
   /** Kalimat utama (ink-strong). */
   utama: ReactNode
-  /** Kalimat pelengkap yang lebih redup (ink-subtle). */
+  /** Kalimat pelengkap berwarna biru aksi, senada dengan eyebrow <LabelSeksi> di atasnya. */
   pelengkap?: ReactNode
   as?: 'h1' | 'h2' | 'p'
   id?: string
@@ -21,7 +21,7 @@ export function JudulSeksi({ utama, pelengkap, as: Tag = 'h2', id, className }: 
       {pelengkap && (
         <>
           {' '}
-          <span className="text-ink-subtle">{pelengkap}</span>
+          <span className="text-action">{pelengkap}</span>
         </>
       )}
     </Tag>

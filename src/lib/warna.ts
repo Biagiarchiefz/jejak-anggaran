@@ -9,7 +9,7 @@ export const WARNA = {
   brand: '#2b8cff',
   brandLight: '#8cc8ff',
   danger: '#c81e1e',
-  inkSubtle: '#5b6576',
+  inkSubtle: '#4b5563',
   ink: '#1f2937',
   borderSoft: '#edf1f6',
   border: '#e2e8f0',

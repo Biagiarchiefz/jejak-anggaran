@@ -7,7 +7,7 @@ export function LinimasaStatus({ riwayat }: { riwayat: RiwayatPublik[] }) {
   if (riwayat.length === 0) return <p className="text-sm text-ink-muted">Belum ada riwayat status.</p>
 
   return (
-    <ol className="relative space-y-4 border-l-2 border-border pl-5">
+    <ol className="relative space-y-3 border-l-2 border-border pl-5">
       {riwayat.map((r, i) => (
         <li key={r.id} className="relative">
           {/* Tahap terakhir = cincin brand isi surface; tahap sebelumnya = titik action terisi. */}

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { ArrowRight, SlidersHorizontal, X } from 'lucide-react'
+import { ArrowUpRight, MapPin, SlidersHorizontal, X } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router'
 import { BadgeRedFlag } from '../components/BadgeRedFlag'
 import { BadgeStatusProyek } from '../components/BadgeStatus'
@@ -16,8 +16,17 @@ import { Pilihan } from '../components/ui/Pilihan'
 import { Skeleton } from '../components/ui/Skeleton'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { useProyekList } from '../hooks/useProyekList'
-import { cariProyek, daftarKecamatan, FILTER_AWAL, jumlahFilterAktif, saringProyek, type FilterProyek } from '../lib/filterProyek'
+import {
+  cariProyek,
+  daftarKecamatan,
+  FILTER_AWAL,
+  filterDariParams,
+  jumlahFilterAktif,
+  saringProyek,
+  type FilterProyek,
+} from '../lib/filterProyek'
 import { formatRupiahRingkas } from '../lib/format'
+import { fotoIlustrasiProyek, urlFotoUnsplash } from '../lib/fotoIlustrasi'
 import { LABEL_STATUS_PROYEK } from '../lib/label'
 import { Constants } from '../types/database'
 import type { ProyekDenganRedFlag } from '../services/proyekService'
@@ -26,57 +35,97 @@ type DaftarProyekProps = {
   proyek: ProyekDenganRedFlag[]
   terpilihId: string | null
   onPilih: (id: string) => void
+  /** Proyek yang pinnya sedang disorot di peta (atau kartunya disorot kursor). */
+  sorotId: string | null
+  onSorot: (id: string | null) => void
   /** Desktop: gulir daftar ke proyek yang dipilih lewat peta. */
   gulirKeTerpilih: boolean
 }
 
-/** Daftar proyek yang tersinkron dengan peta: klik kartu = sorot dan pusatkan pin-nya di peta. */
-function DaftarProyek({ proyek, terpilihId, onPilih, gulirKeTerpilih }: DaftarProyekProps) {
+/**
+ * Daftar proyek ringkas yang tersinkron dua arah dengan peta: klik kartu = peta terbang ke pinnya;
+ * klik pin = kartu tersorot dan digulir ke pandangan; kursor di kartu/pin = pasangannya ikut menyala.
+ */
+function DaftarProyek({ proyek, terpilihId, onPilih, sorotId, onSorot, gulirKeTerpilih }: DaftarProyekProps) {
   const refTerpilih = useRef<HTMLLIElement>(null)
 
   useEffect(() => {
-    if (gulirKeTerpilih && terpilihId) refTerpilih.current?.scrollIntoView({ block: 'nearest' })
+    if (gulirKeTerpilih && terpilihId) refTerpilih.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
   }, [terpilihId, gulirKeTerpilih])
 
   return (
-    <ul className="space-y-3">
+    <ul className="space-y-2">
       {proyek.map((p) => {
         const terpilih = p.id === terpilihId
+        const disorot = !terpilih && p.id === sorotId
+        const ilustrasi = p.foto_path ? null : fotoIlustrasiProyek(p.nama_paket)
         return (
           <li
             key={p.id}
             ref={terpilih ? refTerpilih : undefined}
-            className={`relative rounded-lg border p-4 transition-[border-color,box-shadow,background-color,translate] duration-[240ms] outline-offset-2 outline-brand has-[button:focus-visible]:outline-2 ${
-              terpilih ? 'border-brand bg-brand-soft/40 shadow-card' : 'border-border bg-surface hover:-translate-y-0.5 hover:border-border-strong hover:shadow-card motion-reduce:hover:translate-y-0'
+            onPointerEnter={() => onSorot(p.id)}
+            onPointerLeave={() => onSorot(null)}
+            className={`relative flex scroll-my-2 gap-3 rounded-md border p-2.5 transition-[border-color,box-shadow,background-color] duration-200 outline-offset-2 outline-brand has-[button:focus-visible]:outline-2 ${
+              terpilih
+                ? 'border-brand bg-brand-soft/50 shadow-card'
+                : disorot
+                  ? 'border-border-strong bg-surface shadow-card'
+                  : 'border-border bg-surface'
             }`}
           >
-            <button
-              type="button"
-              onClick={() => onPilih(p.id)}
-              aria-pressed={terpilih}
-              className="block w-full text-left after:absolute after:inset-0 after:rounded-lg focus-visible:outline-none"
-            >
-              <span className="block leading-snug font-semibold text-ink-strong">{p.nama_paket}</span>
-              <span className="mt-1 block text-sm text-ink-muted">
-                Kec. {p.kecamatan} · Pagu <span className="font-semibold text-ink tabular-nums">{formatRupiahRingkas(p.pagu)}</span>
-              </span>
-              <span className="sr-only">. Tampilkan di peta.</span>
-            </button>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              <BadgeStatusProyek status={p.status_proyek} />
-              {p.redFlag && <BadgeRedFlag alasan={p.redFlag.alasan} />}
+            {/* Garis aksen kiri menandai proyek yang sedang dipilih di peta. */}
+            {terpilih && <span className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-action" aria-hidden />}
+
+            <div className="relative size-16 shrink-0 overflow-hidden rounded-md bg-recessed">
+              <img
+                src={ilustrasi ? urlFotoUnsplash(ilustrasi.id, 160) : (p.foto_path ?? undefined)}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                className="size-full object-cover"
+              />
+              <span
+                className={`absolute right-1 bottom-1 size-2.5 rounded-full border-2 border-white ${p.redFlag ? 'bg-danger' : 'bg-brand'}`}
+                aria-hidden
+              />
             </div>
-            {/* Di atas tombol yang diregangkan agar tautan tetap bisa diklik sendiri. */}
-            <div className="relative z-[1]">
-              <SumberData nama="SiRUP LKPP" url={p.sumber_rup_url} diaksesPada={p.diakses_pada} demo={p.is_demo} dalamKartu />
-              <Link
-                to={`/proyek/${p.id}`}
-                className="group mt-2 inline-flex items-center gap-1 text-sm font-medium text-link hover:underline"
+
+            <div className="min-w-0 flex-1">
+              <button
+                type="button"
+                onClick={() => onPilih(p.id)}
+                aria-pressed={terpilih}
+                className="block w-full pr-7 text-left after:absolute after:inset-0 after:rounded-md focus-visible:outline-none"
               >
-                Lihat detail proyek
-                <ArrowRight className="size-4 transition-transform duration-150 group-hover:translate-x-0.5 motion-reduce:transition-none" strokeWidth={1.5} aria-hidden />
-              </Link>
+                <span className="line-clamp-2 text-sm leading-snug font-semibold text-ink-strong">{p.nama_paket}</span>
+                <span className="sr-only">. Tampilkan di peta.</span>
+              </button>
+              <p className="mt-0.5 flex items-center gap-1 text-xs text-ink-muted">
+                <MapPin className="size-3 shrink-0 text-ink-subtle" strokeWidth={1.5} aria-hidden />
+                <span className="truncate">
+                  Kec. {p.kecamatan} · TA {p.tahun_anggaran}
+                </span>
+              </p>
+              <div className="mt-1.5 flex items-center justify-between gap-2">
+                <div className="flex min-w-0 flex-wrap gap-1">
+                  <BadgeStatusProyek status={p.status_proyek} ringkas />
+                  {p.redFlag && <BadgeRedFlag alasan={p.redFlag.alasan} ringkas />}
+                </div>
+                <span className="shrink-0 text-sm font-semibold text-ink-strong tabular-nums">{formatRupiahRingkas(p.pagu)}</span>
+              </div>
+              {/* Di atas tombol yang diregangkan agar tautan sumber tetap bisa diklik sendiri. */}
+              <div className="relative z-1">
+                <SumberData nama="SiRUP LKPP" url={p.sumber_rup_url} diaksesPada={p.diakses_pada} demo={p.is_demo} className="mt-1" />
+              </div>
             </div>
+
+            <Link
+              to={`/proyek/${p.id}`}
+              aria-label={`Detail proyek ${p.nama_paket}`}
+              className="absolute top-1.5 right-1.5 z-1 grid size-8 place-items-center rounded-md text-ink-subtle efek-tekan hover:bg-recessed hover:text-action"
+            >
+              <ArrowUpRight className="size-4" strokeWidth={1.5} aria-hidden />
+            </Link>
           </li>
         )
       })}
@@ -120,20 +169,23 @@ function ChipStatus({ filter, setFilter }: ChipStatusProps) {
 
 export default function PetaPage() {
   const { data, error, memuat, muatUlang } = useProyekList()
-  const [filter, setFilter] = useState<FilterProyek>(FILTER_AWAL)
-  // Kata kunci awal dari `?cari=` (dikirim tombol Cari di panel pencarian header). Bila URL berubah saat halaman
-  // ini sudah terbuka, kolom cari ikut diperbarui.
+  // Kata kunci dan saringan awal dari URL (`?cari=…&kecamatan=…&status=…`, mis. dari panel cari
+  // di header). Bila URL berubah saat halaman ini sudah terbuka, kolom cari dan saringan ikut diperbarui.
   const [params] = useSearchParams()
-  const cariUrl = params.get('cari') ?? ''
-  const [cariUrlSebelumnya, setCariUrlSebelumnya] = useState(cariUrl)
-  const [kata, setKata] = useState(cariUrl)
-  if (cariUrl !== cariUrlSebelumnya) {
-    setCariUrlSebelumnya(cariUrl)
-    setKata(cariUrl)
+  const kunciUrl = params.toString()
+  const [kunciUrlSebelumnya, setKunciUrlSebelumnya] = useState(kunciUrl)
+  const [kata, setKata] = useState(params.get('cari') ?? '')
+  const [filter, setFilter] = useState<FilterProyek>(() => filterDariParams(params))
+  if (kunciUrl !== kunciUrlSebelumnya) {
+    setKunciUrlSebelumnya(kunciUrl)
+    setKata(params.get('cari') ?? '')
+    setFilter(filterDariParams(params))
   }
   const [terpilihId, setTerpilihId] = useState<string | null>(null)
   const [fokus, setFokus] = useState<PermintaanFokus | null>(null)
   const [lembarFilter, setLembarFilter] = useState(false)
+  // Sorotan hover bersama peta ↔ daftar (tidak memilih, hanya menyalakan pasangannya).
+  const [sorotId, setSorotId] = useState<string | null>(null)
   const desktop = useMediaQuery('(min-width: 1024px)')
   // Mulai `sm` saringan tampil langsung di halaman, jadi lembar saringan ditutup bila layar melebar.
   const layarSm = useMediaQuery('(min-width: 640px)')
@@ -166,6 +218,7 @@ export default function PetaPage() {
     <div className="space-y-6">
       <title>Peta Proyek — Jejak Anggaran</title>
       <KepalaHalaman
+        eyebrow="Proyek beranggaran"
         judul="Peta proyek Kota Bandung"
         deskripsi="Pilih titik di peta untuk melihat pagu, status, dan laporan warga. Semua proyek juga tersedia dalam bentuk daftar."
       />
@@ -269,13 +322,13 @@ export default function PetaPage() {
       </Laci>
 
       {memuat && !data ? (
-        <div role="status" className="grid gap-6 lg:grid-cols-3">
+        <div role="status" className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_24rem] xl:grid-cols-[minmax(0,1fr)_26rem]">
           <span className="sr-only">Memuat peta proyek…</span>
-          <Skeleton className="h-[50vh] min-h-80 rounded-lg md:h-[60vh] lg:col-span-2" />
+          <Skeleton className="h-[50vh] min-h-80 rounded-lg md:h-[60vh]" />
           <Skeleton className="hidden h-[60vh] rounded-lg lg:block" />
         </div>
       ) : error ? (
-        <ErrorState pesan={error.pesan} onCobaLagi={muatUlang} />
+        <ErrorState halaman pesan={error.pesan} onCobaLagi={muatUlang} />
       ) : semua.length === 0 ? (
         <EmptyState judul="Belum ada data proyek" pesan="Data proyek sedang dikurasi dari SiRUP dan LPSE Kota Bandung." />
       ) : (
@@ -284,36 +337,51 @@ export default function PetaPage() {
             Menampilkan <span className="font-medium text-ink tabular-nums">{tersaring.length}</span> dari {semua.length} proyek
             {jumlahRedFlag > 0 && <>, {jumlahRedFlag} perlu perhatian</>}.
           </p>
-          <div className="grid gap-6 lg:grid-cols-3">
-            <div ref={refPeta} className="scroll-mt-20 lg:sticky lg:top-20 lg:col-span-2 lg:self-start">
+          {/* Split-screen desktop: peta lebar di kiri, panel daftar setinggi peta di kanan (bergulir sendiri). */}
+          <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_24rem] xl:grid-cols-[minmax(0,1fr)_26rem]">
+            <div ref={refPeta} className="min-w-0 scroll-mt-20 lg:sticky lg:top-20 lg:self-start">
               <PetaProyek
                 proyek={tersaring}
                 terpilihId={terpilih?.id ?? null}
                 fokus={fokus}
                 onPilih={setTerpilihId}
+                sorotId={sorotId}
+                onSorot={setSorotId}
                 denganPopup={desktop}
               />
             </div>
-            <section aria-labelledby="judul-daftar" className="min-w-0">
-              <h2 id="judul-daftar" className="mb-3 text-xl leading-[1.25] font-semibold tracking-[-0.005em]">
-                Daftar proyek
-              </h2>
+            <section
+              aria-labelledby="judul-daftar"
+              className="min-w-0 rounded-lg border border-border bg-surface shadow-edge lg:flex lg:h-[max(60vh,20rem)] lg:flex-col"
+            >
+              <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
+                <h2 id="judul-daftar" className="text-base font-semibold tracking-normal text-ink-strong">
+                  Daftar proyek
+                </h2>
+                <span className="rounded-full bg-recessed px-2 py-0.5 text-xs font-medium text-ink-muted tabular-nums">
+                  {tersaring.length} dari {semua.length}
+                </span>
+              </div>
               {tersaring.length === 0 ? (
-                <EmptyState
-                  judul="Tidak ada proyek yang cocok"
-                  pesan="Coba ubah kata kunci atau hapus saringan status dan kecamatan."
-                  aksi={
-                    <Button varian="kedua" onClick={hapusSaringan}>
-                      Hapus saringan
-                    </Button>
-                  }
-                />
+                <div className="p-4">
+                  <EmptyState
+                    judul="Tidak ada proyek yang cocok"
+                    pesan="Coba ubah kata kunci atau hapus saringan status dan kecamatan."
+                    aksi={
+                      <Button varian="kedua" onClick={hapusSaringan}>
+                        Hapus saringan
+                      </Button>
+                    }
+                  />
+                </div>
               ) : (
-                <div className="lg:max-h-[60vh] lg:overflow-y-auto lg:p-1">
+                <div className="p-2 lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
                   <DaftarProyek
                     proyek={tersaring}
                     terpilihId={terpilih?.id ?? null}
                     onPilih={pilihDariDaftar}
+                    sorotId={sorotId}
+                    onSorot={setSorotId}
                     gulirKeTerpilih={desktop}
                   />
                 </div>

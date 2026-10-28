@@ -16,7 +16,7 @@ export function GrafikTren({ data }: { data: TitikTren[] }) {
 
   return (
     <figure className="min-w-0">
-      <div className="h-72 w-full">
+      <div className="h-60 w-full sm:h-64">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 8, right: 4, bottom: 0, left: 0 }} barGap={2}>
             <CartesianGrid vertical={false} stroke={WARNA.border} />
@@ -56,25 +56,28 @@ export function GrafikTren({ data }: { data: TitikTren[] }) {
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <TombolLipat terbuka={tabel} onClick={() => setTabel((t) => !t)} aria-controls={idTabel} className="mt-3">
-        {tabel ? 'Sembunyikan tabel' : 'Lihat dalam bentuk tabel'}
-      </TombolLipat>
+      {/* Tombol tabel di kaki kartu grafik, dipisah garis tipis dari plot. */}
+      <div className="mt-2 border-t border-border-soft pt-1">
+        <TombolLipat terbuka={tabel} onClick={() => setTabel((t) => !t)} aria-controls={idTabel}>
+          {tabel ? 'Sembunyikan tabel' : 'Lihat dalam bentuk tabel'}
+        </TombolLipat>
+      </div>
       <Lipatan terbuka={tabel} id={idTabel} className="text-sm">
-        <div className="mt-3 overflow-hidden rounded-md border border-border">
+        <div className="mt-1 overflow-hidden rounded-md border border-border">
           <table className="w-full text-left">
             <thead className="border-b border-border bg-canvas-soft text-xs tracking-[0.04em] text-ink-muted uppercase">
               <tr>
-                <th className="px-4 py-3">Tahun</th>
-                <th className="px-4 py-3 text-right">Anggaran</th>
-                <th className="px-4 py-3 text-right">Realisasi</th>
+                <th className="px-3 py-2">Tahun</th>
+                <th className="px-3 py-2 text-right">Anggaran</th>
+                <th className="px-3 py-2 text-right">Realisasi</th>
               </tr>
             </thead>
             <tbody className="tabular-nums">
               {data.map((t) => (
                 <tr key={t.tahun} className="border-b border-border-soft last:border-0 hover:bg-brand-soft/60">
-                  <td className="px-4 py-3">{t.tahun}</td>
-                  <td className="px-4 py-3 text-right">{formatRupiahRingkas(t.anggaran)}</td>
-                  <td className="px-4 py-3 text-right">{t.realisasi === null ? 'Belum ada' : formatRupiahRingkas(t.realisasi)}</td>
+                  <td className="px-3 py-2">{t.tahun}</td>
+                  <td className="px-3 py-2 text-right">{formatRupiahRingkas(t.anggaran)}</td>
+                  <td className="px-3 py-2 text-right">{t.realisasi === null ? 'Belum ada' : formatRupiahRingkas(t.realisasi)}</td>
                 </tr>
               ))}
             </tbody>

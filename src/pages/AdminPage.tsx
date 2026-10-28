@@ -192,7 +192,7 @@ function AntreanLaporan() {
   const [panelTerbuka, setPanelTerbuka] = useState(false)
 
   if (memuat && !data) return <SkeletonHalaman />
-  if (error) return <ErrorState pesan={error.pesan} onCobaLagi={muatUlang} />
+  if (error) return <ErrorState halaman pesan={error.pesan} onCobaLagi={muatUlang} />
 
   const semua = data ?? []
   const tampil = saring === 'semua' ? semua : semua.filter((l) => l.status === saring)

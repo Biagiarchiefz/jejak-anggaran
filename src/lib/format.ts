@@ -24,6 +24,17 @@ export function formatRupiahRingkas(nilai: number): string {
   return `${tanda}Rp ${angka.format(Math.round(mutlak))}`
 }
 
+/**
+ * Seperti `formatRupiahRingkas`, tetapi satuannya mengikuti `acuan`, mis. `(2.4e12, 6.8e12)` → `Rp 2,4 T`
+ * (bukan `Rp 2.400 M`). Dipakai animasi angka agar satuan tidak berganti-ganti selama angka naik.
+ */
+export function formatRupiahRingkasSatuan(nilai: number, acuan: number): string {
+  const satuan = SATUAN.find(({ batas }) => Math.abs(acuan) >= batas)
+  if (!satuan) return formatRupiahRingkas(nilai)
+  const tanda = nilai < 0 ? '-' : ''
+  return `${tanda}Rp ${desimal.format(Math.abs(nilai) / satuan.batas)} ${satuan.akhiran}`
+}
+
 const tanggal = new Intl.DateTimeFormat('id-ID', {
   day: 'numeric',
   month: 'long',

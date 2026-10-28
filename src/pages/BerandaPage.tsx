@@ -9,7 +9,7 @@ import { TautanTombol } from '../components/ui/Button'
 import { useAnggaran } from '../hooks/useAnggaran'
 import { useProyekList } from '../hooks/useProyekList'
 
-/** Urutan: hero peta titik → pita statistik → anggaran → proyek perlu perhatian → cara kerja → CTA penutup. */
+/** Urutan: hero peta Bandung → pita statistik → anggaran → proyek perlu perhatian → cara kerja → CTA penutup. */
 export default function BerandaPage() {
   // Diambil sekali di sini lalu dibagikan ke beberapa section.
   const anggaran = useAnggaran()
@@ -20,17 +20,12 @@ export default function BerandaPage() {
       <title>Jejak Anggaran — Kota Bandung</title>
       <FlatProjectMap
         judul="Ikuti uang publik Kota Bandung, dari anggaran sampai ke lapangan"
-        deskripsi="Lihat APBD dan proyek beranggaran di peta, lalu periksa kondisi nyatanya lewat laporan warga. Setiap angka disertai sumber resminya."
+        deskripsi="Temukan proyek beranggaran di sekitar Anda, lihat pagunya, lalu periksa kondisi nyatanya lewat laporan warga. Setiap angka disertai sumber resminya."
         aksi={
-          <>
-            <TautanTombol to="/peta">
-              Jelajahi peta proyek
-              <ArrowRight className="size-4 transition-transform duration-150 group-hover:translate-x-0.5 motion-reduce:transition-none" strokeWidth={1.5} aria-hidden />
-            </TautanTombol>
-            <TautanTombol to="/anggaran" varian="kedua">
-              Lihat anggaran kota
-            </TautanTombol>
-          </>
+          <TautanTombol to="/peta">
+            Jelajahi peta proyek
+            <ArrowRight className="size-4 transition-transform duration-150 group-hover:translate-x-0.5 motion-reduce:transition-none" strokeWidth={1.5} aria-hidden />
+          </TautanTombol>
         }
         proyek={proyek}
       />

@@ -17,8 +17,8 @@
 
   --color-ink: #1f2937;
   --color-ink-strong: #111827;
-  --color-ink-muted: #4b5563;
-  --color-ink-subtle: #5b6576;
+  --color-ink-muted: #374151;
+  --color-ink-subtle: #4b5563;
   --color-on-dark: #ffffff;
   --color-on-dark-muted: #c7e2ff;
 
@@ -245,6 +245,77 @@ dialog[data-laci][open]::backdrop {
   box-shadow: var(--shadow-pop);
 }
 
+/* Popup halaman Peta yang berisi <KartuPin>: kartu sudah punya bingkai, bayangan, dan ekornya sendiri,
+   jadi pembungkus, ujung, dan margin bawaan Leaflet dihilangkan. */
+.popup-kartu .leaflet-popup-content-wrapper {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.popup-kartu .leaflet-popup-content {
+  margin: 0;
+  width: auto !important;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.popup-kartu .leaflet-popup-tip-container {
+  display: none;
+}
+
+/* leaflet.css (tanpa layer) memberi warna tautan #0078A8 dan margin paragraf 1.3em yang mengalahkan utilitas Tailwind.
+   revert-layer mengembalikan keduanya ke kelas Tailwind milik kartu. */
+.leaflet-container .popup-kartu a {
+  color: revert-layer;
+}
+
+.leaflet-container .popup-kartu p {
+  margin: revert-layer;
+}
+
+/* Pin proyek di peta Leaflet: ikon lucide MapPin terisi, sama dengan pin di hero Beranda (<IkonPin>). */
+.pin-peta {
+  background: none;
+  border: 0;
+}
+
+.pin-peta svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: var(--color-brand);
+  stroke: #fff;
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.25));
+  transform-origin: 50% 100%;
+  transition: scale 150ms var(--ease-standard);
+}
+
+.pin-peta-merah svg {
+  fill: var(--color-danger);
+}
+
+.pin-peta svg circle {
+  fill: #fff;
+}
+
+.pin-peta:hover svg,
+.pin-peta-disorot svg {
+  scale: 1.12;
+}
+
+.pin-peta-terpilih svg {
+  scale: 1.25;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pin-peta svg {
+    transition: none;
+  }
+}
+
 /* Kontrol zoom bergaya tombol sekunder bulat. */
 .leaflet-touch .leaflet-bar,
 .leaflet-bar {
@@ -315,4 +386,18 @@ dialog[data-laci][open]::backdrop {
 }
 .animasi-muncul [data-muncul-anak="tampil"] > :nth-child(n + 6) {
   animation-delay: 300ms;
+}
+
+/* Batang progres (porsi anggaran) yang memanjang dari kiri saat kartunya muncul. Pakai kelas `animasi-batang` pada
+   isi batang; `--tunda` (opsional) menggeser mulainya agar batang dalam satu daftar mengisi bergantian. */
+@keyframes isi-batang {
+  from {
+    scale: 0 1;
+  }
+}
+
+.animasi-muncul [data-muncul="tampil"] .animasi-batang,
+.animasi-muncul [data-muncul-anak="tampil"] .animasi-batang {
+  transform-origin: left;
+  animation: isi-batang 900ms var(--ease-out-soft) calc(200ms + var(--tunda, 0ms)) backwards;
 }

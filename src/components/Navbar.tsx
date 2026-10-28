@@ -55,15 +55,15 @@ const MASUK_BERTAHAP =
 const jeda = (urutan: number) => ({ transitionDelay: `${100 + urutan * 40}ms` })
 
 /**
- * Header yang menempel: logo kiri, tautan (desktop), cari, masuk. Di Beranda sebelum digulir warnanya sama dengan
- * hero tanpa garis bawah; setelah digulir berubah ke `surface` dengan garis bawah.
+ * Header yang menempel: logo kiri, tautan (desktop), cari, masuk. Di Beranda sebelum digulir header transparan tanpa
+ * garis bawah sehingga peta latar hero terlihat di baliknya; setelah digulir berubah ke `surface` dengan garis bawah.
  * Di ponsel/tablet: logo + cari + tombol menu, dan navigasi utama pindah ke bottom navigation.
  */
 export function Navbar() {
   const { pengguna } = useAuth()
   const { pathname } = useLocation()
   const digulir = useDigulir()
-  // Di Beranda sebelum digulir: header menyatu dengan hero (warna sama, tanpa garis bawah).
+  // Di Beranda sebelum digulir: header transparan, menyatu dengan hero yang ditarik ke belakangnya (lihat FlatProjectMap).
   const menyatuDenganHero = pathname === '/' && !digulir
   const [panel, setPanel] = useState<'menu' | 'cari' | null>(null)
   const [pathPanel, setPathPanel] = useState(pathname)
@@ -94,7 +94,7 @@ export function Navbar() {
     <>
       <header
         className={`sticky top-0 z-[1100] h-16 border-b transition-[background-color,border-color] duration-[240ms] ease-(--ease-standard) ${
-          menyatuDenganHero ? 'border-transparent bg-canvas-blue' : 'border-border bg-surface'
+          menyatuDenganHero ? 'border-transparent bg-transparent' : 'border-border bg-surface'
         }`}
       >
         <div className="mx-auto flex h-full max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
@@ -130,7 +130,13 @@ export function Navbar() {
             ) : (
               <Link
                 to="/masuk"
-                className="ml-2 hidden min-h-11 items-center rounded-full border border-border-strong bg-surface px-5 text-sm font-medium text-ink efek-tekan hover:bg-canvas-soft lg:inline-flex"
+                // Transparan bergaris tepi selama header menyatu dengan hero (tidak bersaing dengan tombol utama hero);
+                // biru setelah digulir dan di halaman lain, saat header sudah putih.
+                className={`ml-2 hidden min-h-11 items-center rounded-full border px-5 text-sm font-medium efek-tekan lg:inline-flex ${
+                  menyatuDenganHero
+                    ? 'border-border-strong bg-transparent text-ink hover:bg-surface/70'
+                    : 'border-transparent bg-action text-white hover:bg-action-hover'
+                }`}
               >
                 Masuk
               </Link>

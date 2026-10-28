@@ -4,21 +4,48 @@ import { SumberData } from './SumberData'
 import { ErrorState } from './ui/ErrorState'
 import { LabelSeksi } from './ui/LabelSeksi'
 import { PitaPenuh } from './ui/PitaPenuh'
+import { useAngkaBergerak } from '../hooks/useAngkaBergerak'
 import type { StateMuat } from '../hooks/useMuat'
 import { totalPerTahun, urusanPadaTahun } from '../lib/anggaran'
-import { formatRupiahRingkas } from '../lib/format'
+import { formatRupiahRingkasSatuan } from '../lib/format'
 import type { AnggaranDaerah } from '../services/anggaranService'
 import type { ProyekDenganRedFlag } from '../services/proyekService'
 
-function Statistik({ angka, label, sumber }: { angka: string; label: string; sumber: ReactNode }) {
+const KELAS_ANGKA = 'text-[36px] leading-none font-semibold tracking-[-0.02em] text-white tabular-nums md:text-5xl'
+
+/**
+ * Angka statistik yang berhitung naik saat pita terlihat. Pembaca layar langsung mendapat angka akhir;
+ * angka yang bergerak disembunyikan darinya agar tidak dibacakan berulang.
+ */
+function AngkaBergerak({ target, format }: { target: number; format: (nilai: number) => string }) {
+  const { ref, nilai } = useAngkaBergerak<HTMLParagraphElement>(target)
+  return (
+    <p ref={ref} className={KELAS_ANGKA}>
+      <span aria-hidden>{format(nilai)}</span>
+      <span className="sr-only">{format(target)}</span>
+    </p>
+  )
+}
+
+type StatistikProps = {
+  /** Angka akhir yang dianimasikan; `null` = tidak ada data (tampil "–"). */
+  target: number | null
+  format: (nilai: number) => string
+  label: string
+  sumber: ReactNode
+}
+
+function Statistik({ target, format, label, sumber }: StatistikProps) {
   return (
     <div className="border-t border-white/15 pt-6">
-      <p className="text-[36px] leading-none font-semibold tracking-[-0.02em] text-white tabular-nums md:text-5xl">{angka}</p>
+      {target === null ? <p className={KELAS_ANGKA}>–</p> : <AngkaBergerak target={target} format={format} />}
       <p className="mt-3 text-sm text-on-dark-muted">{label}</p>
       {sumber}
     </div>
   )
 }
+
+const formatBulat = (n: number) => String(Math.round(n))
 
 function SkeletonStatistik() {
   return (
@@ -68,12 +95,13 @@ export function PitaStatistik({ anggaran, proyek }: PitaStatistikProps) {
           </div>
         ) : terakhir ? (
           <Statistik
-            angka={formatRupiahRingkas(terakhir.anggaran)}
+            target={terakhir.anggaran}
+            format={(n) => formatRupiahRingkasSatuan(n, terakhir.anggaran)}
             label={`Total APBD ${terakhir.tahun}`}
             sumber={<SumberAnggaran baris={barisTerakhir} variant="dark" className="mt-3" />}
           />
         ) : (
-          <Statistik angka="–" label="Data APBD belum tersedia" sumber={null} />
+          <Statistik target={null} format={formatBulat} label="Data APBD belum tersedia" sumber={null} />
         )}
 
         {proyek.memuat && !proyek.data ? (
@@ -88,10 +116,16 @@ export function PitaStatistik({ anggaran, proyek }: PitaStatistikProps) {
           </div>
         ) : (
           <>
-            <Statistik angka={String(dataProyek.length)} label="Paket proyek dipantau" sumber={sumberProyek} />
-            <Statistik angka={formatRupiahRingkas(totalPagu)} label="Total pagu proyek dipantau" sumber={sumberProyek} />
+            <Statistik target={dataProyek.length} format={formatBulat} label="Paket proyek dipantau" sumber={sumberProyek} />
             <Statistik
-              angka={String(dataProyek.filter((p) => p.redFlag).length)}
+              target={totalPagu}
+              format={(n) => formatRupiahRingkasSatuan(n, totalPagu)}
+              label="Total pagu proyek dipantau"
+              sumber={sumberProyek}
+            />
+            <Statistik
+              target={dataProyek.filter((p) => p.redFlag).length}
+              format={formatBulat}
               label="Proyek perlu perhatian"
               sumber={<p className="mt-3 text-xs font-medium text-on-dark-muted">Dihitung dari laporan warga terverifikasi.</p>}
             />

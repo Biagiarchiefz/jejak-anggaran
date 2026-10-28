@@ -31,19 +31,19 @@ export function SeksiProyek({ proyek }: { proyek: StateMuat<ProyekDenganRedFlag[
           />
         </div>
         {data && data.length > 0 && (
-          <TautanTombol to="/peta" varian="kedua" className="shrink-0 self-start sm:self-auto">
+          <TautanTombol to="/peta" className="shrink-0 self-start sm:self-auto">
             Lihat {data.length} proyek di peta
             <ArrowRight className="size-4 transition-transform duration-150 group-hover:translate-x-0.5 motion-reduce:transition-none" strokeWidth={1.5} aria-hidden />
           </TautanTombol>
         )}
       </div>
 
-      <div className="mt-12">
+      <div className="mt-10">
         {memuat && !data ? (
-          <div role="status" className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div role="status" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
             <span className="sr-only">Memuat daftar proyek…</span>
             {Array.from({ length: 3 }, (_, i) => (
-              <Skeleton key={i} className="h-96 rounded-lg" />
+              <Skeleton key={i} className="h-80 rounded-lg" />
             ))}
           </div>
         ) : error ? (
@@ -51,7 +51,7 @@ export function SeksiProyek({ proyek }: { proyek: StateMuat<ProyekDenganRedFlag[
         ) : sorotan.length === 0 ? (
           <EmptyState judul="Belum ada proyek yang dipantau" pesan="Data proyek sedang dikurasi dari SiRUP dan LPSE Kota Bandung." />
         ) : (
-          <ul data-muncul-anak="" className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <ul data-muncul-anak="" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
             {sorotan.map((p) => (
               <KartuProyek key={p.id} proyek={p} />
             ))}

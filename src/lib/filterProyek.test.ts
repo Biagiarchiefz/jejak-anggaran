@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { cariProyek, daftarKecamatan, FILTER_AWAL, jumlahFilterAktif, pilihProyekSorotan, saringProyek } from './filterProyek'
+import {
+  cariProyek,
+  daftarKecamatan,
+  FILTER_AWAL,
+  filterDariParams,
+  jumlahFilterAktif,
+  pilihProyekSorotan,
+  saringProyek,
+  urlPeta,
+} from './filterProyek'
 
 const proyek = [
   { id: 'a', status_proyek: 'selesai' as const, kecamatan: 'Coblong' },
@@ -74,5 +83,33 @@ describe('jumlahFilterAktif', () => {
     expect(jumlahFilterAktif(FILTER_AWAL)).toBe(0)
     expect(jumlahFilterAktif({ status: 'selesai', kecamatan: 'semua' })).toBe(1)
     expect(jumlahFilterAktif({ status: 'selesai', kecamatan: 'Coblong' })).toBe(2)
+  })
+})
+
+describe('filterDariParams', () => {
+  it('membaca kecamatan dan status dari URL', () => {
+    expect(filterDariParams(new URLSearchParams('kecamatan=Coblong&status=berjalan'))).toEqual({ kecamatan: 'Coblong', status: 'berjalan' })
+  })
+
+  it('nilai kosong atau status tak dikenal menjadi "semua"', () => {
+    expect(filterDariParams(new URLSearchParams(''))).toEqual(FILTER_AWAL)
+    expect(filterDariParams(new URLSearchParams('kecamatan=%20&status=rusak'))).toEqual(FILTER_AWAL)
+  })
+})
+
+describe('urlPeta', () => {
+  it('tanpa saringan → /peta', () => {
+    expect(urlPeta({})).toBe('/peta')
+    expect(urlPeta({ cari: '  ', filter: FILTER_AWAL })).toBe('/peta')
+  })
+
+  it('menulis kata kunci dan saringan yang dipakai saja', () => {
+    expect(urlPeta({ cari: ' jalan dago ', filter: { kecamatan: 'Coblong', status: 'semua' } })).toBe('/peta?cari=jalan+dago&kecamatan=Coblong')
+  })
+
+  it('bolak-balik dengan filterDariParams', () => {
+    const filter = { kecamatan: 'Bandung Kidul', status: 'selesai' } as const
+    const url = urlPeta({ filter })
+    expect(filterDariParams(new URLSearchParams(url.split('?')[1]))).toEqual(filter)
   })
 })

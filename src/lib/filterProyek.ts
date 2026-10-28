@@ -1,4 +1,4 @@
-import type { Enums } from '../types/database'
+import { Constants, type Enums } from '../types/database'
 
 export type FilterProyek = {
   status: Enums<'status_proyek'> | 'semua'
@@ -49,7 +49,7 @@ type ProyekDicari = { nama_paket: string; kecamatan: string; kelurahan: string |
 const normalkan = (s: string) => s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase()
 
 /**
- * Pencarian cepat di navbar: setiap kata harus muncul di nama paket, wilayah, satker, atau pelaksana.
+ * Pencarian proyek (panel cari di header, Peta proyek): setiap kata harus muncul di nama paket, wilayah, satker, atau pelaksana.
  * Urutan asli dipertahankan. Kata kunci kosong → daftar kosong.
  */
 export function cariProyek<T extends ProyekDicari>(proyek: readonly T[], kataKunci: string): T[] {
@@ -59,4 +59,27 @@ export function cariProyek<T extends ProyekDicari>(proyek: readonly T[], kataKun
     const teks = normalkan([p.nama_paket, p.kecamatan, p.kelurahan, p.satker, p.pelaksana].filter(Boolean).join(' '))
     return kata.every((k) => teks.includes(k))
   })
+}
+
+const STATUS_PROYEK: readonly string[] = Constants.public.Enums.status_proyek
+
+function statusSah(nilai: string | null): nilai is Enums<'status_proyek'> {
+  return nilai !== null && STATUS_PROYEK.includes(nilai)
+}
+
+/** Saringan Peta proyek dari URL (`?kecamatan=…&status=…`). Nilai kosong atau status tak dikenal → "semua". */
+export function filterDariParams(params: URLSearchParams): FilterProyek {
+  const status = params.get('status')
+  const kecamatan = params.get('kecamatan')?.trim()
+  return { status: statusSah(status) ? status : 'semua', kecamatan: kecamatan || 'semua' }
+}
+
+/** Tautan ke Peta proyek dengan kata kunci dan saringan terisi. Nilai kosong/"semua" tidak ditulis ke URL. */
+export function urlPeta({ cari = '', filter = FILTER_AWAL }: { cari?: string; filter?: FilterProyek }): string {
+  const params = new URLSearchParams()
+  if (cari.trim()) params.set('cari', cari.trim())
+  if (filter.kecamatan !== 'semua') params.set('kecamatan', filter.kecamatan)
+  if (filter.status !== 'semua') params.set('status', filter.status)
+  const query = params.toString()
+  return query ? `/peta?${query}` : '/peta'
 }

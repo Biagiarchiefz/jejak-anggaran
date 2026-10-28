@@ -67,3 +67,17 @@ export function TautanLuarTombol({ href, varian = 'kedua', ukuran = 'md', classN
     </a>
   )
 }
+
+type TautanBiasaTombolProps = { href: string; varian?: Varian; ukuran?: Ukuran; className?: string; children: ReactNode }
+
+/**
+ * Tautan internal bergaya tombol yang memakai <a href> biasa (bukan <Link>): dipakai di tempat yang bisa berada di luar
+ * Router (mis. error boundary), dan sengaja memuat ulang aplikasi dari awal.
+ */
+export function TautanBiasaTombol({ href, varian = 'utama', ukuran = 'md', className, children }: TautanBiasaTombolProps) {
+  return (
+    <a href={href} className={kelas(varian, ukuran, className)}>
+      {children}
+    </a>
+  )
+}

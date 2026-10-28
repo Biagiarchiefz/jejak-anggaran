@@ -33,9 +33,7 @@ export class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.error) {
       return (
-        <div className="py-6">
-          <ErrorState judul="Halaman ini mengalami masalah" pesan={pesanError(this.state.error)} onCobaLagi={this.cobaLagi} />
-        </div>
+        <ErrorState halaman judul="Halaman ini mengalami masalah" pesan={pesanError(this.state.error)} onCobaLagi={this.cobaLagi} />
       )
     }
     return this.props.children

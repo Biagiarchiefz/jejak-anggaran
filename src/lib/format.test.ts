@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatPersen, formatRupiah, formatRupiahRingkas, formatTanggal } from './format'
+import { formatPersen, formatRupiah, formatRupiahRingkas, formatRupiahRingkasSatuan, formatTanggal } from './format'
 
 describe('formatRupiah', () => {
   it('memakai titik sebagai pemisah ribuan', () => {
@@ -40,5 +40,21 @@ describe('formatTanggal', () => {
 describe('formatPersen', () => {
   it('membulatkan ke persen terdekat', () => {
     expect(formatPersen(0.873)).toBe('87%')
+  })
+})
+
+describe('formatRupiahRingkasSatuan', () => {
+  it('memakai satuan milik acuan, bukan milik nilainya sendiri', () => {
+    expect(formatRupiahRingkasSatuan(2_400_000_000_000, 6_800_000_000_000)).toBe('Rp 2,4 T')
+    expect(formatRupiahRingkasSatuan(300_000_000_000, 6_800_000_000_000)).toBe('Rp 0,3 T')
+    expect(formatRupiahRingkasSatuan(0, 9_000_000_000)).toBe('Rp 0 M')
+  })
+
+  it('sama dengan formatRupiahRingkas saat nilai = acuan', () => {
+    expect(formatRupiahRingkasSatuan(6_765_000_000_000, 6_765_000_000_000)).toBe(formatRupiahRingkas(6_765_000_000_000))
+  })
+
+  it('acuan di bawah seribu → format biasa', () => {
+    expect(formatRupiahRingkasSatuan(500, 900)).toBe('Rp 500')
   })
 })

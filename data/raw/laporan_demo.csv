@@ -4,3 +4,7 @@ demo-jalan-lingkungan,kerusakan,"(Contoh demo) Permukaan jalan retak memanjang s
 demo-jalan-lingkungan,kerusakan,"(Contoh demo) Genangan air muncul setiap hujan karena permukaan jalan amblas di tengah ruas.",diverifikasi,12,,
 demo-jalan-lingkungan,kerusakan,"(Contoh demo) Ada lubang baru di depan gang, cukup dalam dan berbahaya bagi pengendara motor.",diterima,3,,
 demo-saluran-drainase,belum_dikerjakan,"(Contoh demo) Sudah dua bulan tidak terlihat aktivitas pekerjaan di lokasi saluran ini.",ditolak,20,,"Pekerjaan dijadwalkan ulang sesuai kontrak (simulasi)."
+demo-gorong-gorong,kerusakan,"(Contoh demo) Gorong-gorong tersumbat dan air meluap ke jalan setiap hujan deras, padahal proyek tercatat selesai.",diverifikasi,30,,
+demo-gorong-gorong,kerusakan,"(Contoh demo) Tutup gorong-gorong di mulut gang patah sehingga berbahaya bagi pejalan kaki.",diverifikasi,18,,
+demo-gorong-gorong,kerusakan,"(Contoh demo) Dinding saluran retak dan sebagian runtuh ke dalam gorong-gorong.",ditindaklanjuti,9,,"Diteruskan ke satker terkait (simulasi)."
+demo-trotoar-pejalan-kaki,kerusakan,"(Contoh demo) Satu ubin pemandu tunanetra terlepas di dekat halte.",diterima,5,,

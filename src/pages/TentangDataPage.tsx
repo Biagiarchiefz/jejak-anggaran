@@ -107,7 +107,7 @@ function DaftarSumberTercatat() {
       </div>
     )
   }
-  if (error) return <ErrorState pesan={error.pesan} onCobaLagi={muatUlang} />
+  if (error) return <ErrorState halaman pesan={error.pesan} onCobaLagi={muatUlang} />
   if (!data || data.length === 0) {
     return <EmptyState judul="Belum ada sumber tercatat" pesan="Sumber akan muncul setelah data resmi dimasukkan." />
   }
