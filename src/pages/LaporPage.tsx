@@ -1,18 +1,19 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 import { Camera, CircleAlert, Lock, X } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router'
-import { Button, TautanTombol } from '../components/ui/Button'
-import { Card } from '../components/ui/Card'
-import { ErrorState } from '../components/ui/ErrorState'
-import { KELAS_GALAT, KELAS_INPUT, KELAS_LABEL } from '../components/ui/gayaForm'
-import { KepalaHalaman } from '../components/ui/KepalaHalaman'
-import { SkeletonHalaman } from '../components/ui/Skeleton'
+import { Button, TautanTombol } from '../components/common/Button'
+import { Card } from '../components/common/Card'
+import { ErrorState } from '../components/common/ErrorState'
+import { KELAS_GALAT, KELAS_INPUT, KELAS_LABEL } from '../components/common/gayaForm'
+import { KepalaHalaman } from '../components/common/KepalaHalaman'
+import { SkeletonHalaman } from '../components/common/Skeleton'
 import { useAuth } from '../hooks/useAuth'
-import { useProyekDetail } from '../hooks/useProyekDetail'
-import { pesanError } from '../lib/errors'
-import { kompresFoto, type FotoTerkompres } from '../lib/kompresFoto'
-import { LABEL_KATEGORI, PENJELASAN_KATEGORI } from '../lib/label'
-import { DESKRIPSI_MAKS, errorPerField, laporanFormSchema } from '../lib/schemas'
+import { useProyekDetail } from '../features/proyek/hooks/useProyekDetail'
+import { pesanError } from '../utils/errors'
+import { kompresFoto, type FotoTerkompres } from '../utils/kompresFoto'
+import { LABEL_KATEGORI, PENJELASAN_KATEGORI } from '../utils/label'
+import { errorPerField, laporanFormSchema } from '../utils/schemas'
+import { DESKRIPSI_MAKS, panjangKarakter } from '../utils/batasLaporan'
 import { buatLaporan } from '../services/laporanService'
 import { Constants, type Enums } from '../types/database'
 
@@ -129,13 +130,12 @@ function FormLapor({ proyekId }: { proyekId: string }) {
           value={deskripsi}
           onChange={(e) => setDeskripsi(e.target.value)}
           rows={5}
-          maxLength={DESKRIPSI_MAKS}
           aria-invalid={!!errorField.deskripsi}
           aria-describedby={errorField.deskripsi ? idError('deskripsi') : undefined}
           className={`mt-2 ${KELAS_INPUT}`}
         />
         <p className="mt-1 text-right text-xs text-ink-subtle tabular-nums">
-          {deskripsi.trim().length}/{DESKRIPSI_MAKS}
+          {panjangKarakter(deskripsi.trim())}/{DESKRIPSI_MAKS}
         </p>
         <PesanField id={idError('deskripsi')} pesan={errorField.deskripsi} />
       </div>

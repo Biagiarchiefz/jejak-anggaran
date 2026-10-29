@@ -1,5 +1,5 @@
-import { TautanTombol } from '../components/ui/Button'
-import { EmptyState } from '../components/ui/EmptyState'
+import { TautanTombol } from '../components/common/Button'
+import { EmptyState } from '../components/common/EmptyState'
 
 export default function TidakDitemukanPage() {
   return (

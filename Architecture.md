@@ -15,7 +15,7 @@ flowchart LR
   R --> S[scripts/build-seed.ts<br/>validasi zod] --> Q[supabase/seed.sql]
   Q --> PG[(Supabase Postgres)]
   subgraph App["React SPA (Vercel)"]
-    UI[pages + components] --> H[hooks] --> SV[services] --> PG
+    UI[pages + features + components] --> H[hooks] --> SV[services] --> PG
     SV --> ST[(Storage: foto-laporan)]
   end
   W[Warga] --> UI
@@ -47,49 +47,71 @@ jejak-anggaran/
 │   └── seed.sql                # HASIL GENERATE, jangan diedit manual
 ├── public/
 │   └── foto-proyek/            # foto lapangan tim; dirujuk kolom proyek.foto_path (/foto-proyek/…)
+├── tests/
+│   └── setup.ts                # setup Vitest (jest-dom + cleanup); test unit tetap di samping filenya
 └── src/
-    ├── main.tsx
-    ├── App.tsx                 # router + layout + ErrorBoundary per route
-    ├── pages/
+    ├── main.tsx                # entry point Vite
+    ├── App.tsx                 # AuthProvider + AppRoutes
+    ├── vite-env.d.ts
+    ├── config/
+    │   └── env.ts              # SATU-SATUNYA pembaca import.meta.env (URL/anon key Supabase, mode data demo)
+    ├── routes/
+    │   └── AppRoutes.tsx       # daftar route + lazy load halaman; ErrorBoundary per route ada di Layout
+    ├── context/
+    │   ├── authContext.ts      # createContext + tipe NilaiAuth
+    │   └── AuthProvider.tsx
+    ├── styles/
+    │   └── index.css           # @theme Tailwind v4 (token warna, radius, animasi)
+    ├── pages/                  # komponen route, merangkai features + components
     │   ├── BerandaPage.tsx     # F1 dashboard anggaran
+    │   ├── AnggaranPage.tsx
     │   ├── PetaPage.tsx        # F2 peta + daftar proyek (alternatif aksesibel)
     │   ├── ProyekDetailPage.tsx# F3, F6, F7, F8, F9
     │   ├── LaporPage.tsx       # F4 form laporan (/proyek/:id/lapor)
     │   ├── TentangDataPage.tsx # F5
     │   ├── MasukPage.tsx       # login Supabase Auth
-    │   └── AdminPage.tsx       # verifikasi + ubah status (peran admin)
+    │   ├── AdminDasborPage.tsx # /admin: dashboard ringkasan (peran admin / admin_demo)
+    │   ├── AdminLaporanPage.tsx# /admin/laporan: tabel laporan + panel ubah status
+    │   └── TidakDitemukanPage.tsx
     ├── components/
-    │   ├── ui/                 # Button, Badge, Card, Skeleton, EmptyState, ErrorState
-    │   ├── SumberData.tsx      # badge sumber + tanggal akses + link (wajib di tiap angka)
-    │   ├── BadgeDemo.tsx
-    │   ├── BadgeRedFlag.tsx
-    │   ├── BadgeStatus.tsx     # badge status proyek & status laporan
-    │   ├── PetaProyek.tsx      # react-leaflet
-    │   ├── GrafikAnggaran.tsx  # Recharts (tren) + batang HTML (per urusan)
-    │   ├── LinimasaFoto.tsx
-    │   ├── LinimasaStatus.tsx  # audit trail
-    │   ├── KartuLaporan.tsx    # satu laporan: foto, konfirmasi (F6), riwayat (F8), LAPOR! (F9)
-    │   ├── TeruskanKeLapor.tsx # F9: ringkasan siap salin + link lapor.go.id
-    │   ├── Layout.tsx          # Navbar, footer, ErrorBoundary + Suspense per route
-    │   ├── Navbar.tsx          # pita "situs warga independen" + menu + tombol Lapor
-    │   ├── Footer.tsx          # blok merek + link LAPOR!, 3 kolom tautan (jelajahi, tentang data, sumber resmi), hak cipta
-    │   ├── HeroBanner.tsx      # banner navy rounded + lekukan breadcrumb
-    │   ├── SeksiPengantar.tsx  # teks kiri atas + kolase foto tersebar (grid 12x8, tanpa celah tengah, tanpa CTA), lalu dua kolom "Fokus Kami"
-    │   ├── SeksiProyek.tsx     # Beranda: maks 6 proyek sorotan (perlu perhatian dulu) + tautan ke peta
-    │   ├── KartuProyek.tsx     # kartu proyek: teks di atas, foto lapangan / cuplikan peta di bawah, aksen merah bila perlu perhatian
-    │   ├── CuplikanPeta.tsx    # peta statis tile OSM berpusat di lokasi proyek (+ atribusi wajib)
-    │   ├── SeksiLayanan.tsx    # (tidak dipakai lagi) 8 kartu fitur; diganti SeksiProyek di Beranda
-    │   ├── AuthProvider.tsx
-    │   └── ErrorBoundary.tsx
-    ├── hooks/                  # useMuat (dasar), useProyekList, useProyekDetail, useAnggaran, useAuth, ...
+    │   ├── common/             # dipakai lintas fitur
+    │   │   ├── Button, Badge, Card, Skeleton, EmptyState, ErrorState, Laci, Lipatan, Pilihan, KolomCari, ...
+    │   │   ├── KepalaHalaman, JudulSeksi, LabelSeksi, PitaPenuh, gayaForm.ts
+    │   │   ├── SumberData.tsx  # sumber + tanggal akses + link (wajib di tiap angka)
+    │   │   ├── BadgeStatus.tsx, BadgeRedFlag.tsx
+    │   │   └── ErrorBoundary.tsx
+    │   └── layout/
+    │       ├── Layout.tsx      # Navbar, Footer, ErrorBoundary + Suspense per route, animasi muncul
+    │       ├── Navbar.tsx      # header menempel, laci menu, bottom navigation
+    │       ├── Footer.tsx      # tautan, LAPOR!, catatan data demo
+    │       ├── PencarianCepat.tsx
+    │       ├── LayoutPolos.tsx # tanpa navbar/footer, untuk /masuk
+    │       └── AdminLayout.tsx # layout panel admin: sidebar (desktop) / laci (ponsel), penjaga peran, tanpa navbar publik
+    ├── features/               # kode milik satu domain (tanpa barrel index.ts)
+    │   ├── anggaran/
+    │   │   ├── components/     # GrafikAnggaran, GrafikTrenMini, GrafikUrusan, IkonUrusan, KonteksWarga, SumberAnggaran
+    │   │   └── hooks/          # useAnggaran
+    │   ├── proyek/
+    │   │   ├── components/     # PetaProyek (react-leaflet), KartuProyek, KartuPinProyek, LembarProyek, DialogProyek, CuplikanPeta
+    │   │   └── hooks/          # useProyekList, useProyekDetail
+    │   ├── laporan/
+    │   │   ├── components/     # KartuLaporan, LinimasaFoto, LinimasaStatus (audit trail), TeruskanKeLapor (F9)
+    │   │   └── hooks/          # useStatusPengguna
+    │   ├── auth/components/    # MenuAkun, DialogPerluMasuk
+    │   ├── admin/
+    │   │   ├── components/     # DasborAdmin (ringkasan + antrean prioritas), AntreanLaporan (tabel + panel ubah status)
+    │   │   └── hooks/          # useLaporanAdmin (dimuat di AdminLayout), useDataAdmin (outlet context)
+    │   └── beranda/components/ # FlatProjectMap (hero), PitaStatistik, SeksiAnggaran, SeksiProyek, SeksiCaraKerja, CtaPenutup
+    │                           # (SeksiLayanan, SeksiPengantar: tidak dipakai lagi)
+    ├── hooks/                  # hook umum: useMuat (dasar), useAuth, useMediaQuery, useDigulir, useAnimasiMuncul, ...
     ├── services/               # SATU-SATUNYA tempat memanggil Supabase (dijaga aturan ESLint)
     │   ├── supabaseClient.ts
-    │   ├── authService.ts      # magic link, pantau sesi, peran
+    │   ├── authService.ts      # masuk/daftar email + kata sandi, pantau sesi, peran
     │   ├── proyekService.ts
-    │   ├── anggaranService.ts
+    │   ├── anggaranService.ts  # + anggaranDemo.ts (data fiktif selama APBD belum dikurasi)
     │   ├── laporanService.ts   # buat laporan, upload foto, konfirmasi
-    │   └── adminService.ts     # ubah status
-    ├── lib/
+    │   └── adminService.ts     # data dashboard admin, ubah status
+    ├── utils/                  # logika murni, masing-masing punya *.test.ts
     │   ├── errors.ts           # AppError + pemetaan error Supabase
     │   ├── logger.ts
     │   ├── format.ts           # formatRupiah, formatRupiahRingkas, formatTanggal
@@ -97,12 +119,12 @@ jejak-anggaran/
     │   ├── kompresFoto.ts      # canvas → WebP (fallback JPEG), buang EXIF
     │   ├── statusLaporan.ts    # transisi status (sinkron dengan transisi_status_valid)
     │   ├── wilayah.ts          # batas & kecamatan Kota Bandung (dipakai juga oleh scripts/)
-    │   ├── label.ts, anggaran.ts, filterProyek.ts, ringkasanLapor.ts
-    │   ├── petaTile.ts         # hitung tile Web Mercator untuk CuplikanPeta (diuji terhadap proyeksi Leaflet)
+    │   ├── petaTile.ts         # hitung tile Web Mercator untuk peta statis
+    │   ├── penandaDemo.ts, warna.ts, label.ts, anggaran.ts, filterProyek.ts, ringkasanLapor.ts, ...
     │   └── schemas.ts          # skema zod form
-    ├── types/
-    │   └── database.ts         # hasil `supabase gen types`
-    └── test/                   # setup Vitest + test util & komponen kunci
+    ├── data/                   # batasKotaBandung.ts, pendudukKotaBandung.ts
+    └── types/
+        └── database.ts         # hasil `supabase gen types`
 ```
 
 ## Model data
@@ -112,10 +134,10 @@ jejak-anggaran/
 | `sumber_data` | id, nama, url, diakses_pada | Direferensikan semua data resmi |
 | `anggaran_daerah` | tahun, urusan, anggaran, realisasi, sumber_id | Untuk F1 |
 | `proyek` | id (slug teks), kode_rup, nama_paket, satker, kecamatan, kelurahan, pagu, nilai_kontrak, pelaksana, tahun_anggaran, status_proyek, lat, lng, sumber_rup_url, sumber_lpse_url, diakses_pada, is_demo, foto_path | `status_proyek`: direncanakan / berjalan / selesai. Data nyata wajib punya `sumber_rup_url` + `diakses_pada` (check constraint) |
-| `profiles` | id (= auth.users.id), nama_tampilan, peran | `peran`: warga / admin. Dibuat trigger saat daftar; peran tidak bisa diubah sendiri |
+| `profiles` | id (= auth.users.id), nama_tampilan, peran | `peran`: warga / admin / admin_demo. Dibuat trigger saat daftar; peran tidak bisa diubah sendiri |
 | `laporan` | id, proyek_id, pelapor_id, kategori, deskripsi, foto_path, status, catatan_status, is_demo, created_at, updated_at | `kategori`: kerusakan / belum_dikerjakan / tidak_sesuai / lainnya. `pelapor_id` null hanya untuk demo. `catatan_status` diisi admin bersama perubahan status |
 | `konfirmasi` | laporan_id, warga_id, created_at | Primary key (laporan_id, warga_id) |
-| `riwayat_status` | id, laporan_id, status_lama, status_baru, diubah_oleh, catatan, created_at | Diisi trigger. `diubah_oleh` hanya terisi untuk perubahan admin (pelapor tidak pernah tercatat) |
+| `riwayat_status` | id, laporan_id, status_lama, status_baru, diubah_oleh, oleh_admin, catatan, created_at | Diisi trigger. `diubah_oleh` hanya terisi untuk perubahan admin (pelapor tidak pernah tercatat) dan tidak bisa dibaca publik; publik membaca `oleh_admin` (kolom turunan) |
 | `v_laporan_publik` | semua kolom laporan kecuali pelapor_id + jumlah_konfirmasi | Yang dibaca halaman publik |
 | `v_red_flag_proyek` | proyek_id, jumlah_laporan, alasan | Aturan F7 |
 
@@ -124,9 +146,9 @@ jejak-anggaran/
 | Tabel | Baca | Tulis |
 | --- | --- | --- |
 | sumber_data, anggaran_daerah, proyek | Publik | Hanya lewat migrasi/seed |
-| laporan | Publik lewat `v_laporan_publik` | Insert: warga login, `pelapor_id = auth.uid()`. Update status: admin |
-| konfirmasi | Publik (jumlah) | Insert: warga login, bukan pelapor laporan tersebut |
-| riwayat_status | Publik | Hanya trigger |
+| laporan | Publik lewat `v_laporan_publik` | Insert: warga login, `pelapor_id = auth.uid()`. Update status: admin (semua), admin_demo (hanya `is_demo`) |
+| konfirmasi | Publik (jumlah) | Insert: warga login, bukan pelapor laporan tersebut, laporan belum `ditolak` |
+| riwayat_status | Publik, semua kolom kecuali `diubah_oleh` | Hanya trigger |
 | Storage `foto-laporan` | Publik | Upload: warga login, ke folder `{auth.uid()}/` |
 
 ## Alur data utama

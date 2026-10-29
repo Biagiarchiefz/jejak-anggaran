@@ -17,6 +17,7 @@ Subtema lomba yang dicakup: Open Government Data, Civic Reporting & Accountabili
 | Pengunjung (tanpa login) | Melihat anggaran, peta proyek, detail, laporan, dan red flag |
 | Warga (login) | Melapor kondisi proyek dengan foto, mengonfirmasi laporan warga lain |
 | Admin (simulasi instansi) | Memverifikasi laporan, mengubah status tindak lanjut |
+| Admin demo (juri lomba) | Mencoba panel admin; hanya bisa mengubah status laporan demo |
 
 ## Alur utama (skenario demo)
 
@@ -50,6 +51,13 @@ Alur ini harus berjalan tanpa error di HP maupun desktop.
 | F7 | Red flag otomatis | Proyek berstatus `selesai` dengan ≥ 3 laporan kategori `kerusakan` berstatus `diverifikasi` atau lebih, dalam 90 hari terakhir. Ditandai di peta dan detail, dengan penjelasan alasannya. |
 | F8 | Status + audit trail | Status laporan: diterima → diverifikasi → ditindaklanjuti → selesai (atau ditolak). Setiap perubahan tercatat (siapa, kapan, catatan) dan tampil publik. |
 | F9 | Teruskan ke LAPOR! | Tombol membuka lapor.go.id di tab baru, dengan ringkasan laporan siap disalin. |
+
+### Tambahan untuk penjurian (disetujui 2026-10-29)
+
+| ID | Fitur | Kriteria selesai |
+| --- | --- | --- |
+| F12 | Masuk email + kata sandi & akun demo | Satu halaman masuk/daftar untuk semua peran, diarahkan sesuai peran setelah masuk. Tombol satu klik "Masuk sebagai warga/admin demo" dari env. Peran `admin_demo` hanya bisa mengubah laporan `is_demo` (RLS). |
+| F13 | Dashboard admin | Jumlah laporan per status, proyek red flag aktif, rata-rata waktu respons (masuk → pertama kali ditanggapi), dan antrean prioritas (berpotensi memicu red flag dulu, lalu yang paling lama menunggu). |
 
 ### Prioritas 3 — hanya jika waktu cukup
 

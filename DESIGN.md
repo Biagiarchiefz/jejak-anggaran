@@ -87,7 +87,7 @@ Urutan seri: `#2B8CFF`, `#0F3B6E`, `#8CC8FF`, `#64748B`, `#CBD5E1`.
 
 ### 3.4 Implementasi Tailwind v4
 
-Taruh di `src/index.css`:
+Taruh di `src/styles/index.css`:
 
 ```css
 @import "tailwindcss";

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { nilaiPadaWaktu } from '../lib/animasiAngka'
+import { nilaiPadaWaktu } from '../utils/animasiAngka'
 
 function tanpaAnimasi(): boolean {
   return (

@@ -230,6 +230,7 @@ export type Database = {
           diubah_oleh: string | null
           id: number
           laporan_id: string
+          oleh_admin: boolean
           status_baru: Database["public"]["Enums"]["status_laporan"]
           status_lama: Database["public"]["Enums"]["status_laporan"] | null
         }
@@ -239,6 +240,7 @@ export type Database = {
           diubah_oleh?: string | null
           id?: never
           laporan_id: string
+          oleh_admin?: never
           status_baru: Database["public"]["Enums"]["status_laporan"]
           status_lama?: Database["public"]["Enums"]["status_laporan"] | null
         }
@@ -248,6 +250,7 @@ export type Database = {
           diubah_oleh?: string | null
           id?: never
           laporan_id?: string
+          oleh_admin?: never
           status_baru?: Database["public"]["Enums"]["status_laporan"]
           status_lama?: Database["public"]["Enums"]["status_laporan"] | null
         }
@@ -360,6 +363,11 @@ export type Database = {
     Functions: {
       adalah_pelapor: { Args: { id_laporan: string }; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
+      is_admin_demo: { Args: never; Returns: boolean }
+      laporan_bisa_dikonfirmasi: {
+        Args: { id_laporan: string }
+        Returns: boolean
+      }
       transisi_status_valid: {
         Args: {
           baru: Database["public"]["Enums"]["status_laporan"]
@@ -374,7 +382,7 @@ export type Database = {
         | "belum_dikerjakan"
         | "tidak_sesuai"
         | "lainnya"
-      peran_pengguna: "warga" | "admin"
+      peran_pengguna: "warga" | "admin" | "admin_demo"
       status_laporan:
         | "diterima"
         | "diverifikasi"
@@ -515,7 +523,7 @@ export const Constants = {
         "tidak_sesuai",
         "lainnya",
       ],
-      peran_pengguna: ["warga", "admin"],
+      peran_pengguna: ["warga", "admin", "admin_demo"],
       status_laporan: [
         "diterima",
         "diverifikasi",

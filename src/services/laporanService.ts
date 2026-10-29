@@ -1,7 +1,7 @@
 import { BUCKET_FOTO_LAPORAN, supabase } from './supabaseClient'
-import { AppError, dariErrorSupabase } from '../lib/errors'
-import { logger } from '../lib/logger'
-import type { FotoTerkompres } from '../lib/kompresFoto'
+import { AppError, dariErrorSupabase } from '../utils/errors'
+import { logger } from '../utils/logger'
+import type { FotoTerkompres } from '../utils/kompresFoto'
 import type { Enums, Tables } from '../types/database'
 
 type Wajib<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> }
@@ -12,8 +12,10 @@ export type LaporanPublik = Wajib<
   'id' | 'proyek_id' | 'kategori' | 'deskripsi' | 'status' | 'is_demo' | 'created_at' | 'updated_at' | 'jumlah_konfirmasi'
 > & { fotoUrl: string | null }
 
-/** Riwayat status versi publik: hanya mencatat apakah perubahan dilakukan admin. */
-export type RiwayatPublik = Omit<Tables<'riwayat_status'>, 'diubah_oleh'> & { olehAdmin: boolean }
+/** Riwayat status versi publik: hanya mencatat apakah perubahan dilakukan admin (`diubah_oleh` tidak bisa dibaca publik). */
+export type RiwayatPublik = Omit<Tables<'riwayat_status'>, 'diubah_oleh'>
+/** Kolom riwayat_status yang di-grant ke publik (lihat migrasi perketat_aturan_laporan). */
+export const KOLOM_RIWAYAT_PUBLIK = 'id, laporan_id, status_lama, status_baru, catatan, created_at, oleh_admin'
 
 /** Foto laporan demo memakai path absolut ke public/foto-proyek, sisanya ada di Storage. */
 export function urlFotoLaporan(path: string | null): string | null {
@@ -24,10 +26,6 @@ export function urlFotoLaporan(path: string | null): string | null {
 
 export function keLaporanPublik(baris: Tables<'v_laporan_publik'>): LaporanPublik {
   return { ...(baris as LaporanPublik), fotoUrl: urlFotoLaporan(baris.foto_path) }
-}
-
-export function keRiwayatPublik({ diubah_oleh, ...baris }: Tables<'riwayat_status'>): RiwayatPublik {
-  return { ...baris, olehAdmin: diubah_oleh !== null }
 }
 
 async function idPenggunaAktif(): Promise<string> {
@@ -80,7 +78,7 @@ export async function konfirmasiLaporan(laporanId: string): Promise<void> {
   if (error) {
     throw dariErrorSupabase(error, 'konfirmasiLaporan', {
       VALIDASI: 'Anda sudah mengonfirmasi laporan ini.',
-      TIDAK_BERWENANG: 'Anda tidak bisa mengonfirmasi laporan Anda sendiri.',
+      TIDAK_BERWENANG: 'Laporan ini tidak bisa Anda konfirmasi: laporan milik Anda sendiri atau sudah ditolak.',
     })
   }
 }

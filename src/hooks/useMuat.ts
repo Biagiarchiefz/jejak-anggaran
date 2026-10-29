@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useEffectEvent, useState } from 'react'
-import { AppError } from '../lib/errors'
+import { AppError } from '../utils/errors'
 
 export type StateMuat<T> = {
   data: T | undefined

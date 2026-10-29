@@ -1,13 +1,13 @@
 import { ArrowRight } from 'lucide-react'
-import { CtaPenutup } from '../components/CtaPenutup'
-import { FlatProjectMap } from '../components/FlatProjectMap'
-import { PitaStatistik } from '../components/PitaStatistik'
-import { SeksiAnggaran } from '../components/SeksiAnggaran'
-import { SeksiCaraKerja } from '../components/SeksiCaraKerja'
-import { SeksiProyek } from '../components/SeksiProyek'
-import { TautanTombol } from '../components/ui/Button'
-import { useAnggaran } from '../hooks/useAnggaran'
-import { useProyekList } from '../hooks/useProyekList'
+import { CtaPenutup } from '../features/beranda/components/CtaPenutup'
+import { FlatProjectMap } from '../features/beranda/components/FlatProjectMap'
+import { PitaStatistik } from '../features/beranda/components/PitaStatistik'
+import { SeksiAnggaran } from '../features/beranda/components/SeksiAnggaran'
+import { SeksiCaraKerja } from '../features/beranda/components/SeksiCaraKerja'
+import { SeksiProyek } from '../features/beranda/components/SeksiProyek'
+import { TautanTombol } from '../components/common/Button'
+import { useAnggaran } from '../features/anggaran/hooks/useAnggaran'
+import { useProyekList } from '../features/proyek/hooks/useProyekList'
 
 /** Urutan: hero peta Bandung → pita statistik → anggaran → proyek perlu perhatian → cara kerja → CTA penutup. */
 export default function BerandaPage() {

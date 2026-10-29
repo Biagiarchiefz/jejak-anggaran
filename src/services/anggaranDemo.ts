@@ -3,7 +3,7 @@ import type { AnggaranDaerah, SumberData } from './anggaranService'
 /**
  * Data APBD FIKTIF untuk melihat tampilan dashboard selama data resmi dari DJPK belum dikurasi.
  * Angka hanya meniru skala APBD kota besar, BUKAN angka Kota Bandung. Setiap baris `is_demo: true`
- * sehingga UI menampilkan catatan data demo di footer (lib/penandaDemo).
+ * sehingga UI menampilkan catatan data demo di footer (utils/penandaDemo).
  * Aktif hanya jika VITE_DATA_DEMO_ANGGARAN=true.
  */
 

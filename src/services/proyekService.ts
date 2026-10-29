@@ -1,7 +1,7 @@
 import { supabase } from './supabaseClient'
-import { keLaporanPublik, keRiwayatPublik, type LaporanPublik, type RiwayatPublik } from './laporanService'
-import { AppError, dariErrorSupabase } from '../lib/errors'
-import { tandaiDataDemo } from '../lib/penandaDemo'
+import { KOLOM_RIWAYAT_PUBLIK, keLaporanPublik, type LaporanPublik, type RiwayatPublik } from './laporanService'
+import { AppError, dariErrorSupabase } from '../utils/errors'
+import { tandaiDataDemo } from '../utils/penandaDemo'
 import type { Tables } from '../types/database'
 
 export type Proyek = Tables<'proyek'>
@@ -57,14 +57,14 @@ async function ambilRiwayat(laporanIds: string[]): Promise<Map<string, RiwayatPu
   if (laporanIds.length === 0) return hasil
   const { data, error } = await supabase
     .from('riwayat_status')
-    .select('*')
+    .select(KOLOM_RIWAYAT_PUBLIK)
     .in('laporan_id', laporanIds)
     .order('created_at')
     .order('id')
   if (error) throw dariErrorSupabase(error, 'ambilRiwayat')
   for (const baris of data) {
     const daftar = hasil.get(baris.laporan_id) ?? []
-    daftar.push(keRiwayatPublik(baris))
+    daftar.push(baris)
     hasil.set(baris.laporan_id, daftar)
   }
   return hasil

@@ -3,8 +3,8 @@
 import Papa from 'papaparse'
 import { z } from 'zod'
 import { Constants } from '../src/types/database.ts'
-import { jalurStatus } from '../src/lib/statusLaporan.ts'
-import { BATAS_KOTA_BANDUNG, KECAMATAN_KOTA_BANDUNG, dalamKotaBandung } from '../src/lib/wilayah.ts'
+import { jalurStatus } from '../src/utils/statusLaporan.ts'
+import { BATAS_KOTA_BANDUNG, KECAMATAN_KOTA_BANDUNG, dalamKotaBandung } from '../src/utils/wilayah.ts'
 
 const { kategori_laporan, status_laporan, status_proyek } = Constants.public.Enums
 

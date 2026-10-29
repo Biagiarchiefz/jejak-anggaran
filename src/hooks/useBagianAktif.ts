@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { bagianAktif } from '../lib/bagianAktif'
+import { bagianAktif } from '../utils/bagianAktif'
 
 /**
  * Scroll-spy untuk daftar isi: id bagian (elemen ber-`id`) yang sedang dibaca.

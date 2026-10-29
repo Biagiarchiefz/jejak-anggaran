@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react'
-import { adaDataDemo, langgananDataDemo } from '../lib/penandaDemo'
+import { adaDataDemo, langgananDataDemo } from '../utils/penandaDemo'
 
 /** `true` jika halaman ini sudah menampilkan setidaknya satu data demo (fiktif). */
 export function useAdaDataDemo(): boolean {

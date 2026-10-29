@@ -60,15 +60,22 @@ Jangan menambah dependensi baru tanpa alasan jelas. Tidak ada Redux, TanStack Qu
 - Tipe data DB diambil dari `src/types/database.ts` (hasil generate). Jangan menulis ulang tipe tabel secara manual.
 - Semua teks UI dalam bahasa Indonesia yang mudah dipahami warga awam.
 
+## Letak file (lihat pohon lengkap di `Architecture.md`)
+
+- `components/common/` komponen UI dipakai lintas fitur; `components/layout/` kerangka halaman (Layout, Navbar, Footer, PencarianCepat) `LayoutPolos` (halaman berdiri sendiri seperti `/masuk`: tanpa navbar/footer), dan `AdminLayout` (panel `/admin` dengan sidebar sendiri, tanpa navbar/footer publik; tautan masuknya hanya di menu akun).
+- `features/<domain>/{components,hooks}/` kode milik satu domain (`anggaran`, `proyek`, `laporan`, `auth`, `admin`, `beranda`). Tanpa barrel `index.ts`; impor langsung ke file agar code-splitting halaman tetap terjaga.
+- `pages/` komponen route, `routes/AppRoutes.tsx` konfigurasi router, `context/` provider React, `hooks/` hook umum, `services/` akses Supabase, `utils/` logika murni + test, `config/env.ts` satu-satunya pembaca `import.meta.env`, `styles/index.css` token Tailwind, `data/` data geografis/statistik statis.
+- Komponen yang hanya dipakai satu domain masuk ke `features/`; pindahkan ke `components/common/` begitu dipakai domain lain.
+
 ## Aturan penulisan kode
 
 - Akses Supabase **hanya** lewat `src/services/*`. Komponen dan halaman tidak boleh mengimpor `supabase` langsung.
-- Komponen fungsi + hooks. Logika murni (red flag, format rupiah, kalkulasi rapor) ada di `src/lib/` dan wajib punya unit test.
-- Format uang selalu memakai `formatRupiah()` / `formatRupiahRingkas()` dari `src/lib/format.ts` (contoh: `Rp 1,2 M`).
+- Komponen fungsi + hooks. Logika murni (red flag, format rupiah, kalkulasi rapor) ada di `src/utils/` dan wajib punya unit test.
+- Format uang selalu memakai `formatRupiah()` / `formatRupiahRingkas()` dari `src/utils/format.ts` (contoh: `Rp 1,2 M`).
 - **Setiap angka anggaran, pagu, atau kontrak yang tampil wajib disertai komponen `<SumberData>`** (nama sumber + tanggal akses + link). Ini fitur inti, bukan hiasan.
-- **Data demo wajib diberitahukan, tetapi tidak per item.** Service memanggil `tandaiDataDemo()` (`src/lib/penandaDemo.ts`) saat memuat data; begitu ada baris `is_demo = true`, `useAdaDataDemo()` menampilkan satu catatan di bagian bawah footer. Tidak ada badge "Data demo", dan angka demo tidak diberi baris `<SumberData>` (komponennya mengembalikan `null` untuk `demo`).
+- **Data demo wajib diberitahukan, tetapi tidak per item.** Service memanggil `tandaiDataDemo()` (`src/utils/penandaDemo.ts`) saat memuat data; begitu ada baris `is_demo = true`, `useAdaDataDemo()` menampilkan satu catatan di bagian bawah footer. Tidak ada badge "Data demo", dan angka demo tidak diberi baris `<SumberData>` (komponennya mengembalikan `null` untuk `demo`).
 - **Laporan negatif simulasi hanya boleh menempel ke proyek `is_demo = true`.** Jangan membuat laporan palsu pada proyek nyata. `scripts/build-seed.ts` menolak data yang melanggar aturan ini.
-- Ambang red flag hanya didefinisikan di `src/lib/redFlag.ts` dan view SQL `v_red_flag_proyek`. Keduanya harus sinkron.
+- Ambang red flag hanya didefinisikan di `src/utils/redFlag.ts` dan view SQL `v_red_flag_proyek`. Keduanya harus sinkron.
 - Mobile-first: setiap halaman dicek di lebar 375px. Peta dan grafik tidak boleh menyebabkan scroll horizontal.
 - Jangan menampilkan data pribadi: nama/ID pelapor tidak tampil di halaman publik, tidak ada NIK atau data penerima bantuan.
 - Foto dikompres di klien (canvas → WebP, maks 1600px, maks 5 MB) sebelum upload. Proses ini sekaligus membuang metadata EXIF/GPS.
@@ -77,10 +84,10 @@ Jangan menambah dependensi baru tanpa alasan jelas. Tidak ada Redux, TanStack Qu
 
 **Sumber kebenaran gaya visual adalah `DESIGN.md`** (gaya ala cloudflare.com dengan aksen biru langit). Baca sebelum mengubah UI. Ringkasan penerapannya di kode:
 
-- Token warna, radius, bayangan, dan easing ada di `@theme` pada `src/index.css` (Tailwind v4, tanpa `tailwind.config.js`). Komponen hanya memakai token (`bg-canvas`, `bg-surface`, `text-ink-muted`, `bg-action`, `border-border`, …), bukan palet bawaan Tailwind atau hex. Pustaka yang butuh hex (Recharts, Leaflet) memakai `src/lib/warna.ts`.
-- Kontainer halaman: `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8` (di `Layout`, `Navbar`, `Footer`). Section dengan latar selebar layar memakai `<PitaPenuh>` (`src/components/ui/PitaPenuh.tsx`, margin negatif + unit `cqw` dari `@container` di `Layout`).
-- Header putih menempel (logo kiri, tautan di desktop, ikon cari yang membuka `<PencarianCepat>`, Masuk). Di Beranda sebelum digulir header transparan dan hero ditarik ke belakangnya (`-mt-16`), sehingga peta latar terlihat sampai atas layar. Di bawah `lg`: tombol menu (laci kiri) + bottom navigation 5 item. Tidak ada pita di atas header: status "bukan situs resmi", tautan LAPOR!, dan catatan data demo ada di footer. Animasi laci/dialog ada di `index.css` (`dialog[data-laci]`).
-- Beranda mengikuti urutan DESIGN.md §8, dengan hero `<FlatProjectMap>` (teks kiri di atas latar peta OSM grayscale berpusat di Kota Bandung, memakai tile statis tanpa Leaflet (`susunanTile` di `src/lib/petaTile.ts`) dan gradien `canvas`; garis batas kota dari `src/data/batasKotaBandung.ts`; seluruh wilayah kota diperkecil lewat `skalaAgarMuat` agar muat di wadah, pin tetap berukuran penuh; pin proyek + kartu melayang; satu tombol utama, tanpa bar pencarian) → `<PitaStatistik>` (band) → `<SeksiAnggaran>` → `<SeksiProyek>` → `<SeksiCaraKerja>` → `<CtaPenutup>` (band). Pita gelap maksimal dua per halaman.
+- Token warna, radius, bayangan, dan easing ada di `@theme` pada `src/styles/index.css` (Tailwind v4, tanpa `tailwind.config.js`). Komponen hanya memakai token (`bg-canvas`, `bg-surface`, `text-ink-muted`, `bg-action`, `border-border`, …), bukan palet bawaan Tailwind atau hex. Pustaka yang butuh hex (Recharts, Leaflet) memakai `src/utils/warna.ts`.
+- Kontainer halaman: `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8` (di `Layout`, `Navbar`, `Footer`). Section dengan latar selebar layar memakai `<PitaPenuh>` (`src/components/common/PitaPenuh.tsx`, margin negatif + unit `cqw` dari `@container` di `Layout`).
+- Header putih menempel (logo kiri, tautan di desktop, ikon cari yang membuka `<PencarianCepat>`, Masuk). Di Beranda sebelum digulir header transparan dan hero ditarik ke belakangnya (`-mt-16`), sehingga peta latar terlihat sampai atas layar. Di bawah `lg`: tombol menu (laci kiri) + bottom navigation 5 item. Tidak ada pita di atas header: status "bukan situs resmi", tautan LAPOR!, dan catatan data demo ada di footer. Animasi laci/dialog ada di `src/styles/index.css` (`dialog[data-laci]`).
+- Beranda mengikuti urutan DESIGN.md §8, dengan hero `<FlatProjectMap>` (teks kiri di atas latar peta OSM grayscale berpusat di Kota Bandung, memakai tile statis tanpa Leaflet (`susunanTile` di `src/utils/petaTile.ts`) dan gradien `canvas`; garis batas kota dari `src/data/batasKotaBandung.ts`; seluruh wilayah kota diperkecil lewat `skalaAgarMuat` agar muat di wadah, pin tetap berukuran penuh; pin proyek + kartu melayang; satu tombol utama, tanpa bar pencarian) → `<PitaStatistik>` (band) → `<SeksiAnggaran>` → `<SeksiProyek>` → `<SeksiCaraKerja>` → `<CtaPenutup>` (band). Pita gelap maksimal dua per halaman.
 - Komponen bersama: `<KepalaHalaman>` (H1 halaman), `<JudulSeksi>` (H2 section), `<LabelSeksi>` (eyebrow), `gayaForm.ts` (kelas input/select/label/galat), `Button`/`TautanTombol` (pil).
 - Ikon hanya dari `lucide-react`, stroke 1.5.
 - Animasi (DESIGN.md §10): pindah halaman = fade di `Layout` (`animate-halaman-masuk`, hanya opacity). Muncul saat digulir = beri atribut `data-muncul=""` (elemen itu) atau `data-muncul-anak=""` (anak-anaknya bergantian); `useAnimasiMuncul` di `Layout` yang memicunya. Jangan pasang di elemen `sticky`/hero. Tombol, chip, dan ikon memakai utilitas `efek-tekan` (bukan `transition-colors`). Semua mati saat "kurangi gerak".
@@ -88,7 +95,7 @@ Jangan menambah dependensi baru tanpa alasan jelas. Tidak ada Redux, TanStack Qu
 
 ## Standar error handling
 
-- Service tidak pernah mengembalikan `{ data, error }` mentah ke UI. Jika `error` ada, lempar `AppError` (`src/lib/errors.ts`) dengan `code` dan `pesan` bahasa Indonesia.
+- Service tidak pernah mengembalikan `{ data, error }` mentah ke UI. Jika `error` ada, lempar `AppError` (`src/utils/errors.ts`) dengan `code` dan `pesan` bahasa Indonesia.
 - Kode `AppError`: `JARINGAN`, `TIDAK_DITEMUKAN`, `TIDAK_BERWENANG`, `VALIDASI`, `UPLOAD_GAGAL`, `TIDAK_DIKETAHUI`.
 - Jangan pernah menampilkan pesan error Supabase/Postgres asli ke pengguna. Log detailnya dengan `logger.error()` (aktif hanya di dev).
 - Setiap halaman berada di dalam `<ErrorBoundary>` route-level dengan tombol "Coba lagi".
@@ -102,3 +109,4 @@ Jangan menambah dependensi baru tanpa alasan jelas. Tidak ada Redux, TanStack Qu
 - Tidak melakukan scraping SiRUP/LPSE secara otomatis. Data proyek dikurasi manual di `data/raw/`.
 - Tidak mengklaim "real-time" atau "terverifikasi AI" di UI.
 - Tidak mengedit migrasi yang sudah di-push. Buat migrasi baru.
+- Akun demo untuk juri (`VITE_DEMO_*`) kredensialnya publik: akun admin demo wajib berperan `admin_demo`, **tidak pernah** `admin`. Aturan peran ada di `src/utils/peran.ts` dan RLS migrasi `akses_admin_demo`; keduanya harus sinkron.
