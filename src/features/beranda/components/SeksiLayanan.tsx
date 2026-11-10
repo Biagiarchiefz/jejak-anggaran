@@ -21,7 +21,7 @@ type Layanan = {
 const LAYANAN: Layanan[] = [
   {
     judul: 'Dashboard Anggaran',
-    isi: 'Total APBD Kota Bandung, pembagian per urusan, dan tren antar tahun.',
+    isi: 'Total APBD Kota Bandung, pembagian per bidang, dan tren antar tahun.',
     ke: '/anggaran',
     ikon: <path d="M4 20V10M10 20V4M16 20v-7M21 20H3" />,
     foto: {

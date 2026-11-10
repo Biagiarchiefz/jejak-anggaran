@@ -11,11 +11,12 @@ describe('skeleton panel admin', () => {
     expect(container.querySelectorAll('.px-3.py-2\\.5')).toHaveLength(5)
   })
 
-  it('antrean laporan: 6 chip status, 6 baris tabel, 4 kartu ponsel', () => {
+  it('antrean laporan: bilah cari + 3 saringan, 6 tab status, 6 baris tabel, 4 baris ponsel', () => {
     const { container } = render(<SkeletonAntreanLaporan />)
     expect(screen.getByRole('status')).toHaveTextContent('Memuat daftar laporan…')
-    expect(container.querySelectorAll('.min-h-9.rounded-lg')).toHaveLength(6)
-    expect(container.querySelectorAll('.divide-y > div')).toHaveLength(6)
+    expect(container.querySelectorAll('.min-h-11.rounded-md.border')).toHaveLength(4)
+    expect(container.querySelectorAll('[data-tab]')).toHaveLength(6)
+    expect(container.querySelectorAll('.md\\:block .divide-y > div')).toHaveLength(6)
     expect(container.querySelectorAll('.md\\:hidden > div')).toHaveLength(4)
   })
 

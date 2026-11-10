@@ -32,10 +32,10 @@ function KartuUrusan({ baris, tahun }: { baris: AnggaranDaerah[]; tahun: number 
   return (
     <Card className={`flex min-w-0 flex-col lg:col-span-7 ${KELAS_KARTU_HIDUP}`}>
       <h3 className="text-xl leading-tight font-semibold text-ink-strong md:text-2xl">
-        {teratas[0] ? `${teratas[0].urusan} menyerap anggaran terbesar di ${tahun}` : `Belanja per urusan ${tahun}`}
+        {teratas[0] ? `${teratas[0].urusan} menyerap anggaran terbesar di ${tahun}` : `Belanja per bidang ${tahun}`}
       </h3>
       <p className="mt-2 text-sm text-ink-muted">
-        {JUMLAH_URUSAN} urusan terbesar memakai{' '}
+        {JUMLAH_URUSAN} bidang terbesar memakai{' '}
         <span className="rounded-sm bg-brand-soft px-1 font-semibold text-action tabular-nums">{formatPersen(porsiTeratas)}</span> dari APBD{' '}
         {tahun}.
       </p>
@@ -44,7 +44,7 @@ function KartuUrusan({ baris, tahun }: { baris: AnggaranDaerah[]; tahun: number 
       <div
         className="animasi-batang mt-5 flex h-3 gap-0.5 overflow-hidden rounded-full"
         role="img"
-        aria-label={`Porsi ${JUMLAH_URUSAN} urusan terbesar terhadap total APBD ${tahun}: ${formatPersen(porsiTeratas)}`}
+        aria-label={`Porsi ${JUMLAH_URUSAN} bidang terbesar terhadap total APBD ${tahun}: ${formatPersen(porsiTeratas)}`}
       >
         {teratas.map((b) => (
           <div
@@ -70,11 +70,11 @@ function KartuUrusan({ baris, tahun }: { baris: AnggaranDaerah[]; tahun: number 
           <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
             <span className="flex items-center gap-1.5">
               <span className="size-2 rounded-full bg-seri-anggaran" aria-hidden />
-              {JUMLAH_URUSAN} urusan terbesar
+              {JUMLAH_URUSAN} bidang terbesar
             </span>
             <span className="flex items-center gap-1.5">
               <span className="size-2 rounded-full bg-border-strong" aria-hidden />
-              Urusan lainnya
+              Bidang lainnya
             </span>
           </span>
         )}
@@ -317,7 +317,7 @@ function SkeletonKartuTren() {
   )
 }
 
-/** Ringkasan anggaran di Beranda: belanja per urusan + tren (2 kolom desktop). Dashboard lengkap ada di /anggaran. */
+/** Ringkasan anggaran di Beranda: belanja per bidang (fungsi) + tren (2 kolom desktop). Dashboard lengkap ada di /anggaran. */
 export function SeksiAnggaran({ anggaran }: { anggaran: StateMuat<AnggaranDaerah[]> }) {
   const { data, error, memuat, muatUlang } = anggaran
   const tahun = data && data.length > 0 ? totalPerTahun(data).at(-1)!.tahun : null
@@ -330,7 +330,7 @@ export function SeksiAnggaran({ anggaran }: { anggaran: StateMuat<AnggaranDaerah
           id="judul-anggaran"
           className="mt-3"
           utama="Untuk apa APBD Kota Bandung dipakai."
-          pelengkap="Per urusan, dari tahun ke tahun, dan artinya bagi warga."
+          pelengkap="Per bidang, dari tahun ke tahun, dan artinya bagi warga."
         />
       </div>
 

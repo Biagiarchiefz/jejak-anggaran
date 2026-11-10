@@ -1,5 +1,6 @@
 import { ArrowRight } from 'lucide-react'
 import { KartuProyek } from '../../proyek/components/KartuProyek'
+import { DeretKartuProyek } from '../../proyek/components/DeretKartuProyek'
 import { GridKartuProyekSkeleton } from '../../proyek/components/KartuProyekSkeleton'
 import { TautanTombol } from '../../../components/common/Button'
 import { EmptyState } from '../../../components/common/EmptyState'
@@ -46,11 +47,11 @@ export function SeksiProyek({ proyek }: { proyek: StateMuat<ProyekDenganRedFlag[
         ) : sorotan.length === 0 ? (
           <EmptyState judul="Belum ada proyek yang dipantau" pesan="Data proyek sedang dikurasi dari SiRUP dan LPSE Kota Bandung." />
         ) : (
-          <ul data-muncul-anak="" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+          <DeretKartuProyek animasi>
             {sorotan.map((p) => (
               <KartuProyek key={p.id} proyek={p} />
             ))}
-          </ul>
+          </DeretKartuProyek>
         )}
       </div>
     </PitaPenuh>

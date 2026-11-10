@@ -1,5 +1,6 @@
 import { Suspense, useState, type ReactNode } from 'react'
 import {
+  House,
   ArrowLeft,
   Inbox,
   Info,
@@ -18,6 +19,7 @@ import { Button, TautanTombol } from '../common/Button'
 import { EmptyState } from '../common/EmptyState'
 import { ErrorBoundary } from '../common/ErrorBoundary'
 import { Laci } from '../common/Laci'
+import { MenuAkun } from '../../features/auth/components/MenuAkun'
 import { SkeletonIsiAdmin, SkeletonPanelAdmin } from '../../features/admin/components/SkeletonAdmin'
 import { useLaporanAdmin } from '../../features/admin/hooks/useLaporanAdmin'
 import { useAdaDataDemo } from '../../hooks/useAdaDataDemo'
@@ -219,8 +221,16 @@ function TanpaAkses({ sudahMasuk }: { sudahMasuk: boolean }) {
   )
 }
 
+/** Item bottom navigation admin: ikon + label 12px, sama seperti situs publik (Navbar). */
+function kelasTautanBawah({ isActive }: { isActive: boolean }) {
+  return `relative flex h-full flex-col items-center justify-center gap-1 text-xs font-medium efek-tekan ${
+    isActive ? 'text-link' : 'text-ink-muted hover:text-ink-strong'
+  }`
+}
+
 function PanelAdmin({ pengguna }: { pengguna: Pengguna }) {
   const lokasi = useLocation()
+  const navigate = useNavigate()
   const muat = useLaporanAdmin()
   const [laciTerbuka, setLaciTerbuka] = useState(false)
   const [ciut, setCiut] = useState(bacaCiut)
@@ -229,6 +239,14 @@ function PanelAdmin({ pengguna }: { pengguna: Pengguna }) {
   function alihCiut() {
     setCiut(!ciut)
     simpanCiut(!ciut)
+  }
+  async function keluarDariPanel() {
+    try {
+      await keluar()
+      navigate('/')
+    } catch (e) {
+      logger.error('Gagal keluar dari panel admin', e)
+    }
   }
 
   return (
@@ -253,22 +271,34 @@ function PanelAdmin({ pengguna }: { pengguna: Pengguna }) {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* Ponsel & tablet: bilah atas dengan tombol pembuka laci menu admin. */}
-        <header className="sticky top-0 z-40 flex h-14 items-center gap-2 border-b border-border bg-surface px-2 sm:px-4 lg:hidden">
-          <button
-            type="button"
-            onClick={() => setLaciTerbuka(true)}
-            aria-haspopup="dialog"
-            aria-expanded={laciTerbuka}
-            aria-label="Buka menu admin"
-            className="grid size-11 place-items-center rounded-full text-ink efek-tekan hover:bg-recessed"
-          >
-            <Menu className="size-5" strokeWidth={1.5} aria-hidden />
-          </button>
-          <span className="font-medium text-ink-strong">Panel admin</span>
+        {/* Ponsel & tablet: header putih 64px seperti situs publik — logo + label Admin di kiri, avatar akun dan menu di kanan. */}
+        <header className="sticky top-0 z-40 h-16 border-b border-border bg-surface lg:hidden">
+          <div className="flex h-full items-center gap-2 px-4 sm:px-6">
+            <Link to="/admin" className="inline-flex min-h-11 min-w-0 items-center gap-2.5 rounded-md">
+              <img src="/favicon.svg" alt="" className="size-7 shrink-0" />
+              <span className="truncate text-lg font-medium text-ink-strong">Jejak Anggaran</span>
+            </Link>
+            <Badge nada="info" ringkas>
+              Admin
+            </Badge>
+            <div className="ml-auto flex shrink-0 items-center gap-1">
+              <MenuAkun pengguna={pengguna} onKeluar={keluarDariPanel} />
+              <button
+                type="button"
+                onClick={() => setLaciTerbuka(true)}
+                aria-haspopup="dialog"
+                aria-expanded={laciTerbuka}
+                aria-label="Buka menu admin"
+                className="-mr-2.5 grid size-11 place-items-center rounded-full text-ink efek-tekan hover:bg-recessed"
+              >
+                <Menu className="size-6" strokeWidth={1.5} aria-hidden />
+              </button>
+            </div>
+          </div>
         </header>
 
-        <main id="konten" className="mx-auto w-full max-w-6xl flex-1 space-y-4 px-4 py-5 sm:px-6 lg:px-8 lg:py-7">
+        {/* pb-24 di ponsel & tablet: ruang untuk bottom navigation. */}
+        <main id="konten" className="mx-auto w-full max-w-6xl flex-1 space-y-4 px-4 pt-5 pb-24 sm:px-6 lg:px-8 lg:py-7">
           {pengguna.peran === 'admin_demo' && (
             <p className="flex items-start gap-2.5 rounded-xl bg-brand-soft px-3.5 py-2.5 text-sm text-ink">
               <Info className="mt-0.5 size-4 shrink-0 text-link" strokeWidth={1.5} aria-hidden />
@@ -288,6 +318,44 @@ function PanelAdmin({ pengguna }: { pengguna: Pengguna }) {
           </div>
         </main>
       </div>
+
+      {/* Ponsel & tablet: bottom navigation 64px seperti situs publik, dengan jumlah laporan menunggu di ikon Laporan. */}
+      <nav aria-label="Navigasi admin" className="fixed inset-x-0 bottom-0 z-40 h-16 border-t border-border bg-surface lg:hidden">
+        <ul className="mx-auto grid h-full max-w-xl grid-cols-4">
+          <li>
+            <NavLink to="/admin" end className={kelasTautanBawah}>
+              <LayoutDashboard className="size-5" strokeWidth={1.5} aria-hidden />
+              Dashboard
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/admin/laporan" className={kelasTautanBawah}>
+              <span className="relative">
+                <Inbox className="size-5" strokeWidth={1.5} aria-hidden />
+                {menunggu > 0 && (
+                  <span className="absolute -top-1.5 -right-2.5 min-w-4 rounded-full bg-action px-1 text-center text-[10px] leading-4 font-semibold text-white tabular-nums ring-2 ring-surface">
+                    {menunggu}
+                    <span className="sr-only"> menunggu verifikasi</span>
+                  </span>
+                )}
+              </span>
+              Laporan
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/" className={kelasTautanBawah}>
+              <House className="size-5" strokeWidth={1.5} aria-hidden />
+              Situs publik
+            </NavLink>
+          </li>
+          <li>
+            <button type="button" onClick={() => setLaciTerbuka(true)} aria-haspopup="dialog" className={`w-full ${kelasTautanBawah({ isActive: false })}`}>
+              <Menu className="size-5" strokeWidth={1.5} aria-hidden />
+              Menu
+            </button>
+          </li>
+        </ul>
+      </nav>
 
       <Laci
         terbuka={laciTerbuka}

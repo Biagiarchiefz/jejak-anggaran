@@ -1,4 +1,5 @@
 import { Skeleton, SkeletonBaris } from '../../../components/common/Skeleton'
+import { DeretKartuProyek } from './DeretKartuProyek'
 
 /**
  * Placeholder <KartuProyek>: kerangka, rasio foto, dan tinggi tiap baris teks sama persis
@@ -45,16 +46,16 @@ export function KartuProyekSkeleton() {
   )
 }
 
-/** Grid kartu proyek yang sedang dimuat; kelas grid sama dengan daftar aslinya. */
+/** Daftar kartu proyek yang sedang dimuat; tata letaknya sama dengan daftar aslinya (<DeretKartuProyek>). */
 export function GridKartuProyekSkeleton({ jumlah, label }: { jumlah: number; label: string }) {
   return (
     <div role="status">
       <span className="sr-only">{label}</span>
-      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+      <DeretKartuProyek>
         {Array.from({ length: jumlah }, (_, i) => (
           <KartuProyekSkeleton key={i} />
         ))}
-      </ul>
+      </DeretKartuProyek>
     </div>
   )
 }

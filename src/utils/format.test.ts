@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { formatDurasiJam, formatPersen, formatRupiah, formatRupiahRingkas, formatRupiahRingkasSatuan, formatTanggal } from './format'
+import {
+  formatDurasiJam,
+  formatPersen,
+  formatRupiah,
+  formatRupiahRingkas,
+  formatRupiahRingkasSatuan,
+  formatTanggal,
+  formatWaktuRelatif,
+} from './format'
 
 describe('formatRupiah', () => {
   it('memakai titik sebagai pemisah ribuan', () => {
@@ -65,5 +73,23 @@ describe('formatDurasiJam', () => {
     expect(formatDurasiJam(0.001)).toBe('1 menit')
     expect(formatDurasiJam(5)).toBe('5 jam')
     expect(formatDurasiJam(60)).toBe('2,5 hari')
+  })
+})
+
+describe('formatWaktuRelatif', () => {
+  const sekarang = new Date('2026-11-10T12:00:00+07:00')
+  const lalu = (menit: number) => new Date(sekarang.getTime() - menit * 60_000)
+
+  it('memakai satuan yang paling mudah dibaca', () => {
+    expect(formatWaktuRelatif(lalu(0), sekarang)).toBe('baru saja')
+    expect(formatWaktuRelatif(lalu(5), sekarang)).toBe('5 menit lalu')
+    expect(formatWaktuRelatif(lalu(3 * 60), sekarang)).toBe('3 jam lalu')
+    expect(formatWaktuRelatif(lalu(26 * 60), sekarang)).toBe('kemarin')
+    expect(formatWaktuRelatif(lalu(4 * 24 * 60), sekarang)).toBe('4 hari lalu')
+    expect(formatWaktuRelatif(lalu(15 * 24 * 60), sekarang)).toBe('2 minggu lalu')
+  })
+
+  it('lebih dari 30 hari memakai tanggal biasa', () => {
+    expect(formatWaktuRelatif('2026-09-01T10:00:00+07:00', sekarang)).toBe('1 September 2026')
   })
 })

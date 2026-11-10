@@ -1,7 +1,7 @@
 import { useId, useState } from 'react'
 import { ChevronDown, Send, ThumbsUp } from 'lucide-react'
 import { BadgeStatusLaporan } from '../../../components/common/BadgeStatus'
-import { LinimasaStatus } from './LinimasaStatus'
+import { LinimasaStatus } from '../../../components/common/LinimasaStatus'
 import { PanelTeruskanLapor } from './TeruskanKeLapor'
 import { Lipatan } from '../../../components/common/Lipatan'
 import { TombolLipat } from '../../../components/common/TombolLipat'

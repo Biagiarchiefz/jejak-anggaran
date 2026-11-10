@@ -106,7 +106,17 @@ describe('bangunSql', () => {
     const sql = bangunSql(validasiData(files()))
     expect(sql).toContain('delete from public.laporan where is_demo;')
     expect(sql).not.toMatch(/truncate/i)
-    expect(sql.match(/delete from/g)).toHaveLength(1)
+    expect(sql.match(/delete from public\.laporan/g)).toHaveLength(1)
+  })
+
+  it('menghapus proyek demo yang dikeluarkan dari CSV, tapi tidak proyek nyata atau yang punya laporan warga', () => {
+    const sql = bangunSql(validasiData(files()))
+    const hapus = sql.slice(sql.indexOf('delete from public.proyek'), sql.indexOf('commit;'))
+    expect(sql.match(/delete from public\.proyek/g)).toHaveLength(1)
+    expect(hapus).toContain('where p.is_demo')
+    expect(hapus).toContain("and p.id not in ('jalan-demo')")
+    expect(hapus).toContain('not exists (select 1 from public.laporan l where l.proyek_id = p.id and not l.is_demo)')
+    expect(hapus).not.toContain('jalan-nyata')
   })
 
   it('menyusun riwayat status lengkap untuk laporan demo', () => {

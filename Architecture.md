@@ -78,7 +78,7 @@ jejak-anggaran/
     │   │   ├── Button, Badge, Card, Skeleton, EmptyState, ErrorState, Laci, Lipatan, Pilihan, KolomCari, ...
     │   │   ├── KepalaHalaman, JudulSeksi, LabelSeksi, PitaPenuh, gayaForm.ts
     │   │   ├── SumberData.tsx  # sumber + tanggal akses + link (wajib di tiap angka)
-    │   │   ├── BadgeStatus.tsx, BadgeRedFlag.tsx
+    │   │   ├── BadgeStatus.tsx, BadgeRedFlag.tsx, LinimasaStatus.tsx (audit trail status laporan)
     │   │   └── ErrorBoundary.tsx
     │   └── layout/
     │       ├── Layout.tsx      # Navbar, Footer, ErrorBoundary + Suspense per route, animasi muncul
@@ -95,7 +95,7 @@ jejak-anggaran/
     │   │   ├── components/     # PetaProyek (react-leaflet), KartuProyek, KartuPinProyek, LembarProyek, DialogProyek, CuplikanPeta
     │   │   └── hooks/          # useProyekList, useProyekDetail
     │   ├── laporan/
-    │   │   ├── components/     # KartuLaporan, LinimasaFoto, LinimasaStatus (audit trail), TeruskanKeLapor (F9)
+    │   │   ├── components/     # KartuLaporan, LinimasaFoto, TeruskanKeLapor (F9)
     │   │   └── hooks/          # useStatusPengguna
     │   ├── auth/components/    # MenuAkun, DialogPerluMasuk
     │   ├── admin/

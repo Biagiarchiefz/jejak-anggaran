@@ -17,7 +17,7 @@ type GrafikUrusanProps = {
 }
 
 /**
- * Pembagian anggaran per urusan, sebagai daftar batang HTML (terbaca baik di layar sempit, tanpa Recharts).
+ * Pembagian anggaran per bidang (fungsi APBD; kolom DB tetap bernama `urusan`), sebagai daftar batang HTML (terbaca baik di layar sempit, tanpa Recharts).
  * Tiap baris: ikon + peringkat, nilai, batang yang mengisi saat kartu muncul, porsi, anggaran per warga, dan serapan.
  */
 export function GrafikUrusan({ data, jumlahAwal = 8, dapatDiperluas = true }: GrafikUrusanProps) {
@@ -79,7 +79,7 @@ export function GrafikUrusan({ data, jumlahAwal = 8, dapatDiperluas = true }: Gr
           </Lipatan>
           <div className="mt-1 border-t border-border-soft pt-1">
             <TombolLipat terbuka={semua} onClick={() => setSemua((s) => !s)} aria-controls={idSisa}>
-              {semua ? 'Tampilkan lebih sedikit' : `Tampilkan ${sisa.length} urusan lainnya`}
+              {semua ? 'Tampilkan lebih sedikit' : `Tampilkan ${sisa.length} bidang lainnya`}
             </TombolLipat>
           </div>
         </>

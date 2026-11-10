@@ -1,6 +1,6 @@
-import { formatTanggalJam } from '../../../utils/format'
-import { LABEL_STATUS_LAPORAN } from '../../../utils/label'
-import type { RiwayatPublik } from '../../../services/laporanService'
+import { formatTanggalJam } from '../../utils/format'
+import { LABEL_STATUS_LAPORAN } from '../../utils/label'
+import type { RiwayatPublik } from '../../services/laporanService'
 
 /** Audit trail perubahan status laporan (F8). Tampil publik. Titik 10px tersambung garis 2px. */
 export function LinimasaStatus({ riwayat }: { riwayat: RiwayatPublik[] }) {

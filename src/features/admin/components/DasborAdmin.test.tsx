@@ -33,7 +33,7 @@ function laporan(id: string, sebagian: Partial<LaporanAdmin> = {}): LaporanAdmin
 
 /** Angka besar di kartu statistik yang berlabel `label`. */
 function angkaKartu(label: string) {
-  return screen.getByText(label).closest('div.rounded-xl')?.querySelector('p.text-2xl')?.textContent
+  return screen.getByText(label).closest('[data-kartu-angka]')?.querySelector('p.text-2xl')?.textContent
 }
 
 describe('<DasborAdmin>', () => {
@@ -43,7 +43,8 @@ describe('<DasborAdmin>', () => {
       proyekRedFlag: [],
     }
     const onBuka = vi.fn()
-    render(<DasborAdmin data={data} onBuka={onBuka} />)
+    const onLihatSemua = vi.fn()
+    render(<DasborAdmin data={data} onBuka={onBuka} onLihatSemua={onLihatSemua} />)
 
     expect(angkaKartu('Menunggu verifikasi')).toBe('1')
     expect(angkaKartu('Sedang diproses')).toBe('2')
@@ -52,8 +53,10 @@ describe('<DasborAdmin>', () => {
     const daftar = screen.getByRole('heading', { name: 'Prioritas verifikasi' }).closest('div.flex-col') as HTMLElement
     expect(within(daftar).getByText('Bisa memicu red flag')).toBeInTheDocument()
     expect(within(daftar).getByText('1 menunggu')).toBeInTheDocument()
-    fireEvent.click(within(daftar).getByRole('button'))
+    fireEvent.click(within(daftar).getByRole('button', { name: /Bisa memicu red flag/ }))
     expect(onBuka).toHaveBeenCalledWith('baru')
+    fireEvent.click(within(daftar).getByRole('button', { name: 'Lihat semua' }))
+    expect(onLihatSemua).toHaveBeenCalled()
   })
 
   it('pesan kosong jika tidak ada yang menunggu verifikasi', () => {

@@ -21,7 +21,13 @@ export default function AdminDasborPage() {
       ) : error ? (
         <ErrorState halaman pesan={error.pesan} onCobaLagi={muatUlang} />
       ) : (
-        data && <DasborAdmin data={data} onBuka={(id) => navigate(`/admin/laporan?buka=${encodeURIComponent(id)}`)} />
+        data && (
+          <DasborAdmin
+            data={data}
+            onBuka={(id) => navigate(`/admin/laporan?buka=${encodeURIComponent(id)}`)}
+            onLihatSemua={() => navigate('/admin/laporan')}
+          />
+        )
       )}
     </div>
   )

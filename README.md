@@ -25,9 +25,9 @@ Tanpa masuk pun, semua data anggaran, peta, dan detail proyek bisa dibuka.
 
 1. **Sebagai pengunjung (tanpa masuk)**
    - **Beranda**: peta Kota Bandung dengan pin proyek, angka ringkas APBD, dan proyek yang perlu perhatian.
-   - **Anggaran**: total APBD, pembagian per urusan, tren antartahun, dan artinya per warga ("setara Rp … per warga per hari").
+   - **Anggaran**: total APBD resmi, pembagian per bidang, tren antartahun, realisasi, dan artinya per warga ("setara Rp … per warga per hari").
    - **Peta proyek**: cari dan saring proyek per kecamatan atau status, lalu klik pin untuk melihat ringkasannya.
-   - **Detail proyek**: pagu, nilai kontrak, pelaksana, tautan ke SiRUP/LPSE, linimasa foto, dan laporan warga.
+   - **Detail proyek**: pagu, kode RUP dengan tautan ke halaman paketnya di SiRUP, lokasi di peta, linimasa foto, dan laporan warga.
 2. **Sebagai warga demo**
    - Di halaman detail proyek, tekan **Laporkan kondisi**, pilih jenis masalah, ceritakan kondisinya, lalu unggah foto.
    - Pada laporan warga lain, tekan **Saya juga melihat** untuk mengonfirmasi.
@@ -36,27 +36,27 @@ Tanpa masuk pun, semua data anggaran, peta, dan detail proyek bisa dibuka.
    - Buka **Laporan warga**, pilih satu laporan, lalu ubah statusnya: *Diverifikasi → Ditindaklanjuti → Selesai*, atau *Ditolak* dengan catatan.
    - Kembali ke halaman proyeknya: riwayat perubahan status langsung tampil untuk publik.
 
-> Untuk saat ini, proyek, laporan, dan angka anggaran yang tampil adalah **data demo (fiktif)** untuk memperlihatkan alur aplikasi; nama proyek demo selalu diberi tanda "(fiktif)". Selama data demo tampil, catatan di bagian bawah halaman memberitahukannya. Laporan negatif simulasi hanya ditempelkan pada proyek fiktif, tidak pernah pada proyek nyata.
+> **Angka anggaran adalah data resmi** APBD Kota Bandung 2023–2026 dari DJPK Kemenkeu. Peta memuat **8 proyek nyata** TA 2025 dari SiRUP (pagu dan tautan ke halaman paketnya di `sirup.inaproc.id`) dan **4 proyek demo (fiktif)** untuk memperagakan laporan warga, konfirmasi, tanda "perlu perhatian", dan panel admin; nama proyek demo selalu diberi tanda "(fiktif)". Selama data demo tampil, catatan di bagian bawah halaman memberitahukannya. Laporan negatif simulasi hanya ditempelkan pada proyek fiktif, tidak pernah pada proyek nyata.
 
 ---
 
 ## Masalah yang ingin diselesaikan
 
-Data anggaran daerah sebenarnya terbuka (DJPK Kemenkeu, SiRUP LKPP, LPSE), tetapi tersebar di banyak situs, berbentuk tabel teknis, dan tidak terhubung dengan kondisi nyata di lapangan. Akibatnya warga sulit tahu proyek apa yang dibiayai di sekitar rumahnya, dan kanal pengaduan resmi kerap menerima laporan tanpa konteks anggaran.
+Data anggaran daerah sebenarnya terbuka (DJPK Kemenkeu, SiRUP LKPP), tetapi tersebar di banyak situs, berbentuk tabel teknis, dan tidak terhubung dengan kondisi nyata di lapangan. Akibatnya warga sulit tahu proyek apa yang dibiayai di sekitar rumahnya, dan kanal pengaduan resmi kerap menerima laporan tanpa konteks anggaran.
 
 Jejak Anggaran menyambungkan ketiganya dalam satu alur:
 
 ```
-Anggaran (APBD)  →  Proyek di peta (SiRUP/LPSE)  →  Kondisi nyata (laporan + konfirmasi warga)
+Anggaran (APBD, DJPK)  →  Proyek di peta (SiRUP)  →  Kondisi nyata (laporan + konfirmasi warga)
 ```
 
 ## Fitur utama
 
 | Fitur | Penjelasan singkat |
 | --- | --- |
-| **Dashboard anggaran** | Total APBD, pembagian per urusan, tren antartahun, realisasi, dan konteks per warga. |
+| **Dashboard anggaran** | Total APBD resmi 2023–2026, pembagian per bidang (klasifikasi fungsi DJPK), tren antartahun, realisasi, dan konteks per warga. |
 | **Peta proyek** | Semua proyek di peta Kota Bandung, dengan pencarian dan saringan status/kecamatan, tersinkron dengan daftar di sampingnya. |
-| **Detail proyek** | Pagu, nilai kontrak, pelaksana, kode RUP, linimasa foto lapangan, dan semua laporan warga. |
+| **Detail proyek** | Pagu, kode RUP dengan tautan ke SiRUP, nilai kontrak dan pelaksana (bila tersedia), linimasa foto dari warga, dan semua laporan warga. |
 | **Lapor kondisi** | Form sederhana dengan foto. Foto dikompres di perangkat dan data lokasi GPS di dalamnya dihapus sebelum dikirim. |
 | **Konfirmasi warga** | Warga lain bisa menekan "Saya juga melihat", sehingga laporan yang banyak dikonfirmasi lebih menonjol. |
 | **Tanda "perlu perhatian"** | Proyek yang tercatat selesai tetapi menerima beberapa laporan kerusakan terverifikasi ditandai otomatis. Ini **bukan tuduhan**, hanya sinyal untuk diperhatikan. |
@@ -67,11 +67,11 @@ Anggaran (APBD)  →  Proyek di peta (SiRUP/LPSE)  →  Kondisi nyata (laporan +
 
 ## Prinsip yang kami pegang
 
-- **Setiap angka punya sumber.** Angka anggaran, pagu, dan kontrak selalu disertai nama sumber, tanggal akses, dan tautannya.
-- **Jujur soal data demo.** Data fiktif selalu diberitahukan, dan tidak pernah dicampur dengan tuduhan pada proyek nyata.
-- **Privasi pelapor.** Nama dan email pelapor tidak pernah tampil di halaman publik. Tidak ada NIK atau data penerima bantuan.
-- **Tanpa klaim berlebihan.** Data dikurasi manual dari situs resmi (tanpa scraping), tidak diklaim *real-time*, dan tidak diklaim "terverifikasi AI".
-- **Untuk semua warga.** Bahasa awam, dirancang mulai dari layar ponsel 375px, bisa dipakai dengan keyboard dan pembaca layar, dan menghormati pengaturan "kurangi gerak".
+- **Setiap angka punya sumber.** Angka anggaran dan pagu selalu disertai nama sumber, tanggal akses, dan tautannya, jadi siapa pun bisa mengecek ulang.
+- **Jujur soal batas data.** Data demo diberi tanda "(fiktif)" dan tidak pernah dicampur dengan tuduhan pada proyek nyata. Koordinat perkiraan dan status yang diambil dari jadwal SiRUP disebut terang-terangan di halaman Tentang Data.
+- **Tanda "perlu perhatian" bukan tuduhan.** Tanda ini hanya muncul dari laporan warga yang sudah diverifikasi, dengan aturan yang dijelaskan terbuka.
+- **Privasi pelapor.** Nama dan email pelapor tidak pernah tampil di halaman publik, dan data lokasi GPS di dalam foto dihapus sebelum diunggah.
+- **Untuk semua warga.** Bahasa awam, dirancang mulai dari layar ponsel, dan menghormati pengaturan "kurangi gerak".
 
 ## Tampilan dan pengalaman
 
@@ -92,7 +92,7 @@ Anggaran (APBD)  →  Proyek di peta (SiRUP/LPSE)  →  Kondisi nyata (laporan +
 | Grafik dan peta | Recharts, Leaflet + react-leaflet (peta OpenStreetMap) |
 | Backend | Supabase: Postgres dengan Row Level Security, Auth email + kata sandi, Storage foto |
 | Validasi | zod (form dan data CSV) |
-| Kualitas | Vitest + React Testing Library (189 test), ESLint, TypeScript strict |
+| Kualitas | Vitest + React Testing Library (209 test), ESLint, TypeScript strict |
 | Deploy | Vercel |
 
 Keamanan data dijaga di database, bukan hanya di tampilan: aturan siapa boleh membuat laporan, mengonfirmasi, dan mengubah status ditegakkan oleh Row Level Security di Postgres.
@@ -121,17 +121,21 @@ npm run typecheck && npm run lint && npm run test   # pemeriksaan kualitas
 npm run data:seed                                   # validasi data CSV lalu buat data awal database
 ```
 
-## Data
+## Sumber data
 
-Data dikurasi **manual** di folder `data/raw/` dari situs resmi, lalu divalidasi otomatis sebelum masuk database: tipe angka, koordinat harus berada di dalam Kota Bandung, kecamatan harus salah satu dari 30 kecamatan, dan proyek nyata wajib punya tautan sumber serta tanggal akses.
+Semua data adalah data publik dari sumber resmi, disimpan sebagai CSV di folder `data/raw/`, lalu divalidasi otomatis sebelum masuk database (`npm run data:seed`). Validasinya memeriksa tipe angka, koordinat harus berada di dalam Kota Bandung, kecamatan harus salah satu dari 30 kecamatan, dan setiap data nyata wajib punya tautan sumber serta tanggal akses. Tidak ada scraping otomatis.
 
-| Data | Sumber |
-| --- | --- |
-| APBD Kota Bandung | DJPK Kementerian Keuangan, Open Data Kota Bandung |
-| Paket proyek, pagu | SiRUP LKPP |
-| Nilai kontrak, pelaksana | LPSE Kota Bandung / Opentender |
-| Lokasi dan foto awal | Dikumpulkan tim |
-| Jumlah penduduk (konteks per warga) | BPS Kota Bandung |
+| Data | Sumber | Cara diambil | Status |
+| --- | --- | --- | --- |
+| **APBD Kota Bandung**: anggaran dan realisasi belanja per fungsi, 2023–2026 | [DJPK Kementerian Keuangan](https://djpk.kemenkeu.go.id/?p=5412) | Berkas Excel resmi *Anggaran/Realisasi Belanja per Fungsi* diunduh, baris Kota Bandung (kode pemda 10.17) dijumlahkan per bidang, lalu dicocokkan dengan total belanja daerah di berkas ringkasan resmi | ✅ Dipakai. Realisasi tersedia sampai 2024 |
+| **Paket proyek**: kode RUP, nama paket, satuan kerja, pagu, lokasi | [SiRUP LKPP](https://sirup.inaproc.id/sirup/) | Diekspor tim dari menu *Cari Paket* SiRUP (berkas asli di `data/data-proyek-sirupinaproc/`), lalu dicocokkan dengan halaman detail tiap paket | ✅ 8 paket Pekerjaan Konstruksi TA 2025 |
+| **Lokasi proyek** | [OpenStreetMap](https://www.openstreetmap.org/copyright) (Nominatim), © kontributor OpenStreetMap, ODbL | Titik tengah kelurahan dari "Detail Lokasi" paket di SiRUP | ⚠️ Perkiraan, belum survei lapangan |
+| **Jumlah penduduk** (konteks per warga) | BPS Kota Bandung | Disalin dari publikasi BPS | ✅ Dipakai |
+| **Kondisi lapangan** | Laporan dan konfirmasi warga | Dikirim lewat website, diverifikasi admin | ✅ Dipakai |
+| Nilai kontrak dan pelaksana | LPSE Kota Bandung (`spse.inaproc.id/bandungkota`) | — | ⏳ Belum. Paket yang dipakai memakai metode Pengadaan Langsung |
+| Koordinat dan foto lapangan | Survei tim | — | ⏳ Belum. Kartu proyek memakai foto ilustrasi berlabel |
+
+Status proyek nyata diperkirakan dari *jadwal pelaksanaan kontrak* di SiRUP, bukan dari pengecekan lapangan. Laporan warga yang membantu memastikan kondisi sebenarnya.
 
 ## Status pengembangan
 
@@ -139,7 +143,8 @@ Data dikurasi **manual** di folder `data/raw/` dari situs resmi, lalu divalidasi
 
 **Rencana berikutnya:**
 
-- Mengisi data APBD resmi dan 10–20 proyek nyata hasil kurasi dari SiRUP/LPSE (saat ini seluruh data masih data demo; alur dan validasinya sudah siap).
+- Menambah proyek nyata sampai 10–20 paket dan melengkapi nilai kontrak serta pelaksana dari LPSE.
+- Survei lapangan tim untuk koordinat yang tepat dan foto kondisi awal setiap proyek.
 - Rapor per kecamatan dan per dinas.
 - Mode bahasa yang lebih awam lagi untuk istilah anggaran.
 

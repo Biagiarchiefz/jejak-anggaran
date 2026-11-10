@@ -14,14 +14,14 @@ export default function AdminLaporanPage() {
       <title>Laporan warga — Panel admin — Jejak Anggaran</title>
       <KepalaAdmin
         judul="Laporan warga"
-        deskripsi="Verifikasi laporan dan perbarui status tindak lanjutnya. Setiap perubahan status dicatat dan tampil publik."
+        deskripsi="Cari, saring, dan verifikasi laporan warga. Laporan bertanda Prioritas bisa memicu tanda perlu perhatian pada proyeknya. Setiap perubahan status dicatat dan tampil publik."
       />
       {memuat && !data ? (
         <SkeletonAntreanLaporan />
       ) : error ? (
         <ErrorState halaman pesan={error.pesan} onCobaLagi={muatUlang} />
       ) : (
-        data && <AntreanLaporan laporan={data.laporan} onBerubah={muatUlang} idAwal={params.get('buka')} />
+        data && <AntreanLaporan laporan={data.laporan} proyekRedFlag={data.proyekRedFlag} onBerubah={muatUlang} idAwal={params.get('buka')} />
       )}
     </div>
   )

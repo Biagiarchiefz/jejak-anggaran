@@ -291,6 +291,17 @@ function sqlProyek(proyek: BarisProyek[]): string {
   ].join('\n')
 }
 
+/** Hapus proyek demo yang tidak ada lagi di CSV, kecuali yang masih punya laporan non-demo. */
+export function sqlHapusProyekDemoLama(proyek: BarisProyek[]): string {
+  const idDemo = proyek.filter((p) => p.is_demo).map((p) => sqlTeks(p.id))
+  return [
+    'delete from public.proyek p',
+    'where p.is_demo',
+    ...(idDemo.length > 0 ? [`  and p.id not in (${idDemo.join(', ')})`] : []),
+    '  and not exists (select 1 from public.laporan l where l.proyek_id = p.id and not l.is_demo);',
+  ].join('\n')
+}
+
 function sqlLaporanDemo(l: BarisLaporanDemo): string {
   const jalur = jalurStatus(l.status)
   const riwayat = jalur.map((status, i) => {
@@ -334,6 +345,10 @@ export function bangunSql(data: DataSeed): string {
     '-- laporan demo (hanya pada proyek is_demo = true)',
     'delete from public.laporan where is_demo;',
     ...data.laporanDemo.map(sqlLaporanDemo),
+    '',
+    '-- proyek demo yang sudah dikeluarkan dari proyek.csv. Dilewati bila masih punya laporan warga',
+    '-- sungguhan (hapus proyek = cascade ke laporannya), agar laporan nyata tidak pernah ikut terhapus.',
+    sqlHapusProyekDemoLama(data.proyek),
     '',
     'commit;',
     '',

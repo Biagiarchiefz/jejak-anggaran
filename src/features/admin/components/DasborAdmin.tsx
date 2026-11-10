@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ChevronRight, CircleCheck, CircleX, Flag, Inbox, LoaderCircle, Timer, type LucideIcon } from 'lucide-react'
+import { ArrowRight, ChevronRight, CircleCheck, CircleX, Flag, Inbox, LoaderCircle, Timer, type LucideIcon } from 'lucide-react'
 import { Badge } from '../../../components/common/Badge'
 import type { DataAdmin } from '../../../services/adminService'
 import { formatDurasiJam, formatPersen } from '../../../utils/format'
@@ -15,7 +15,10 @@ type KartuAngkaProps = { ikon: LucideIcon; label: string; nilai: number; sorot?:
 
 function KartuAngka({ ikon: Ikon, label, nilai, sorot, className }: KartuAngkaProps) {
   return (
-    <div className={`rounded-xl border p-3.5 ${sorot ? 'border-danger/30 bg-danger-soft' : 'border-border bg-surface'} ${className ?? ''}`}>
+    <div
+      data-kartu-angka=""
+      className={`p-3.5 sm:rounded-xl sm:border ${sorot ? 'bg-danger-soft sm:border-danger/30' : 'bg-surface sm:border-border'} ${className ?? ''}`}
+    >
       <div className="flex items-start justify-between gap-2">
         <p className={`text-xs leading-tight font-medium ${sorot ? 'text-danger' : 'text-ink-muted'}`}>{label}</p>
         <span
@@ -55,8 +58,18 @@ function SebaranStatus({ segmen }: { segmen: Segmen[] }) {
   )
 }
 
-/** Ringkasan kinerja tindak lanjut + antrean prioritas verifikasi. */
-export function DasborAdmin({ data, onBuka }: { data: DataAdmin; onBuka: (id: string) => void }) {
+type DasborAdminProps = {
+  data: DataAdmin
+  onBuka: (id: string) => void
+  /** Buka antrean laporan lengkap (tombol "Lihat semua" di kartu prioritas). */
+  onLihatSemua?: () => void
+}
+
+/**
+ * Ringkasan kinerja tindak lanjut + antrean prioritas verifikasi.
+ * Ponsel: angka digabung dalam satu panel bergaris 1px dan kartu prioritas tampil lebih dulu (yang perlu ditindak).
+ */
+export function DasborAdmin({ data, onBuka, onLihatSemua }: DasborAdminProps) {
   // Dibekukan sekali per kunjungan agar "menunggu N hari" tidak berubah di tengah render.
   const [sekarang] = useState(() => new Date())
   const r = hitungRingkasanAdmin(data.laporan, data.proyekRedFlag)
@@ -69,7 +82,7 @@ export function DasborAdmin({ data, onBuka }: { data: DataAdmin; onBuka: (id: st
       <h2 id="judul-ringkasan" className="sr-only">
         Ringkasan tindak lanjut laporan
       </h2>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-3 sm:gap-3 sm:overflow-visible sm:rounded-none sm:border-0 sm:bg-transparent lg:grid-cols-5">
         <KartuAngka ikon={Inbox} label="Menunggu verifikasi" nilai={r.menungguVerifikasi} />
         <KartuAngka ikon={LoaderCircle} label="Sedang diproses" nilai={r.sedangDiproses} />
         <KartuAngka ikon={CircleCheck} label="Selesai" nilai={r.selesai} />
@@ -83,9 +96,11 @@ export function DasborAdmin({ data, onBuka }: { data: DataAdmin; onBuka: (id: st
         />
       </div>
 
-      <div className="grid gap-3 lg:grid-cols-2">
-        {/* Kiri: kinerja respons. */}
-        <div className={`${KARTU} p-4`}>
+      {/* grid-cols-1 (= minmax(0,1fr)) + min-w-0: tanpa ini kolom di ponsel melebar mengikuti nama proyek terpanjang
+          (yang ber-truncate), sehingga halaman bisa digeser ke samping. */}
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+        {/* Kiri: kinerja respons. Ponsel: di bawah kartu prioritas. */}
+        <div className={`${KARTU} order-2 min-w-0 p-4 lg:order-none`}>
           <div className="flex items-center gap-2 text-xs font-medium text-ink-muted">
             <Timer className="size-4 shrink-0 text-action" strokeWidth={1.5} aria-hidden />
             Rata-rata waktu respons
@@ -99,7 +114,7 @@ export function DasborAdmin({ data, onBuka }: { data: DataAdmin; onBuka: (id: st
               : `Dari laporan masuk sampai pertama kali ditanggapi, dihitung dari ${r.jumlahDitanggapi} laporan.`}
           </p>
 
-          <dl className="mt-4 grid grid-cols-3 divide-x divide-border-soft rounded-lg bg-canvas-soft py-2.5 text-center">
+          <dl className="mt-4 grid grid-cols-3 divide-x divide-border-soft rounded-lg bg-canvas-soft py-2.5 text-center [&_dt]:px-1 [&_dt]:leading-tight">
             <div>
               <dt className="text-[11px] text-ink-subtle">Total laporan</dt>
               <dd className="mt-0.5 text-base font-semibold text-ink-strong tabular-nums">{total}</dd>
@@ -126,17 +141,29 @@ export function DasborAdmin({ data, onBuka }: { data: DataAdmin; onBuka: (id: st
           </div>
         </div>
 
-        {/* Kanan: prioritas verifikasi. */}
-        <div className={`${KARTU} flex flex-col p-4`}>
+        {/* Kanan: prioritas verifikasi. Ponsel: tampil lebih dulu. */}
+        <div className={`${KARTU} order-1 flex min-w-0 flex-col p-4 lg:order-none`}>
           <div className="flex items-start justify-between gap-3">
-            <div>
-              <h3 className="text-sm font-semibold text-ink-strong">Prioritas verifikasi</h3>
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <h3 className="text-sm font-semibold text-ink-strong">Prioritas verifikasi</h3>
+                {semuaPrioritas.length > 0 && (
+                  <Badge nada="info" ringkas>
+                    {semuaPrioritas.length} menunggu
+                  </Badge>
+                )}
+              </div>
               <p className="mt-0.5 text-xs text-ink-muted">Berpotensi red flag didahulukan, lalu yang paling lama menunggu.</p>
             </div>
-            {semuaPrioritas.length > 0 && (
-              <Badge nada="info" ringkas>
-                {semuaPrioritas.length} menunggu
-              </Badge>
+            {onLihatSemua && (
+              <button
+                type="button"
+                onClick={onLihatSemua}
+                className="group -mr-1 inline-flex min-h-9 shrink-0 items-center gap-1 rounded-md px-1 text-sm font-medium text-link hover:underline"
+              >
+                Lihat semua
+                <ArrowRight className="size-4 transition-transform duration-150 group-hover:translate-x-0.5 motion-reduce:transition-none" strokeWidth={1.5} aria-hidden />
+              </button>
             )}
           </div>
           {prioritas.length === 0 ? (

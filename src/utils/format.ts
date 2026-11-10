@@ -72,6 +72,23 @@ export function formatPersen(rasio: number): string {
   return `${Math.round(rasio * 100)}%`
 }
 
+/**
+ * Waktu relatif untuk daftar yang padat: `baru saja`, `5 menit lalu`, `3 jam lalu`, `kemarin`, `4 hari lalu`,
+ * `2 minggu lalu`. Lebih dari 30 hari → tanggal biasa (`23 Oktober 2026`).
+ */
+export function formatWaktuRelatif(nilai: string | Date, sekarang: Date = new Date()): string {
+  const menit = Math.floor((sekarang.getTime() - keDate(nilai).getTime()) / 60_000)
+  if (menit < 1) return 'baru saja'
+  if (menit < 60) return `${menit} menit lalu`
+  const jam = Math.floor(menit / 60)
+  if (jam < 24) return `${jam} jam lalu`
+  const hari = Math.floor(jam / 24)
+  if (hari === 1) return 'kemarin'
+  if (hari < 7) return `${hari} hari lalu`
+  if (hari <= 30) return `${Math.floor(hari / 7)} minggu lalu`
+  return formatTanggal(nilai)
+}
+
 const satuDesimal = new Intl.NumberFormat('id-ID', { maximumFractionDigits: 1 })
 
 /** Durasi dalam jam → `45 menit`, `5 jam`, `2,5 hari`. */

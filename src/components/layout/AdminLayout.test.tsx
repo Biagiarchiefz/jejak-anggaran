@@ -58,6 +58,17 @@ describe('<AdminLayout>', () => {
     expect(screen.getByText('Isi dashboard')).toBeInTheDocument()
   })
 
+  it('ponsel: header bergaya situs publik dan bottom navigation dengan jumlah laporan menunggu', () => {
+    auth.nilai = { pengguna: ADMIN_DEMO, memuat: false }
+    pasang()
+    expect(screen.getByRole('button', { name: 'Buka menu admin' })).toBeInTheDocument()
+    const bawah = screen.getByRole('navigation', { name: 'Navigasi admin' })
+    expect(within(bawah).getByRole('link', { name: 'Dashboard' })).toHaveAttribute('aria-current', 'page')
+    expect(within(bawah).getByRole('link', { name: /Laporan/ })).toHaveTextContent('2 menunggu verifikasi')
+    expect(within(bawah).getByRole('link', { name: 'Situs publik' })).toHaveAttribute('href', '/')
+    expect(within(bawah).getByRole('button', { name: 'Menu' })).toBeInTheDocument()
+  })
+
   it('sidebar bisa diciutkan ke mode ikon dan pilihannya diingat', () => {
     auth.nilai = { pengguna: ADMIN_DEMO, memuat: false }
     pasang()

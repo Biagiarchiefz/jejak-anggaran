@@ -40,7 +40,7 @@ const DATASET = [
   {
     nama: 'APBD Kota Bandung',
     asal: 'DJPK Kementerian Keuangan dan Open Data Kota Bandung',
-    isi: 'Total anggaran, pembagian per urusan, dan realisasi per tahun.',
+    isi: 'Total anggaran, pembagian per bidang (klasifikasi fungsi), dan realisasi per tahun.',
   },
   {
     nama: 'Paket proyek',
@@ -206,7 +206,11 @@ export default function TentangDataPage() {
 
           <Bagian id="kurasi">
             <ol className="list-decimal space-y-2 pl-5">
-              <li>Tim menyalin data dari situs resmi secara manual, tanpa scraping otomatis.</li>
+              <li>
+                Data proyek disalin tim dari situs resmi secara manual, tanpa scraping otomatis. Data APBD diambil dari berkas
+                Excel resmi yang diterbitkan DJPK Kemenkeu, lalu dijumlahkan per bidang dan dicocokkan dengan total belanja
+                resminya.
+              </li>
               <li>Setiap baris dicatat bersama tautan sumber dan tanggal aksesnya.</li>
               <li>
                 Data diperiksa otomatis sebelum masuk database: tipe angka, koordinat harus berada di dalam Kota Bandung, dan data
@@ -279,8 +283,19 @@ export default function TentangDataPage() {
           <Bagian id="keterbatasan">
             <ul className="list-disc space-y-1.5 pl-5">
               <li>Hanya mencakup Kota Bandung dan sebagian kecil paket proyek yang sudah dikurasi.</li>
+              <li>
+                Pembagian anggaran memakai klasifikasi <strong className="text-ink">fungsi</strong> dari DJPK (misalnya Pelayanan
+                Umum, Pendidikan, Kesehatan), bukan daftar urusan atau dinas. Angka anggaran adalah APBD yang dilaporkan ke DJPK
+                pada awal tahun, sehingga bisa berbeda dengan APBD perubahan.
+              </li>
+              <li>Realisasi per bidang baru tersedia sampai tahun 2024; realisasi tahun berjalan belum diterbitkan DJPK.</li>
               <li>Angka bisa berbeda dengan versi terbaru di situs sumber. Selalu cek tanggal akses pada setiap angka.</li>
-              <li>Koordinat proyek adalah perkiraan tim berdasarkan nama lokasi paket.</li>
+              <li>Koordinat proyek adalah perkiraan tim berdasarkan nama lokasi paket (titik tengah kelurahan), belum hasil survei lapangan.</li>
+              <li>
+                Status proyek nyata diperkirakan dari jadwal pelaksanaan kontrak di SiRUP, bukan hasil pengecekan lapangan. Laporan
+                warga membantu memastikan kondisi sebenarnya.
+              </li>
+              <li>Nilai kontrak dan pelaksana baru diisi bila pengumuman pemenangnya ditemukan di LPSE.</li>
               <li>
                 Laporan warga belum tentu akurat sebelum diverifikasi. Status laporan menunjukkan sejauh mana sudah diperiksa.
               </li>

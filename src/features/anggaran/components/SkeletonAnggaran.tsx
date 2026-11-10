@@ -81,7 +81,7 @@ const BATANG_TREN = [
 ]
 
 /**
- * Dashboard /anggaran selama data dimuat: panel ringkasan 4 metrik → kartu per urusan (6 baris) +
+ * Dashboard /anggaran selama data dimuat: panel ringkasan 4 metrik → kartu per bidang (6 baris) +
  * kartu grafik tren → kotak jembatan ke peta. Struktur dan jaraknya sama dengan <DashboardAnggaran>.
  */
 export function SkeletonDashboardAnggaran() {

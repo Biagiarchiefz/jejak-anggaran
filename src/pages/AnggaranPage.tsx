@@ -143,10 +143,10 @@ function DashboardAnggaran({ data }: { data: AnggaranDaerah[] }) {
           <section aria-labelledby="judul-urusan">
             {/* Judul grafik menyatakan temuan (DESIGN.md §7.11). */}
             <h2 id="judul-urusan" className={KELAS_JUDUL_KARTU}>
-              {urusanTerbesar ? `Belanja ${urusanTerbesar.urusan.toLowerCase()} terbesar di ${tahun}` : `Belanja per urusan ${tahun}`}
+              {urusanTerbesar ? `Belanja ${urusanTerbesar.urusan.toLowerCase()} terbesar di ${tahun}` : `Belanja per bidang ${tahun}`}
             </h2>
             <p className="mt-1 mb-3 text-sm text-ink-muted">
-              {barisTahun.length} urusan pemerintahan, dari yang terbesar. Persen = porsi dari total APBD.
+              {barisTahun.length} bidang belanja (klasifikasi fungsi DJPK), dari yang terbesar. Persen = porsi dari total APBD.
             </p>
             <GrafikUrusan data={barisTahun} jumlahAwal={6} />
             <SumberAnggaran baris={barisTahun} dalamKartu />
@@ -192,7 +192,7 @@ export default function AnggaranPage() {
       <KepalaHalaman
         eyebrow="APBD Kota Bandung"
         judul="Anggaran Kota Bandung"
-        deskripsi="Berapa total APBD, untuk urusan apa saja uangnya dipakai, dan bagaimana perkembangannya dari tahun ke tahun."
+        deskripsi="Berapa total APBD, untuk bidang apa saja uangnya dipakai, dan bagaimana perkembangannya dari tahun ke tahun."
       />
 
       {memuat && !data ? (

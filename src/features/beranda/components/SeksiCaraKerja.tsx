@@ -5,7 +5,7 @@ import { LabelSeksi } from '../../../components/common/LabelSeksi'
 const LANGKAH: { judul: string; isi: string; ikon: LucideIcon }[] = [
   {
     judul: 'Lihat anggarannya',
-    isi: 'Total APBD Kota Bandung dan pembagiannya per urusan, lengkap dengan sumber resmi dan tanggal aksesnya.',
+    isi: 'Total APBD Kota Bandung dan pembagiannya per bidang, lengkap dengan sumber resmi dan tanggal aksesnya.',
     ikon: Landmark,
   },
   {
