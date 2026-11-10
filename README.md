@@ -27,6 +27,7 @@ Tanpa masuk pun, semua data anggaran, peta, dan detail proyek bisa dibuka.
    - **Beranda**: peta Kota Bandung dengan pin proyek, angka ringkas APBD, dan proyek yang perlu perhatian.
    - **Anggaran**: total APBD resmi, pembagian per bidang, tren antartahun, realisasi, dan artinya per warga ("setara Rp … per warga per hari").
    - **Peta proyek**: cari dan saring proyek per kecamatan atau status, lalu klik pin untuk melihat ringkasannya.
+   - **Rapor**: proyek, pagu, dan laporan warga per kecamatan atau per dinas, lengkap dengan tombol **Unduh CSV** dan **Cetak / PDF** untuk analisis lanjutan.
    - **Detail proyek**: pagu, kode RUP dengan tautan ke halaman paketnya di SiRUP, lokasi di peta, linimasa foto, dan laporan warga.
 2. **Sebagai warga demo**
    - Di halaman detail proyek, tekan **Laporkan kondisi**, pilih jenis masalah, ceritakan kondisinya, lalu unggah foto.
@@ -57,12 +58,14 @@ Anggaran (APBD, DJPK)  →  Proyek di peta (SiRUP)  →  Kondisi nyata (laporan 
 | **Dashboard anggaran** | Total APBD resmi 2023–2026, pembagian per bidang (klasifikasi fungsi DJPK), tren antartahun, realisasi, dan konteks per warga. |
 | **Peta proyek** | Semua proyek di peta Kota Bandung, dengan pencarian dan saringan status/kecamatan, tersinkron dengan daftar di sampingnya. |
 | **Detail proyek** | Pagu, kode RUP dengan tautan ke SiRUP, nilai kontrak dan pelaksana (bila tersedia), linimasa foto dari warga, dan semua laporan warga. |
-| **Lapor kondisi** | Form sederhana dengan foto. Foto dikompres di perangkat dan data lokasi GPS di dalamnya dihapus sebelum dikirim. |
+| **Lapor kondisi** | Form sederhana dengan foto. Foto dikompres di perangkat dan data lokasi GPS di dalamnya dihapus sebelum dikirim. Anti-spam: maksimal 5 laporan per akun dalam 24 jam, dan satu laporan per proyek dalam 24 jam (dijaga di database). |
 | **Konfirmasi warga** | Warga lain bisa menekan "Saya juga melihat", sehingga laporan yang banyak dikonfirmasi lebih menonjol. |
 | **Tanda "perlu perhatian"** | Proyek yang tercatat selesai tetapi menerima beberapa laporan kerusakan terverifikasi ditandai otomatis. Ini **bukan tuduhan**, hanya sinyal untuk diperhatikan. |
 | **Status dan riwayat terbuka** | Setiap perubahan status laporan tercatat (kapan dan catatannya) dan bisa dilihat publik. |
 | **Teruskan ke LAPOR!** | Ringkasan laporan siap disalin untuk dikirim ke kanal resmi pemerintah. |
 | **Panel admin** | Dashboard tindak lanjut, antrean prioritas verifikasi, dan pengubahan status laporan. |
+| **Rapor wilayah** | Per kecamatan atau per dinas: jumlah proyek, total pagu, laporan warga per status, rata-rata waktu respons, dan proyek yang perlu perhatian. Bisa disaring ke data nyata saja. |
+| **Unduh data terbuka** | CSV rapor, daftar proyek (dengan penanda data demo dan tautan SiRUP), dan APBD per bidang beserta persen serapannya, siap diolah di spreadsheet. Rapor juga bisa dicetak atau disimpan sebagai PDF. |
 | **Halaman Tentang Data** | Dari mana setiap angka berasal, cara kurasi, aturan tanda "perlu perhatian", dan keterbatasan data. |
 
 ## Prinsip yang kami pegang
@@ -92,7 +95,7 @@ Anggaran (APBD, DJPK)  →  Proyek di peta (SiRUP)  →  Kondisi nyata (laporan 
 | Grafik dan peta | Recharts, Leaflet + react-leaflet (peta OpenStreetMap) |
 | Backend | Supabase: Postgres dengan Row Level Security, Auth email + kata sandi, Storage foto |
 | Validasi | zod (form dan data CSV) |
-| Kualitas | Vitest + React Testing Library (209 test), ESLint, TypeScript strict |
+| Kualitas | Vitest + React Testing Library (233 test), ESLint, TypeScript strict |
 | Deploy | Vercel |
 
 Keamanan data dijaga di database, bukan hanya di tampilan: aturan siapa boleh membuat laporan, mengonfirmasi, dan mengubah status ditegakkan oleh Row Level Security di Postgres.
@@ -139,13 +142,12 @@ Status proyek nyata diperkirakan dari *jadwal pelaksanaan kontrak* di SiRUP, buk
 
 ## Status pengembangan
 
-**Sudah berjalan:** semua halaman dan fitur prioritas di atas, termasuk masuk/daftar, panel admin, tanda "perlu perhatian" otomatis, riwayat status, teruskan ke LAPOR!, dan loading skeleton di setiap halaman.
+**Sudah berjalan:** semua halaman dan fitur prioritas di atas, termasuk masuk/daftar, panel admin, tanda "perlu perhatian" otomatis, riwayat status, teruskan ke LAPOR!, rapor wilayah dengan unduh CSV, dan loading skeleton di setiap halaman.
 
 **Rencana berikutnya:**
 
 - Menambah proyek nyata sampai 10–20 paket dan melengkapi nilai kontrak serta pelaksana dari LPSE.
 - Survei lapangan tim untuk koordinat yang tepat dan foto kondisi awal setiap proyek.
-- Rapor per kecamatan dan per dinas.
 - Mode bahasa yang lebih awam lagi untuk istilah anggaran.
 
 ## Dokumentasi lain

@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
-import { Camera, CircleAlert, Lock, X } from 'lucide-react'
+import { Camera, CircleAlert, Clock, Lock, X } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { Button, TautanTombol } from '../components/common/Button'
 import { Card } from '../components/common/Card'
@@ -8,12 +8,14 @@ import { KELAS_GALAT, KELAS_INPUT, KELAS_LABEL } from '../components/common/gaya
 import { KepalaHalaman } from '../components/common/KepalaHalaman'
 import { useAuth } from '../hooks/useAuth'
 import { SkeletonLapor } from '../features/laporan/components/SkeletonLapor'
+import { useBatasLaporan } from '../features/laporan/hooks/useBatasLaporan'
 import { useProyekDetail } from '../features/proyek/hooks/useProyekDetail'
 import { pesanError } from '../utils/errors'
 import { kompresFoto, type FotoTerkompres } from '../utils/kompresFoto'
 import { LABEL_KATEGORI, PENJELASAN_KATEGORI } from '../utils/label'
 import { errorPerField, laporanFormSchema } from '../utils/schemas'
-import { DESKRIPSI_MAKS, panjangKarakter } from '../utils/batasLaporan'
+import { DESKRIPSI_MAKS, LAPORAN_PER_HARI, hitungBatasLaporan, panjangKarakter, type StatusBatasLaporan } from '../utils/batasLaporan'
+import { formatTanggalJam } from '../utils/format'
 import { buatLaporan } from '../services/laporanService'
 import { Constants, type Enums } from '../types/database'
 
@@ -207,16 +209,53 @@ function FormLapor({ proyekId }: { proyekId: string }) {
   )
 }
 
+/** Kuota laporan habis: beri tahu sebelum warga mengisi form dan memotret, beserta kapan bisa melapor lagi. */
+function KuotaHabis({ batas, proyekId }: { batas: StatusBatasLaporan; proyekId: string }) {
+  const harian = batas.alasan === 'harian'
+  return (
+    <Card className="space-y-3">
+      <div className="flex items-start gap-3">
+        <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-warning-soft text-warning" aria-hidden>
+          <Clock className="size-5" strokeWidth={1.5} />
+        </span>
+        <div>
+          <p className="font-medium text-ink-strong">
+            {harian ? `Anda sudah mengirim ${LAPORAN_PER_HARI} laporan dalam 24 jam terakhir` : 'Anda sudah melaporkan proyek ini hari ini'}
+          </p>
+          <p className="mt-1 text-sm text-ink-muted">
+            {harian
+              ? 'Batas ini menjaga laporan tetap bisa diperiksa satu per satu dan mencegah banjir laporan.'
+              : 'Satu akun hanya bisa melaporkan satu proyek sekali dalam 24 jam. Jika kondisinya sama, cukup konfirmasi laporan yang sudah ada.'}
+            {batas.bisaLagiPada && (
+              <>
+                {' '}
+                Anda bisa melapor lagi mulai <strong className="font-medium text-ink">{formatTanggalJam(batas.bisaLagiPada)}</strong>.
+              </>
+            )}
+          </p>
+        </div>
+      </div>
+      <TautanTombol to={`/proyek/${proyekId}`} varian="kedua" className="w-full sm:w-auto">
+        {harian ? 'Kembali ke detail proyek' : 'Lihat laporan proyek ini'}
+      </TautanTombol>
+    </Card>
+  )
+}
+
 export default function LaporPage() {
   const { id = '' } = useParams()
   const { pengguna, memuat: memuatAuth } = useAuth()
   const { data, error, memuat, muatUlang } = useProyekDetail(id)
+  const laporanSaya = useBatasLaporan(pengguna?.id ?? null)
 
-  if (memuatAuth || (memuat && !data)) return <SkeletonLapor />
+  // Gagal memuat kuota tidak menghalangi melapor: batas sebenarnya tetap dijaga database.
+  const memuatKuota = !!pengguna && laporanSaya.memuat && !laporanSaya.data && !laporanSaya.error
+  if (memuatAuth || (memuat && !data) || memuatKuota) return <SkeletonLapor />
   if (error) return <ErrorState halaman pesan={error.pesan} onCobaLagi={error.code === 'TIDAK_DITEMUKAN' ? undefined : muatUlang} />
   if (!data) return null
 
   const { proyek } = data
+  const batas = hitungBatasLaporan(laporanSaya.data ?? [], proyek.id)
 
   return (
     <div className="mx-auto max-w-[560px] space-y-6">
@@ -244,8 +283,19 @@ export default function LaporPage() {
           </p>
           <TautanTombol to={`/masuk?kembali=${encodeURIComponent(`/proyek/${proyek.id}/lapor`)}`}>Masuk dengan email</TautanTombol>
         </Card>
+      ) : batas.alasan ? (
+        <KuotaHabis batas={batas} proyekId={proyek.id} />
       ) : (
         <Card>
+          {batas.terpakai > 0 && (
+            <p className="mb-6 rounded-md bg-canvas-soft px-3.5 py-2.5 text-sm text-ink-muted">
+              Sisa kuota laporan Anda hari ini:{' '}
+              <strong className="font-medium text-ink tabular-nums">
+                {batas.sisa} dari {LAPORAN_PER_HARI}
+              </strong>
+              .
+            </p>
+          )}
           <FormLapor proyekId={proyek.id} />
         </Card>
       )}

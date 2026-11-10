@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BookOpen, House, Landmark, Map as IkonPeta, Megaphone, Menu, Search, UserRound, X, type LucideIcon } from 'lucide-react'
+import { BookOpen, ChartColumn, House, Landmark, Map as IkonPeta, Megaphone, Menu, Search, UserRound, X, type LucideIcon } from 'lucide-react'
 import { Link, NavLink, useLocation } from 'react-router'
 import { MenuAkun } from '../../features/auth/components/MenuAkun'
 import { PencarianCepat } from './PencarianCepat'
@@ -11,13 +11,14 @@ import { logger } from '../../utils/logger'
 import { URL_LAPOR } from '../../utils/ringkasanLapor'
 import { keluar } from '../../services/authService'
 
-/** `pendek`: label di bottom navigation yang sempit. */
-type ItemMenu = { ke: string; label: string; pendek?: string; ikon: LucideIcon }
+/** `pendek`: label di bottom navigation yang sempit. `diBawah: false`: hanya di header & laci (bottom navigation tetap 5 item). */
+type ItemMenu = { ke: string; label: string; pendek?: string; ikon: LucideIcon; diBawah?: boolean }
 
 const MENU: ItemMenu[] = [
   { ke: '/', label: 'Beranda', ikon: House },
   { ke: '/anggaran', label: 'Anggaran', ikon: Landmark },
   { ke: '/peta', label: 'Peta Proyek', pendek: 'Peta', ikon: IkonPeta },
+  { ke: '/rapor', label: 'Rapor', ikon: ChartColumn, diBawah: false },
   { ke: '/tentang-data', label: 'Tentang Data', pendek: 'Data', ikon: BookOpen },
 ]
 
@@ -95,7 +96,7 @@ export function Navbar() {
   return (
     <>
       <header
-        className={`sticky top-0 z-[1100] h-16 border-b transition-[background-color,border-color] duration-[240ms] ease-(--ease-standard) ${
+        className={`sticky top-0 z-[1100] h-16 border-b transition-[background-color,border-color] print:hidden duration-[240ms] ease-(--ease-standard) ${
           menyatuDenganHero ? 'border-transparent bg-transparent' : 'border-border bg-surface'
         }`}
       >
@@ -166,9 +167,9 @@ export function Navbar() {
       </header>
 
       {/* Bottom navigation (ponsel & tablet): ikon + label 12px, tinggi 64px. */}
-      <nav aria-label="Navigasi bawah" className="fixed inset-x-0 bottom-0 z-[1100] h-16 border-t border-border bg-surface lg:hidden">
+      <nav aria-label="Navigasi bawah" className="fixed inset-x-0 bottom-0 z-[1100] h-16 border-t border-border bg-surface lg:hidden print:hidden">
         <ul className="mx-auto grid h-full max-w-xl grid-cols-5">
-          {[...MENU, { ke: '/masuk', label: 'Akun', ikon: UserRound }].map((m) => (
+          {[...MENU.filter((m) => m.diBawah !== false), { ke: '/masuk', label: 'Akun', ikon: UserRound }].map((m) => (
             <li key={m.ke}>
               <NavLink to={m.ke} end={m.ke === '/'} className={kelasTautanBawah}>
                 <m.ikon className="size-5" strokeWidth={1.5} aria-hidden />

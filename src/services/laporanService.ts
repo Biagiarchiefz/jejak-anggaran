@@ -1,6 +1,7 @@
 import { BUCKET_FOTO_LAPORAN, supabase } from './supabaseClient'
 import { AppError, dariErrorSupabase } from '../utils/errors'
 import { logger } from '../utils/logger'
+import { LAPORAN_PER_HARI, type LaporanSaya } from '../utils/batasLaporan'
 import type { FotoTerkompres } from '../utils/kompresFoto'
 import type { Enums, Tables } from '../types/database'
 
@@ -67,9 +68,37 @@ export async function buatLaporan({ proyekId, kategori, deskripsi, foto }: DataL
   if (error) {
     const hapus = await supabase.storage.from(BUCKET_FOTO_LAPORAN).remove([path])
     if (hapus.error) logger.error('buatLaporan: gagal menghapus foto yatim', hapus.error)
-    throw dariErrorSupabase(error, 'buatLaporan: insert laporan')
+    throw galatBatasLaporan(error) ?? dariErrorSupabase(error, 'buatLaporan: insert laporan')
   }
   return data.id
+}
+
+/** Galat dari trigger anti-spam laporan_batas_harian → pesan yang bisa dipahami warga. */
+function galatBatasLaporan(error: { message?: string }): AppError | null {
+  const pesan = error.message ?? ''
+  if (pesan.includes('batas_laporan_harian')) {
+    return new AppError('VALIDASI', `Anda sudah mengirim ${LAPORAN_PER_HARI} laporan dalam 24 jam terakhir. Silakan melapor lagi besok.`)
+  }
+  if (pesan.includes('batas_laporan_proyek')) {
+    return new AppError('VALIDASI', 'Anda sudah melaporkan proyek ini dalam 24 jam terakhir. Untuk kondisi yang sama, konfirmasi laporan yang sudah ada.')
+  }
+  return null
+}
+
+/**
+ * Laporan milik pengguna ini dalam 24 jam terakhir (RLS: pelapor hanya bisa membaca laporannya sendiri).
+ * Untuk memberi tahu sisa kuota sebelum form diisi; batas sebenarnya tetap dijaga trigger database.
+ */
+export async function laporanSaya24Jam(penggunaId: string): Promise<LaporanSaya[]> {
+  const sejak = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+  const { data, error } = await supabase
+    .from('laporan')
+    .select('proyek_id, status, created_at')
+    .eq('pelapor_id', penggunaId)
+    .eq('is_demo', false)
+    .gt('created_at', sejak)
+  if (error) throw dariErrorSupabase(error, 'laporanSaya24Jam')
+  return data
 }
 
 export async function konfirmasiLaporan(laporanId: string): Promise<void> {

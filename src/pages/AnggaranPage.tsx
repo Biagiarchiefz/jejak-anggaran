@@ -1,11 +1,11 @@
 import { useState, type ReactNode } from 'react'
-import { ArrowDownRight, ArrowRight, ArrowUpRight, UsersRound } from 'lucide-react'
+import { ArrowDownRight, ArrowRight, ArrowUpRight, Download, UsersRound } from 'lucide-react'
 import { GrafikTren } from '../features/anggaran/components/GrafikAnggaran'
 import { GrafikUrusan } from '../features/anggaran/components/GrafikUrusan'
 import { SkeletonDashboardAnggaran } from '../features/anggaran/components/SkeletonAnggaran'
 import { SumberAnggaran } from '../features/anggaran/components/SumberAnggaran'
 import { SumberData } from '../components/common/SumberData'
-import { TautanTombol } from '../components/common/Button'
+import { Button, TautanTombol } from '../components/common/Button'
 import { Card } from '../components/common/Card'
 import { EmptyState } from '../components/common/EmptyState'
 import { ErrorState } from '../components/common/ErrorState'
@@ -13,7 +13,9 @@ import { KepalaHalaman } from '../components/common/KepalaHalaman'
 import { Pilihan } from '../components/common/Pilihan'
 import { PENDUDUK_KOTA_BANDUNG } from '../data/pendudukKotaBandung'
 import { useAnggaran } from '../features/anggaran/hooks/useAnggaran'
-import { anggaranPerWarga, bandingkanTahunSebelumnya, realisasiTerakhir, totalPerTahun, urusanPadaTahun } from '../utils/anggaran'
+import { anggaranKeCsv, anggaranPerWarga, bandingkanTahunSebelumnya, realisasiTerakhir, totalPerTahun, urusanPadaTahun } from '../utils/anggaran'
+import { tanggalBerkas } from '../utils/csv'
+import { unduhBerkas } from '../utils/unduh'
 import { formatPersen, formatRupiah, formatRupiahRingkas } from '../utils/format'
 import type { AnggaranDaerah } from '../services/anggaranService'
 
@@ -53,6 +55,17 @@ function DashboardAnggaran({ data }: { data: AnggaranDaerah[] }) {
       <Card data-muncul="" className="p-0! sm:p-0!">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3 sm:px-5">
           <h2 className="text-sm font-semibold tracking-normal text-ink-strong">Ringkasan APBD {tahun}</h2>
+          <div className="flex items-center gap-2">
+            {/* Semua tahun & bidang sekaligus, untuk analisis penyerapan di spreadsheet. */}
+            <Button
+              varian="kedua"
+              ukuran="sm"
+              className="print:hidden"
+              onClick={() => unduhBerkas(`apbd-kota-bandung-per-bidang-jejak-anggaran-${tanggalBerkas()}.csv`, anggaranKeCsv(data))}
+            >
+              <Download className="size-4" strokeWidth={1.5} aria-hidden />
+              Unduh CSV
+            </Button>
           {tren.length > 1 && (
             <Pilihan
               label="Tahun anggaran"
@@ -63,6 +76,7 @@ function DashboardAnggaran({ data }: { data: AnggaranDaerah[] }) {
               className="w-28"
             />
           )}
+          </div>
         </div>
 
         <dl className="grid grid-cols-2 gap-px bg-border lg:grid-cols-4">

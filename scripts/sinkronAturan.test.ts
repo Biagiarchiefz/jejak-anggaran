@@ -6,7 +6,14 @@ import { describe, expect, it } from 'vitest'
 import { RED_FLAG } from '../src/utils/redFlag.ts'
 import { statusBerikutnya } from '../src/utils/statusLaporan.ts'
 import { Constants } from '../src/types/database.ts'
-import { ALASAN_TOLAK_MIN, CATATAN_MAKS, DESKRIPSI_MAKS, DESKRIPSI_MIN } from '../src/utils/batasLaporan.ts'
+import {
+  ALASAN_TOLAK_MIN,
+  CATATAN_MAKS,
+  DESKRIPSI_MAKS,
+  DESKRIPSI_MIN,
+  LAPORAN_PER_HARI,
+  LAPORAN_PER_PROYEK_PER_HARI,
+} from '../src/utils/batasLaporan.ts'
 
 const FOLDER = join(import.meta.dirname, '..', 'supabase', 'migrations')
 
@@ -61,5 +68,20 @@ describe('batas isian: src/utils/batasLaporan.ts ↔ constraint tabel laporan', 
   it('panjang minimal alasan penolakan sama', () => {
     const sql = definisiTerakhir(/constraint laporan_alasan_tolak_wajib[\s\S]*?>= \d+\)/)
     expect(sql).toContain(`>= ${ALASAN_TOLAK_MIN})`)
+  })
+})
+
+describe('anti-spam: src/utils/batasLaporan.ts ↔ trigger laporan_batas_harian', () => {
+  const sql = definisiTerakhir(/create (or replace )?function public\.laporan_batas_harian[\s\S]*?\$\$;/)
+
+  it('batas harian, batas per proyek, dan jendela 24 jam sama', () => {
+    expect(sql).toContain(`jumlah_harian >= ${LAPORAN_PER_HARI}`)
+    expect(sql).toContain(`jumlah_proyek >= ${LAPORAN_PER_PROYEK_PER_HARI}`)
+    expect(sql).toContain("interval '24 hours'")
+  })
+
+  it('laporan ditolak dan laporan demo tidak dihitung', () => {
+    expect(sql).toContain("status <> 'ditolak'")
+    expect(sql).toContain('not is_demo')
   })
 })

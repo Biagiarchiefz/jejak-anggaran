@@ -63,7 +63,7 @@ Alur ini harus berjalan tanpa error di HP maupun desktop.
 
 | ID | Fitur |
 | --- | --- |
-| F10 | Rapor per kecamatan / per dinas: jumlah proyek, total pagu, jumlah laporan, rata-rata waktu respons |
+| F10 | Rapor per kecamatan / per dinas: jumlah proyek, total pagu, jumlah laporan, rata-rata waktu respons. **Selesai (2026-11-11)** di `/rapor`, ditambah unduh CSV (rapor, daftar proyek, APBD per bidang) dan cetak/PDF atas saran mentor. |
 | F11 | Mode bahasa awam: angka besar diterjemahkan ke padanan sehari-hari, dengan asumsi yang ditulis jelas |
 
 ## Data

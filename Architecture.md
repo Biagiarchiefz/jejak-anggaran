@@ -69,6 +69,7 @@ jejak-anggaran/
     │   ├── ProyekDetailPage.tsx# F3, F6, F7, F8, F9
     │   ├── LaporPage.tsx       # F4 form laporan (/proyek/:id/lapor)
     │   ├── TentangDataPage.tsx # F5
+    │   ├── RaporPage.tsx       # F10: rapor per kecamatan / dinas + unduh CSV + cetak
     │   ├── MasukPage.tsx       # login Supabase Auth
     │   ├── AdminDasborPage.tsx # /admin: dashboard ringkasan (peran admin / admin_demo)
     │   ├── AdminLaporanPage.tsx# /admin/laporan: tabel laporan + panel ubah status
@@ -101,6 +102,9 @@ jejak-anggaran/
     │   ├── admin/
     │   │   ├── components/     # DasborAdmin (ringkasan + antrean prioritas), AntreanLaporan (tabel + panel ubah status)
     │   │   └── hooks/          # useLaporanAdmin (dimuat di AdminLayout), useDataAdmin (outlet context)
+    │   ├── rapor/
+    │   │   ├── components/     # TabelRapor (tabel / kartu ponsel), SkeletonRapor
+    │   │   └── hooks/          # useRapor
     │   └── beranda/components/ # FlatProjectMap (hero), PitaStatistik, SeksiAnggaran, SeksiProyek, SeksiCaraKerja, CtaPenutup
     │                           # (SeksiLayanan, SeksiPengantar: tidak dipakai lagi)
     ├── hooks/                  # hook umum: useMuat (dasar), useAuth, useMediaQuery, useDigulir, useAnimasiMuncul, ...
@@ -110,7 +114,8 @@ jejak-anggaran/
     │   ├── proyekService.ts
     │   ├── anggaranService.ts  # + anggaranDemo.ts (data fiktif selama APBD belum dikurasi)
     │   ├── laporanService.ts   # buat laporan, upload foto, konfirmasi
-    │   └── adminService.ts     # data dashboard admin, ubah status
+    │   ├── adminService.ts     # data dashboard admin, ubah status
+    │   └── raporService.ts     # proyek + ringkasan laporan publik (tanpa isi/identitas) untuk rapor wilayah
     ├── utils/                  # logika murni, masing-masing punya *.test.ts
     │   ├── errors.ts           # AppError + pemetaan error Supabase
     │   ├── logger.ts
@@ -120,6 +125,8 @@ jejak-anggaran/
     │   ├── statusLaporan.ts    # transisi status (sinkron dengan transisi_status_valid)
     │   ├── wilayah.ts          # batas & kecamatan Kota Bandung (dipakai juga oleh scripts/)
     │   ├── petaTile.ts         # hitung tile Web Mercator untuk peta statis
+    │   ├── rapor.ts            # hitung rapor per kecamatan/satker, CSV rapor & daftar proyek, opsi di URL
+    │   ├── csv.ts              # susun CSV (RFC 4180, BOM UTF-8); unduh.ts = unduh berkas lewat Blob (efek DOM)
     │   ├── penandaDemo.ts, warna.ts, label.ts, anggaran.ts, filterProyek.ts, ringkasanLapor.ts, ...
     │   └── schemas.ts          # skema zod form
     ├── data/                   # batasKotaBandung.ts, pendudukKotaBandung.ts

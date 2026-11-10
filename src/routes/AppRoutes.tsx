@@ -11,6 +11,7 @@ const PetaPage = lazy(() => import('../pages/PetaPage'))
 const ProyekDetailPage = lazy(() => import('../pages/ProyekDetailPage'))
 const LaporPage = lazy(() => import('../pages/LaporPage'))
 const TentangDataPage = lazy(() => import('../pages/TentangDataPage'))
+const RaporPage = lazy(() => import('../pages/RaporPage'))
 const MasukPage = lazy(() => import('../pages/MasukPage'))
 const AdminDasborPage = lazy(() => import('../pages/AdminDasborPage'))
 const AdminLaporanPage = lazy(() => import('../pages/AdminLaporanPage'))
@@ -27,6 +28,7 @@ const router = createBrowserRouter([
       { path: 'proyek/:id', element: <ProyekDetailPage /> },
       { path: 'proyek/:id/lapor', element: <LaporPage /> },
       { path: 'tentang-data', element: <TentangDataPage /> },
+      { path: 'rapor', element: <RaporPage /> },
       { path: '*', element: <TidakDitemukanPage /> },
     ],
   },

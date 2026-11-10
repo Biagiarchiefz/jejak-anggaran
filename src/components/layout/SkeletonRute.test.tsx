@@ -28,6 +28,12 @@ describe('SkeletonRute (fallback Suspense per halaman)', () => {
     expect(container.querySelectorAll('.border-b.border-border-soft.px-4')).toHaveLength(4)
   })
 
+  it('/rapor: kerangka rapor wilayah', () => {
+    const { container } = render(<SkeletonRute pathname="/rapor" />)
+    expect(screen.getByText('Memuat rapor wilayah…')).toBeInTheDocument()
+    expect(container.querySelectorAll('.lg\\:grid-cols-4 > div')).toHaveLength(4)
+  })
+
   it('rute tak dikenal (404) memakai bentuk EmptyState: ikon, judul, kalimat, tombol', () => {
     const { container } = render(<SkeletonRute pathname="/halaman-tidak-ada" />)
     expect(screen.getByText('Memuat halaman…')).toBeInTheDocument()

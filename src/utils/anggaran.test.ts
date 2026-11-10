@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { anggaranPerWarga, bandingkanTahunSebelumnya, realisasiTerakhir, totalPerTahun, unikBerdasarkanId, urusanPadaTahun } from './anggaran'
+import { anggaranKeCsv, anggaranPerWarga, bandingkanTahunSebelumnya, realisasiTerakhir, totalPerTahun, unikBerdasarkanId, urusanPadaTahun } from './anggaran'
 
 const baris = [
   { tahun: 2025, urusan: 'Pendidikan', anggaran: 300, realisasi: 250 },
@@ -75,5 +75,23 @@ describe('anggaranPerWarga', () => {
   it('null bila jumlah penduduk tidak valid', () => {
     expect(anggaranPerWarga(1_000, 0)).toBeNull()
     expect(anggaranPerWarga(1_000, Number.NaN)).toBeNull()
+  })
+})
+
+describe('anggaranKeCsv', () => {
+  const sumber = { nama: 'DJPK Kemenkeu', url: 'https://djpk.kemenkeu.go.id/?p=5412', diakses_pada: '2026-11-10' }
+  it('urut tahun menurun lalu anggaran terbesar, dengan persen serapan 1 desimal', () => {
+    const csv = anggaranKeCsv([
+      { tahun: 2024, urusan: 'Kesehatan', anggaran: 200, realisasi: 180, is_demo: false, sumber },
+      { tahun: 2025, urusan: 'Pendidikan', anggaran: 300, realisasi: null, is_demo: false, sumber },
+      { tahun: 2024, urusan: 'Pendidikan', anggaran: 300, realisasi: 251, is_demo: false, sumber },
+    ])
+    const baris = csv.trim().split('\r\n')
+    expect(baris[0]).toBe('tahun,bidang,anggaran_rp,realisasi_rp,serapan_persen,data_demo,sumber,sumber_url,diakses_pada')
+    expect(baris.slice(1).map((b) => b.split(',').slice(0, 5).join(','))).toEqual([
+      '2025,Pendidikan,300,,',
+      '2024,Pendidikan,300,251,83.7',
+      '2024,Kesehatan,200,180,90',
+    ])
   })
 })

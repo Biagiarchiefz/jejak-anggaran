@@ -11,6 +11,7 @@ import { useSumberData } from '../hooks/useSumberData'
 import { LABEL_KATEGORI, LABEL_STATUS_LAPORAN, LABEL_STATUS_PROYEK } from '../utils/label'
 import { RED_FLAG } from '../utils/redFlag'
 import { ALUR_STATUS } from '../utils/statusLaporan'
+import { LAPORAN_PER_HARI } from '../utils/batasLaporan'
 
 const BAGIAN = [
   { id: 'sumber', judul: 'Sumber data' },
@@ -265,6 +266,12 @@ export default function TentangDataPage() {
             <p>
               Peran admin di Jejak Anggaran adalah <strong className="text-ink">simulasi instansi</strong>. Untuk tindak lanjut
               resmi, gunakan tombol “Teruskan ke LAPOR!” pada setiap laporan.
+            </p>
+            <p>
+              Untuk mencegah laporan palsu dan banjir laporan, setiap akun bisa mengirim paling banyak{' '}
+              <strong className="text-ink">{LAPORAN_PER_HARI} laporan dalam 24 jam</strong>, dan hanya{' '}
+              <strong className="text-ink">satu laporan untuk proyek yang sama</strong> dalam 24 jam. Warga lain yang melihat kondisi
+              serupa cukup menekan “Saya juga melihat”. Laporan baru dihitung untuk tanda “perlu perhatian” setelah diverifikasi admin.
             </p>
           </Bagian>
 

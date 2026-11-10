@@ -1,3 +1,5 @@
+import { keCsv } from './csv'
+
 type BarisAnggaran = {
   tahun: number
   urusan: string
@@ -58,4 +60,28 @@ export function realisasiTerakhir(
     if (t.tahun <= tahun && t.realisasi !== null) return { ...t, realisasi: t.realisasi }
   }
   return null
+}
+
+type BarisAnggaranCsv = BarisAnggaran & { is_demo: boolean; sumber: { nama: string; url: string | null; diakses_pada: string | null } }
+
+/**
+ * CSV APBD per tahun dan per bidang: anggaran, realisasi, dan persen serapan (realisasi ÷ anggaran, 1 desimal).
+ * Urut tahun menurun lalu anggaran terbesar. Sumber dan tanggal akses ikut di setiap baris agar data tetap bisa dilacak.
+ */
+export function anggaranKeCsv(baris: readonly BarisAnggaranCsv[]): string {
+  const urut = [...baris].sort((a, b) => b.tahun - a.tahun || b.anggaran - a.anggaran)
+  return keCsv(
+    ['tahun', 'bidang', 'anggaran_rp', 'realisasi_rp', 'serapan_persen', 'data_demo', 'sumber', 'sumber_url', 'diakses_pada'],
+    urut.map((b) => [
+      b.tahun,
+      b.urusan,
+      b.anggaran,
+      b.realisasi,
+      b.realisasi === null || b.anggaran === 0 ? null : Math.round((b.realisasi / b.anggaran) * 1000) / 10,
+      b.is_demo,
+      b.sumber.nama,
+      b.sumber.url,
+      b.sumber.diakses_pada,
+    ]),
+  )
 }

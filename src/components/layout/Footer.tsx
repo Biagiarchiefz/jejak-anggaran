@@ -13,6 +13,7 @@ const KOLOM: Kolom[] = [
       { label: 'Beranda', ke: '/' },
       { label: 'Anggaran kota', ke: '/anggaran' },
       { label: 'Peta proyek', ke: '/peta' },
+      { label: 'Rapor wilayah', ke: '/rapor' },
       { label: 'Laporkan kondisi', ke: '/peta' },
     ],
   },
@@ -29,8 +30,8 @@ const KOLOM: Kolom[] = [
     judul: 'Sumber resmi',
     tautan: [
       { label: 'DJPK Kemenkeu', ke: 'https://djpk.kemenkeu.go.id/' },
-      { label: 'SiRUP LKPP', ke: 'https://sirup.lkpp.go.id/' },
-      { label: 'Open Data Bandung', ke: 'https://opendata.bandung.go.id/' },
+      { label: 'SiRUP LKPP', ke: 'https://sirup.inaproc.id/sirup/' },
+      { label: 'BPS Kota Bandung', ke: 'https://bandungkota.bps.go.id/' },
     ],
   },
   {
@@ -66,7 +67,7 @@ export function Footer() {
   const adaDemo = useAdaDataDemo()
 
   return (
-    <footer className="bg-band-deep text-sm text-on-dark-muted">
+    <footer className="bg-band-deep text-sm text-on-dark-muted print:hidden">
       <div className="mx-auto max-w-7xl px-4 pt-16 pb-10 sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[1.4fr_repeat(4,1fr)] lg:gap-10">
           <div className="max-w-sm">

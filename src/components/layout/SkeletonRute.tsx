@@ -3,6 +3,7 @@ import { Skeleton, SkeletonBaris, SkeletonDaftarSumber, SkeletonEmptyState, Skel
 import { SkeletonHalamanAnggaran } from '../../features/anggaran/components/SkeletonAnggaran'
 import { SkeletonBeranda } from '../../features/beranda/components/SkeletonBeranda'
 import { SkeletonLapor } from '../../features/laporan/components/SkeletonLapor'
+import { SkeletonHalamanRapor } from '../../features/rapor/components/SkeletonRapor'
 import { SkeletonProyekDetail } from '../../features/proyek/components/SkeletonProyekDetail'
 import { SkeletonHalamanPeta } from '../../features/proyek/components/SkeletonPeta'
 
@@ -124,6 +125,8 @@ export function SkeletonRute({ pathname }: { pathname: string }) {
       return <SkeletonHalamanAnggaran />
     case '/peta':
       return <SkeletonHalamanPeta />
+    case '/rapor':
+      return <SkeletonHalamanRapor />
     case '/tentang-data':
       return <SkeletonTentangData />
     default:
