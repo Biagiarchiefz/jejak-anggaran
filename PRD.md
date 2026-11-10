@@ -56,7 +56,7 @@ Alur ini harus berjalan tanpa error di HP maupun desktop.
 
 | ID | Fitur | Kriteria selesai |
 | --- | --- | --- |
-| F12 | Masuk email + kata sandi & akun demo | Satu halaman masuk/daftar untuk semua peran, diarahkan sesuai peran setelah masuk. Tombol satu klik "Masuk sebagai warga/admin demo" dari env. Peran `admin_demo` hanya bisa mengubah laporan `is_demo` (RLS). |
+| F12 | Masuk email + kata sandi & akun demo | Satu halaman masuk/daftar untuk semua peran, diarahkan sesuai peran setelah masuk. Tombol satu klik "Masuk sebagai warga demo/admin juri" dari env. Akun admin juri berperan `admin` selama masa lomba; peran `admin_demo` (hanya laporan `is_demo`, dijaga RLS) tersedia sebagai opsi pembatasan. |
 | F13 | Dashboard admin | Jumlah laporan per status, proyek red flag aktif, rata-rata waktu respons (masuk → pertama kali ditanggapi), dan antrean prioritas (berpotensi memicu red flag dulu, lalu yang paling lama menunggu). |
 
 ### Prioritas 3 — hanya jika waktu cukup

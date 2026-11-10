@@ -18,7 +18,7 @@ import { Button, TautanTombol } from '../common/Button'
 import { EmptyState } from '../common/EmptyState'
 import { ErrorBoundary } from '../common/ErrorBoundary'
 import { Laci } from '../common/Laci'
-import { SkeletonHalaman } from '../common/Skeleton'
+import { SkeletonIsiAdmin, SkeletonPanelAdmin } from '../../features/admin/components/SkeletonAdmin'
 import { useLaporanAdmin } from '../../features/admin/hooks/useLaporanAdmin'
 import { useAdaDataDemo } from '../../hooks/useAdaDataDemo'
 import { useAuth } from '../../hooks/useAuth'
@@ -281,7 +281,7 @@ function PanelAdmin({ pengguna }: { pengguna: Pengguna }) {
           {/* key = path: setiap pindah halaman, konten baru memudar masuk. */}
           <div key={lokasi.pathname} className="animate-halaman-masuk motion-reduce:animate-none">
             <ErrorBoundary resetKey={lokasi.pathname}>
-              <Suspense fallback={<SkeletonHalaman />}>
+              <Suspense fallback={<SkeletonIsiAdmin pathname={lokasi.pathname} />}>
                 <Outlet context={muat} />
               </Suspense>
             </ErrorBoundary>
@@ -310,10 +310,12 @@ function PanelAdmin({ pengguna }: { pengguna: Pengguna }) {
  */
 export function AdminLayout() {
   const { pengguna, memuat } = useAuth()
+  const { pathname } = useLocation()
   if (memuat) {
     return (
-      <div className="mx-auto max-w-6xl px-4 py-10">
-        <SkeletonHalaman />
+      <div role="status">
+        <span className="sr-only">Memuat panel admin…</span>
+        <SkeletonPanelAdmin pathname={pathname} />
       </div>
     )
   }

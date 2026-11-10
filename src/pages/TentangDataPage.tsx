@@ -5,7 +5,7 @@ import { SumberData } from '../components/common/SumberData'
 import { EmptyState } from '../components/common/EmptyState'
 import { ErrorState } from '../components/common/ErrorState'
 import { KepalaHalaman } from '../components/common/KepalaHalaman'
-import { Skeleton } from '../components/common/Skeleton'
+import { SkeletonDaftarSumber } from '../components/common/Skeleton'
 import { useBagianAktif } from '../hooks/useBagianAktif'
 import { useSumberData } from '../hooks/useSumberData'
 import { LABEL_KATEGORI, LABEL_STATUS_LAPORAN, LABEL_STATUS_PROYEK } from '../utils/label'
@@ -100,10 +100,9 @@ function DaftarSumberTercatat() {
   const { data, error, memuat, muatUlang } = useSumberData()
   if (memuat && !data) {
     return (
-      <div role="status" className="space-y-2">
+      <div role="status">
         <span className="sr-only">Memuat daftar sumber…</span>
-        <Skeleton className="h-5 w-3/4" />
-        <Skeleton className="h-5 w-2/3" />
+        <SkeletonDaftarSumber />
       </div>
     )
   }

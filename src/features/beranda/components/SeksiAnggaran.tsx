@@ -10,7 +10,7 @@ import { EmptyState } from '../../../components/common/EmptyState'
 import { ErrorState } from '../../../components/common/ErrorState'
 import { JudulSeksi } from '../../../components/common/JudulSeksi'
 import { LabelSeksi } from '../../../components/common/LabelSeksi'
-import { Skeleton } from '../../../components/common/Skeleton'
+import { Skeleton, SkeletonBaris } from '../../../components/common/Skeleton'
 import { PENDUDUK_KOTA_BANDUNG } from '../../../data/pendudukKotaBandung'
 import type { StateMuat } from '../../../hooks/useMuat'
 import { anggaranPerWarga, bandingkanTahunSebelumnya, realisasiTerakhir, totalPerTahun, urusanPadaTahun } from '../../../utils/anggaran'
@@ -200,6 +200,123 @@ function KartuTren({ data, tahun }: { data: AnggaranDaerah[]; tahun: number }) {
   )
 }
 
+/** Baris sumber di dalam kartu (<SumberData dalamKartu>): garis putus-putus + satu baris teks kecil. */
+function SkeletonSumberKartu() {
+  return (
+    <div className="mt-3 border-t border-dashed border-border pt-2 text-xs">
+      <SkeletonBaris className="w-3/4 max-w-64" />
+    </div>
+  )
+}
+
+/** Placeholder <KartuUrusan>: judul, batang distribusi + keterangan, 5 baris urusan, sumber. */
+function SkeletonKartuUrusan() {
+  return (
+    <Card className="flex min-w-0 flex-col lg:col-span-7" aria-hidden>
+      <div className="text-xl leading-tight md:text-2xl">
+        <SkeletonBaris className="w-full" />
+        <SkeletonBaris className="w-2/3" />
+      </div>
+      <div className="mt-2 text-sm">
+        <SkeletonBaris className="w-3/4" />
+      </div>
+      <Skeleton className="mt-5 h-3 w-full rounded-full" />
+      <div className="mt-2 flex min-h-5 items-center gap-4 text-xs">
+        <SkeletonBaris className="w-28" />
+        <SkeletonBaris className="w-24" />
+      </div>
+
+      <div className="-mx-2 mt-4 space-y-1">
+        {['w-44', 'w-36', 'w-40', 'w-32', 'w-36'].map((lebarNama, i) => (
+          <div key={i} className="flex items-center gap-3 px-2 py-2.5">
+            <Skeleton className="size-10 shrink-0" />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-start justify-between gap-3 text-sm">
+                <SkeletonBaris className={`${lebarNama} max-w-full`} />
+                <SkeletonBaris className="w-16" />
+              </div>
+              <Skeleton className="mt-1.5 h-1.5 w-full rounded-full" />
+              <div className="mt-1 flex items-center justify-between gap-3 text-xs">
+                <SkeletonBaris className="w-32" />
+                <SkeletonBaris className="w-10" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-auto pt-2">
+        <SkeletonSumberKartu />
+      </div>
+    </Card>
+  )
+}
+
+/** Placeholder <KartuTren>: judul, angka total + badge, grafik tren mini, konteks warga, realisasi, sumber, tautan. */
+function SkeletonKartuTren() {
+  return (
+    <Card className="flex min-w-0 flex-col lg:col-span-5" aria-hidden>
+      <div className="text-xl leading-tight md:text-2xl">
+        <SkeletonBaris className="w-full" />
+        <SkeletonBaris className="w-1/2" />
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-end gap-x-3 gap-y-2">
+        <div>
+          <div className="text-xs">
+            <SkeletonBaris className="w-24" />
+          </div>
+          <Skeleton className="h-7.5 w-36" />
+        </div>
+        <Skeleton className="mb-0.5 h-5 w-40 rounded-full" />
+      </div>
+
+      {/* Rasio sama dengan viewBox <GrafikTrenMini> (320×96) + baris label tahun. */}
+      <div className="mt-5">
+        <Skeleton className="aspect-[320/96] w-full" />
+        <div className="mt-2 flex h-4 items-center justify-between">
+          {Array.from({ length: 4 }, (_, i) => (
+            <Skeleton key={i} className="h-3 w-8" />
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-5 flex items-start gap-3 rounded-lg border border-brand/15 bg-brand-soft/50 p-4">
+        <div className="size-10 shrink-0 rounded-md bg-surface shadow-edge" />
+        <div className="min-w-0 flex-1">
+          <div className="text-sm">
+            <SkeletonBaris className="w-full" />
+            <SkeletonBaris className="w-11/12" />
+            <SkeletonBaris className="w-1/2" />
+          </div>
+          <div className="mt-1 text-xs">
+            <SkeletonBaris className="w-full" />
+            <SkeletonBaris className="w-2/3" />
+          </div>
+          <div className="mt-1 text-xs">
+            <SkeletonBaris className="w-3/4" />
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-5">
+        <div className="flex items-baseline justify-between gap-3 text-sm">
+          <SkeletonBaris className="w-28" />
+          <SkeletonBaris className="w-32" />
+        </div>
+        <Skeleton className="mt-1.5 h-2 w-full rounded-full" />
+      </div>
+
+      <div className="mt-2">
+        <SkeletonSumberKartu />
+      </div>
+      <div className="mt-auto pt-6 text-sm">
+        <SkeletonBaris className="w-56" />
+      </div>
+    </Card>
+  )
+}
+
 /** Ringkasan anggaran di Beranda: belanja per urusan + tren (2 kolom desktop). Dashboard lengkap ada di /anggaran. */
 export function SeksiAnggaran({ anggaran }: { anggaran: StateMuat<AnggaranDaerah[]> }) {
   const { data, error, memuat, muatUlang } = anggaran
@@ -221,8 +338,8 @@ export function SeksiAnggaran({ anggaran }: { anggaran: StateMuat<AnggaranDaerah
         {memuat && !data ? (
           <div role="status" className="grid gap-6 lg:grid-cols-12">
             <span className="sr-only">Memuat ringkasan anggaran…</span>
-            <Skeleton className="h-96 rounded-lg lg:col-span-7" />
-            <Skeleton className="h-96 rounded-lg lg:col-span-5" />
+            <SkeletonKartuUrusan />
+            <SkeletonKartuTren />
           </div>
         ) : error ? (
           <ErrorState pesan={error.pesan} onCobaLagi={muatUlang} />

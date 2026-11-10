@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { IkonPin, KartuPin } from '../../proyek/components/KartuPinProyek'
+import { KartuPinSkeleton } from '../../proyek/components/KartuProyekSkeleton'
 import { Button } from '../../../components/common/Button'
 import { LabelSeksi } from '../../../components/common/LabelSeksi'
 import { PitaPenuh } from '../../../components/common/PitaPenuh'
@@ -27,6 +28,15 @@ const JARAK_X = 48
 const JARAK_Y = 88
 // Desktop: 20% kiri lapisan tertutup gradien ke arah kolom teks, 64px atas tertutup header; kota dipusatkan di sisanya.
 const KELAS_JANGKAR = 'absolute top-1/2 left-1/2 lg:top-[calc(50%+2rem)] lg:left-[60%]'
+
+/** Pin bayangan selama proyek dimuat, tersebar di beberapa kecamatan agar peta tidak kosong. */
+const TITIK_PIN_MEMUAT: ReadonlyArray<readonly [number, number]> = [
+  [-6.9218, 107.607], // Alun-alun (Regol)
+  [-6.887, 107.592], // Sukajadi
+  [-6.915, 107.66], // Antapani
+  [-6.949, 107.689], // Gedebage
+  [-6.94, 107.585], // Bojongloa Kaler
+]
 
 /** Posisi koordinat terhadap titik jangkar (pusat kota) setelah peta diskalakan. */
 function posisiDiPeta(lat: number, lng: number, skala: number) {
@@ -248,7 +258,7 @@ export function FlatProjectMap({ judul, deskripsi, aksi, proyek }: FlatProjectMa
 
             <div className={KELAS_JANGKAR}>
               <GarisBatasKota gayaGrid={gayaGrid} />
-              {semua.length > 0 && (
+              {semua.length > 0 ? (
                 <ul aria-label="Proyek di Kota Bandung">
                   {semua.map((p) => {
                     const { x, y } = posisiDiPeta(p.lat, p.lng, skala)
@@ -266,7 +276,19 @@ export function FlatProjectMap({ judul, deskripsi, aksi, proyek }: FlatProjectMa
                     )
                   })}
                 </ul>
-              )}
+              ) : memuatAwal ? (
+                <div aria-hidden className="pointer-events-none">
+                  {TITIK_PIN_MEMUAT.map(([lat, lng]) => {
+                    const { x, y } = posisiDiPeta(lat, lng, skala)
+                    // Ukuran dan titik nol sama dengan <PinProyek>: ujung bawah pin di koordinatnya.
+                    return (
+                      <div key={`${lat},${lng}`} className="absolute z-10" style={{ left: x, top: y }}>
+                        <IkonPin className="absolute bottom-0 left-0 size-8 -translate-x-1/2 opacity-40 motion-safe:animate-pulse" />
+                      </div>
+                    )
+                  })}
+                </div>
+              ) : null}
 
               {desktop && pilihan && posisiPilihan && (
                 <KartuPin
@@ -314,6 +336,10 @@ export function FlatProjectMap({ judul, deskripsi, aksi, proyek }: FlatProjectMa
               </a>
             </div>
           </div>
+
+          {!desktop && memuatAwal && (
+            <KartuPinSkeleton className="relative mx-auto mt-3 max-w-sm" />
+          )}
 
           {!desktop && pilihan && (
             <KartuPin proyek={pilihan} id={idKartu} onTutup={() => setIdPilihan(null)} className="relative mx-auto mt-3 max-w-sm" />

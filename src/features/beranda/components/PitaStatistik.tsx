@@ -4,6 +4,7 @@ import { SumberData } from '../../../components/common/SumberData'
 import { ErrorState } from '../../../components/common/ErrorState'
 import { LabelSeksi } from '../../../components/common/LabelSeksi'
 import { PitaPenuh } from '../../../components/common/PitaPenuh'
+import { SkeletonStatistik } from './SkeletonBeranda'
 import { useAngkaBergerak } from '../../../hooks/useAngkaBergerak'
 import type { StateMuat } from '../../../hooks/useMuat'
 import { totalPerTahun, urusanPadaTahun } from '../../../utils/anggaran'
@@ -47,15 +48,6 @@ function Statistik({ target, format, label, sumber }: StatistikProps) {
 
 const formatBulat = (n: number) => String(Math.round(n))
 
-function SkeletonStatistik() {
-  return (
-    <div className="border-t border-white/15 pt-6" aria-hidden>
-      <div className="h-12 w-32 animate-pulse rounded-md bg-white/10" />
-      <div className="mt-3 h-4 w-40 animate-pulse rounded-md bg-white/10" />
-    </div>
-  )
-}
-
 type PitaStatistikProps = {
   anggaran: StateMuat<AnggaranDaerah[]>
   proyek: StateMuat<ProyekDenganRedFlag[]>
@@ -86,6 +78,11 @@ export function PitaStatistik({ anggaran, proyek }: PitaStatistikProps) {
         </div>
       </div>
 
+      {((anggaran.memuat && !anggaran.data) || (proyek.memuat && !proyek.data)) && (
+        <p role="status" className="sr-only">
+          Memuat angka statistik…
+        </p>
+      )}
       <div data-muncul-anak="" className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
         {anggaran.memuat && !anggaran.data ? (
           <SkeletonStatistik />

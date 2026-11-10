@@ -6,8 +6,8 @@ import { Card } from '../components/common/Card'
 import { ErrorState } from '../components/common/ErrorState'
 import { KELAS_GALAT, KELAS_INPUT, KELAS_LABEL } from '../components/common/gayaForm'
 import { KepalaHalaman } from '../components/common/KepalaHalaman'
-import { SkeletonHalaman } from '../components/common/Skeleton'
 import { useAuth } from '../hooks/useAuth'
+import { SkeletonLapor } from '../features/laporan/components/SkeletonLapor'
 import { useProyekDetail } from '../features/proyek/hooks/useProyekDetail'
 import { pesanError } from '../utils/errors'
 import { kompresFoto, type FotoTerkompres } from '../utils/kompresFoto'
@@ -212,7 +212,7 @@ export default function LaporPage() {
   const { pengguna, memuat: memuatAuth } = useAuth()
   const { data, error, memuat, muatUlang } = useProyekDetail(id)
 
-  if (memuatAuth || (memuat && !data)) return <SkeletonHalaman baris={3} />
+  if (memuatAuth || (memuat && !data)) return <SkeletonLapor />
   if (error) return <ErrorState halaman pesan={error.pesan} onCobaLagi={error.code === 'TIDAK_DITEMUKAN' ? undefined : muatUlang} />
   if (!data) return null
 

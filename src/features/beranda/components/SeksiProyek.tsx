@@ -1,12 +1,12 @@
 import { ArrowRight } from 'lucide-react'
 import { KartuProyek } from '../../proyek/components/KartuProyek'
+import { GridKartuProyekSkeleton } from '../../proyek/components/KartuProyekSkeleton'
 import { TautanTombol } from '../../../components/common/Button'
 import { EmptyState } from '../../../components/common/EmptyState'
 import { ErrorState } from '../../../components/common/ErrorState'
 import { JudulSeksi } from '../../../components/common/JudulSeksi'
 import { LabelSeksi } from '../../../components/common/LabelSeksi'
 import { PitaPenuh } from '../../../components/common/PitaPenuh'
-import { Skeleton } from '../../../components/common/Skeleton'
 import type { StateMuat } from '../../../hooks/useMuat'
 import { pilihProyekSorotan } from '../../../utils/filterProyek'
 import type { ProyekDenganRedFlag } from '../../../services/proyekService'
@@ -40,12 +40,7 @@ export function SeksiProyek({ proyek }: { proyek: StateMuat<ProyekDenganRedFlag[
 
       <div className="mt-10">
         {memuat && !data ? (
-          <div role="status" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
-            <span className="sr-only">Memuat daftar proyek…</span>
-            {Array.from({ length: 3 }, (_, i) => (
-              <Skeleton key={i} className="h-80 rounded-lg" />
-            ))}
-          </div>
+          <GridKartuProyekSkeleton jumlah={JUMLAH_KARTU} label="Memuat daftar proyek…" />
         ) : error ? (
           <ErrorState pesan={error.pesan} onCobaLagi={muatUlang} />
         ) : sorotan.length === 0 ? (

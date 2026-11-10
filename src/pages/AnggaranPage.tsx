@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react'
 import { ArrowDownRight, ArrowRight, ArrowUpRight, UsersRound } from 'lucide-react'
 import { GrafikTren } from '../features/anggaran/components/GrafikAnggaran'
 import { GrafikUrusan } from '../features/anggaran/components/GrafikUrusan'
+import { SkeletonDashboardAnggaran } from '../features/anggaran/components/SkeletonAnggaran'
 import { SumberAnggaran } from '../features/anggaran/components/SumberAnggaran'
 import { SumberData } from '../components/common/SumberData'
 import { TautanTombol } from '../components/common/Button'
@@ -10,7 +11,6 @@ import { EmptyState } from '../components/common/EmptyState'
 import { ErrorState } from '../components/common/ErrorState'
 import { KepalaHalaman } from '../components/common/KepalaHalaman'
 import { Pilihan } from '../components/common/Pilihan'
-import { Skeleton } from '../components/common/Skeleton'
 import { PENDUDUK_KOTA_BANDUNG } from '../data/pendudukKotaBandung'
 import { useAnggaran } from '../features/anggaran/hooks/useAnggaran'
 import { anggaranPerWarga, bandingkanTahunSebelumnya, realisasiTerakhir, totalPerTahun, urusanPadaTahun } from '../utils/anggaran'
@@ -196,14 +196,7 @@ export default function AnggaranPage() {
       />
 
       {memuat && !data ? (
-        <div role="status" className="space-y-5">
-          <span className="sr-only">Memuat data anggaran…</span>
-          <Skeleton className="h-52 rounded-lg" />
-          <div className="grid gap-5 lg:grid-cols-5">
-            <Skeleton className="h-96 rounded-lg lg:col-span-3" />
-            <Skeleton className="h-96 rounded-lg lg:col-span-2" />
-          </div>
-        </div>
+        <SkeletonDashboardAnggaran />
       ) : error ? (
         <ErrorState halaman pesan={error.pesan} onCobaLagi={muatUlang} />
       ) : !data || data.length === 0 ? (

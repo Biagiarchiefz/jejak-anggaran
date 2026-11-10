@@ -5,6 +5,7 @@ import { BadgeRedFlag } from '../components/common/BadgeRedFlag'
 import { BadgeStatusProyek } from '../components/common/BadgeStatus'
 import { LembarProyek } from '../features/proyek/components/LembarProyek'
 import { PetaProyek, type PermintaanFokus } from '../features/proyek/components/PetaProyek'
+import { SkeletonHasilPeta } from '../features/proyek/components/SkeletonPeta'
 import { SumberData } from '../components/common/SumberData'
 import { Button } from '../components/common/Button'
 import { EmptyState } from '../components/common/EmptyState'
@@ -13,7 +14,6 @@ import { KepalaHalaman } from '../components/common/KepalaHalaman'
 import { KolomCari } from '../components/common/KolomCari'
 import { Laci } from '../components/common/Laci'
 import { Pilihan } from '../components/common/Pilihan'
-import { Skeleton } from '../components/common/Skeleton'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { useProyekList } from '../features/proyek/hooks/useProyekList'
 import {
@@ -322,11 +322,7 @@ export default function PetaPage() {
       </Laci>
 
       {memuat && !data ? (
-        <div role="status" className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_24rem] xl:grid-cols-[minmax(0,1fr)_26rem]">
-          <span className="sr-only">Memuat peta proyek…</span>
-          <Skeleton className="h-[50vh] min-h-80 rounded-lg md:h-[60vh]" />
-          <Skeleton className="hidden h-[60vh] rounded-lg lg:block" />
-        </div>
+        <SkeletonHasilPeta />
       ) : error ? (
         <ErrorState halaman pesan={error.pesan} onCobaLagi={muatUlang} />
       ) : semua.length === 0 ? (

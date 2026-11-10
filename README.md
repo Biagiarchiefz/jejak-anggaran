@@ -1,123 +1,150 @@
 # Jejak Anggaran
 
-Website tempat warga Kota Bandung melacak uang publik: **anggaran → proyek di peta → kondisi nyata yang diverifikasi warga.**
-Dibuat untuk lomba WIA MIA 2026 (tema: *Designing Digital Futures – Powering Public Transparency*) sebagai pelengkap [LAPOR!](https://www.lapor.go.id/), bukan pengganti.
+**Ikuti uang publik Kota Bandung, dari anggaran sampai ke lapangan.**
 
-## Tech stack
+Jejak Anggaran membantu warga menjawab tiga pertanyaan sederhana: *berapa anggarannya, dipakai untuk proyek apa, dan bagaimana kondisinya sekarang?*
+Angka APBD dan paket proyek dari sumber resmi disajikan dalam bahasa awam, setiap proyek ditandai di peta, lalu warga melaporkan dan mengonfirmasi kondisi nyatanya di lapangan.
+
+Dibuat untuk lomba **WIA MIA 2026** dengan tema *Designing Digital Futures – Powering Public Transparency*.
+Jejak Anggaran adalah **pelengkap [LAPOR!](https://www.lapor.go.id/)**, bukan penggantinya: setiap laporan bisa diteruskan ke kanal resmi pemerintah dengan satu tombol.
+
+---
+
+## Akses untuk juri
+
+Buka halaman **Masuk** (`/masuk`). Tersedia tombol satu klik **Warga demo** dan **Admin juri**, atau ketik kredensial berikut:
+
+| Akun | Email | Kata sandi | Yang bisa dicoba |
+| --- | --- | --- | --- |
+| **Warga demo** | `warga.demo@jejakanggaran.id` | `Warga-HPVi7398-wkfV!` | Melapor kondisi proyek dengan foto, dan mengonfirmasi laporan warga lain |
+| **Admin juri** | `admin.juri@jejakanggaran.id` | `Juri-CHwY9777-YgKk!` | Panel admin: dashboard tindak lanjut, verifikasi, dan mengubah status **semua** laporan |
+
+Tanpa masuk pun, semua data anggaran, peta, dan detail proyek bisa dibuka.
+
+### Panduan mencoba dalam 5 menit
+
+1. **Sebagai pengunjung (tanpa masuk)**
+   - **Beranda**: peta Kota Bandung dengan pin proyek, angka ringkas APBD, dan proyek yang perlu perhatian.
+   - **Anggaran**: total APBD, pembagian per urusan, tren antartahun, dan artinya per warga ("setara Rp … per warga per hari").
+   - **Peta proyek**: cari dan saring proyek per kecamatan atau status, lalu klik pin untuk melihat ringkasannya.
+   - **Detail proyek**: pagu, nilai kontrak, pelaksana, tautan ke SiRUP/LPSE, linimasa foto, dan laporan warga.
+2. **Sebagai warga demo**
+   - Di halaman detail proyek, tekan **Laporkan kondisi**, pilih jenis masalah, ceritakan kondisinya, lalu unggah foto.
+   - Pada laporan warga lain, tekan **Saya juga melihat** untuk mengonfirmasi.
+3. **Sebagai admin juri**
+   - Setelah masuk, Anda langsung dibawa ke **panel admin**: jumlah laporan per status, rata-rata waktu respons, dan antrean prioritas.
+   - Buka **Laporan warga**, pilih satu laporan, lalu ubah statusnya: *Diverifikasi → Ditindaklanjuti → Selesai*, atau *Ditolak* dengan catatan.
+   - Kembali ke halaman proyeknya: riwayat perubahan status langsung tampil untuk publik.
+
+> Untuk saat ini, proyek, laporan, dan angka anggaran yang tampil adalah **data demo (fiktif)** untuk memperlihatkan alur aplikasi; nama proyek demo selalu diberi tanda "(fiktif)". Selama data demo tampil, catatan di bagian bawah halaman memberitahukannya. Laporan negatif simulasi hanya ditempelkan pada proyek fiktif, tidak pernah pada proyek nyata.
+
+---
+
+## Masalah yang ingin diselesaikan
+
+Data anggaran daerah sebenarnya terbuka (DJPK Kemenkeu, SiRUP LKPP, LPSE), tetapi tersebar di banyak situs, berbentuk tabel teknis, dan tidak terhubung dengan kondisi nyata di lapangan. Akibatnya warga sulit tahu proyek apa yang dibiayai di sekitar rumahnya, dan kanal pengaduan resmi kerap menerima laporan tanpa konteks anggaran.
+
+Jejak Anggaran menyambungkan ketiganya dalam satu alur:
+
+```
+Anggaran (APBD)  →  Proyek di peta (SiRUP/LPSE)  →  Kondisi nyata (laporan + konfirmasi warga)
+```
+
+## Fitur utama
+
+| Fitur | Penjelasan singkat |
+| --- | --- |
+| **Dashboard anggaran** | Total APBD, pembagian per urusan, tren antartahun, realisasi, dan konteks per warga. |
+| **Peta proyek** | Semua proyek di peta Kota Bandung, dengan pencarian dan saringan status/kecamatan, tersinkron dengan daftar di sampingnya. |
+| **Detail proyek** | Pagu, nilai kontrak, pelaksana, kode RUP, linimasa foto lapangan, dan semua laporan warga. |
+| **Lapor kondisi** | Form sederhana dengan foto. Foto dikompres di perangkat dan data lokasi GPS di dalamnya dihapus sebelum dikirim. |
+| **Konfirmasi warga** | Warga lain bisa menekan "Saya juga melihat", sehingga laporan yang banyak dikonfirmasi lebih menonjol. |
+| **Tanda "perlu perhatian"** | Proyek yang tercatat selesai tetapi menerima beberapa laporan kerusakan terverifikasi ditandai otomatis. Ini **bukan tuduhan**, hanya sinyal untuk diperhatikan. |
+| **Status dan riwayat terbuka** | Setiap perubahan status laporan tercatat (kapan dan catatannya) dan bisa dilihat publik. |
+| **Teruskan ke LAPOR!** | Ringkasan laporan siap disalin untuk dikirim ke kanal resmi pemerintah. |
+| **Panel admin** | Dashboard tindak lanjut, antrean prioritas verifikasi, dan pengubahan status laporan. |
+| **Halaman Tentang Data** | Dari mana setiap angka berasal, cara kurasi, aturan tanda "perlu perhatian", dan keterbatasan data. |
+
+## Prinsip yang kami pegang
+
+- **Setiap angka punya sumber.** Angka anggaran, pagu, dan kontrak selalu disertai nama sumber, tanggal akses, dan tautannya.
+- **Jujur soal data demo.** Data fiktif selalu diberitahukan, dan tidak pernah dicampur dengan tuduhan pada proyek nyata.
+- **Privasi pelapor.** Nama dan email pelapor tidak pernah tampil di halaman publik. Tidak ada NIK atau data penerima bantuan.
+- **Tanpa klaim berlebihan.** Data dikurasi manual dari situs resmi (tanpa scraping), tidak diklaim *real-time*, dan tidak diklaim "terverifikasi AI".
+- **Untuk semua warga.** Bahasa awam, dirancang mulai dari layar ponsel 375px, bisa dipakai dengan keyboard dan pembaca layar, dan menghormati pengaturan "kurangi gerak".
+
+## Tampilan dan pengalaman
+
+- Desain bersih dengan aksen biru langit, mobile-first, dengan navigasi bawah di ponsel.
+- Hero Beranda berupa peta Kota Bandung dengan pin proyek dan kartu ringkasan.
+- **Loading skeleton yang meniru bentuk asli** setiap halaman (bukan kotak polos), sehingga tata letak tidak meloncat saat data datang.
+- Setiap data punya tiga keadaan yang jelas: sedang dimuat, kosong (dengan saran tindakan), dan gagal (dengan tombol "Coba lagi").
+
+---
+
+## Teknologi
 
 | Bagian | Teknologi |
 | --- | --- |
 | Bahasa | TypeScript (strict) |
 | Frontend | React 19 + Vite, React Router 7 |
-| Styling | Tailwind CSS 4, font Inter (`@fontsource-variable/inter`), ikon lucide-react |
-| Grafik & peta | Recharts, Leaflet + react-leaflet (tile OpenStreetMap) |
-| Backend | Supabase (Postgres + Row Level Security, Auth email + kata sandi, Storage foto) |
-| Validasi & data | zod (form + CSV), papaparse (skrip seed) |
-| Test & kualitas | Vitest + React Testing Library, ESLint |
+| Styling | Tailwind CSS 4, font Inter, ikon lucide-react |
+| Grafik dan peta | Recharts, Leaflet + react-leaflet (peta OpenStreetMap) |
+| Backend | Supabase: Postgres dengan Row Level Security, Auth email + kata sandi, Storage foto |
+| Validasi | zod (form dan data CSV) |
+| Kualitas | Vitest + React Testing Library (189 test), ESLint, TypeScript strict |
 | Deploy | Vercel |
 
-## Cara menjalankan
+Keamanan data dijaga di database, bukan hanya di tampilan: aturan siapa boleh membuat laporan, mengonfirmasi, dan mengubah status ditegakkan oleh Row Level Security di Postgres.
 
-Butuh **Node.js ≥ 22.18**. Untuk database lokal, butuh juga **Docker** dan [Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started).
+## Menjalankan secara lokal
+
+Butuh **Node.js 22.18 atau lebih baru**. Untuk database lokal, butuh juga **Docker** dan [Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started).
 
 ```bash
-# 1. Clone
 git clone https://github.com/Biagiarchiefz/jejak-anggaran.git
 cd jejak-anggaran
-
-# 2. Install
 npm install
-cp .env.example .env.local          # isi VITE_SUPABASE_URL dan VITE_SUPABASE_ANON_KEY
+cp .env.example .env.local     # isi alamat dan anon key Supabase
 
-# 3. Siapkan database lokal
-supabase start                      # catat API URL + anon key yang dicetak, masukkan ke .env.local
-supabase db reset                   # terapkan migrasi + supabase/seed.sql
+supabase start                 # jalankan Supabase lokal
+supabase db reset              # siapkan tabel dan data awal
 
-# 4. Run
-npm run dev                         # buka http://localhost:5173
+npm run dev                    # buka http://localhost:5173
 ```
-
-Catatan:
-
-- Tanpa `.env.local` aplikasi tetap terbuka, tetapi setiap data tampil dalam state error "Coba lagi".
-- Selama data APBD resmi belum diisi, set `VITE_DATA_DEMO_ANGGARAN=true` agar dashboard anggaran memakai data demo fiktif.
-- Masuk memakai **email + kata sandi** di `/masuk`. Warga bisa mendaftar sendiri di halaman yang sama.
-- Selama masa lomba, matikan **Authentication → Sign In / Providers → Email → Confirm email** di Supabase agar akun baru langsung aktif tanpa menunggu email (email bawaan Supabase dibatasi beberapa kiriman per jam).
-
-### Peran dan akun demo untuk juri
-
-| Peran | Bisa apa | Cara membuat |
-| --- | --- | --- |
-| `warga` | Melapor dan mengonfirmasi laporan | Daftar sendiri di `/masuk` |
-| `admin_demo` | Membuka panel admin, mengubah status **laporan demo saja** (dijaga RLS) | Akun demo untuk juri, kredensialnya publik |
-| `admin` | Mengubah status semua laporan | Hanya untuk tim. **Jangan pernah** membagikan kredensialnya |
-
-Menyiapkan akun demo (sekali saja per project Supabase):
-
-1. Supabase → **Authentication → Users → Add user → Create new user**, centang *Auto Confirm User*. Buat dua akun, misalnya `warga.demo@jejakanggaran.id` dan `admin.demo@jejakanggaran.id`.
-2. Jalankan di SQL Editor:
-
-   ```sql
-   update public.profiles set peran = 'admin_demo'   -- BUKAN 'admin': kredensial ini dibagikan ke juri
-   where id = (select id from auth.users where email = 'admin.demo@jejakanggaran.id');
-   ```
-
-3. Isi `VITE_DEMO_WARGA_EMAIL`/`_PASSWORD` dan `VITE_DEMO_ADMIN_EMAIL`/`_PASSWORD` di `.env.local` dan di env Vercel. Halaman masuk lalu menampilkan tombol **Masuk sebagai warga demo / admin demo** (satu klik, tanpa mengetik).
-4. Cantumkan kredensial yang sama di dokumen submisi lomba.
-
-Akun `admin` sungguhan untuk tim dibuat dengan cara yang sama, dengan `peran = 'admin'`.
 
 Perintah lain:
 
 ```bash
-npm run build                                   # build produksi ke dist/
-npm run typecheck && npm run lint && npm run test   # wajib lulus sebelum commit
-npm run data:seed                               # validasi data/raw/*.csv → tulis supabase/seed.sql
+npm run build                                       # build produksi
+npm run typecheck && npm run lint && npm run test   # pemeriksaan kualitas
+npm run data:seed                                   # validasi data CSV lalu buat data awal database
 ```
-
-## Progress saat ini
-
-**Sudah jadi (semua halaman dan fitur prioritas 1–2 di [PRD.md](PRD.md)):**
-
-- **Beranda**: hero peta Kota Bandung dengan pin proyek, pita statistik, ringkasan anggaran, proyek sorotan, dan penjelasan cara kerja.
-- **Anggaran (F1)**: total APBD, pembagian per urusan, tren antar tahun, dan anggaran per warga. Setiap angka disertai sumber dan tanggal akses.
-- **Peta proyek (F2)**: peta Leaflet + daftar proyek, filter status/kecamatan, dan pencarian cepat.
-- **Detail proyek (F3)**: pagu, kontrak, pelaksana, sumber SiRUP/LPSE, linimasa foto, dan daftar laporan warga.
-- **Lapor kondisi (F4)**: form untuk warga yang sudah masuk, validasi zod, dan kompresi foto di browser (EXIF/GPS dibuang).
-- **Tentang Data (F5)**: sumber tiap dataset, cara kurasi, aturan red flag, dan keterbatasan data.
-- **Konfirmasi warga (F6), red flag otomatis (F7), status + audit trail (F8), teruskan ke LAPOR! (F9).**
-- **Masuk/daftar** dengan email + kata sandi, tombol akun demo untuk juri, dan **panel admin** dengan layout dan sidebar sendiri (`/admin` dashboard, `/admin/laporan` daftar laporan) berisi dashboard (jumlah laporan per status, proyek red flag, rata-rata waktu respons, antrean prioritas) serta verifikasi dan ubah status laporan.
-- Pipeline data CSV → `seed.sql` dengan validasi, serta 142 test (logika, komponen kunci, dan sinkronisasi aturan TypeScript ↔ SQL).
-
-**Belum selesai:**
-
-- Data nyata belum dikurasi: `anggaran_daerah.csv` masih kosong, dan `proyek.csv` baru berisi 9 proyek **demo** fiktif (target 10–20 proyek nyata).
-- Belum di-deploy ke Vercel dan Supabase remote.
-- Fitur prioritas 3 (F10 rapor per kecamatan/dinas, F11 mode bahasa awam) belum dikerjakan.
 
 ## Data
 
-Data dikurasi **manual** di `data/raw/` (tanpa scraping), lalu `npm run data:seed` memvalidasinya dan menulis `supabase/seed.sql` (jangan diedit manual).
+Data dikurasi **manual** di folder `data/raw/` dari situs resmi, lalu divalidasi otomatis sebelum masuk database: tipe angka, koordinat harus berada di dalam Kota Bandung, kecamatan harus salah satu dari 30 kecamatan, dan proyek nyata wajib punya tautan sumber serta tanggal akses.
 
-- Angka ditulis polos (`1250000000`), tanggal `YYYY-MM-DD`, koordinat desimal dengan titik.
-- Proyek nyata (`is_demo=false`) wajib punya `sumber_rup_url` dan `diakses_pada`. Jika `nilai_kontrak` diisi, `sumber_lpse_url` juga wajib.
-- `kecamatan` harus salah satu dari 30 kecamatan Kota Bandung (`src/utils/wilayah.ts`).
-- Laporan demo **hanya** boleh untuk proyek `is_demo=true`. Skrip menolak data yang melanggar.
-- `foto_path` (opsional): simpan foto di `public/foto-proyek/`, lalu isi `/foto-proyek/nama-berkas.webp`.
+| Data | Sumber |
+| --- | --- |
+| APBD Kota Bandung | DJPK Kementerian Keuangan, Open Data Kota Bandung |
+| Paket proyek, pagu | SiRUP LKPP |
+| Nilai kontrak, pelaksana | LPSE Kota Bandung / Opentender |
+| Lokasi dan foto awal | Dikumpulkan tim |
+| Jumlah penduduk (konteks per warga) | BPS Kota Bandung |
 
-Untuk project remote, jalankan isi `supabase/seed.sql` di SQL editor. Seed aman diulang: data resmi di-upsert, dan hanya laporan demo yang dibuat ulang.
+## Status pengembangan
 
-## Deploy (Vercel)
+**Sudah berjalan:** semua halaman dan fitur prioritas di atas, termasuk masuk/daftar, panel admin, tanda "perlu perhatian" otomatis, riwayat status, teruskan ke LAPOR!, dan loading skeleton di setiap halaman.
 
-1. `supabase link --project-ref <ref>` lalu `supabase db push`, kemudian jalankan `supabase/seed.sql` di project remote.
-2. Di Supabase → Authentication → URL Configuration, tambahkan domain Vercel ke *Site URL* dan *Redirect URLs*.
-3. Di Vercel, isi env `VITE_SUPABASE_URL` dan `VITE_SUPABASE_ANON_KEY`. **Jangan** pernah memakai service role key.
+**Rencana berikutnya:**
 
-`vercel.json` sudah mengarahkan semua route ke `index.html` (SPA).
+- Mengisi data APBD resmi dan 10–20 proyek nyata hasil kurasi dari SiRUP/LPSE (saat ini seluruh data masih data demo; alur dan validasinya sudah siap).
+- Rapor per kecamatan dan per dinas.
+- Mode bahasa yang lebih awam lagi untuk istilah anggaran.
 
 ## Dokumentasi lain
 
-- [PRD.md](PRD.md): scope dan daftar fitur
+- [PRD.md](PRD.md): ruang lingkup dan daftar fitur
 - [Architecture.md](Architecture.md): arsitektur, struktur folder, model data, aturan akses
 - [DESIGN.md](DESIGN.md): panduan gaya visual
-- [CLAUDE.md](CLAUDE.md): aturan kerja dan konvensi kode

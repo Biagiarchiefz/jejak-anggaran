@@ -3,7 +3,7 @@ import { Outlet, ScrollRestoration, useLocation } from 'react-router'
 import { ErrorBoundary } from '../common/ErrorBoundary'
 import { Footer } from './Footer'
 import { Navbar } from './Navbar'
-import { SkeletonHalaman } from '../common/Skeleton'
+import { SkeletonRute } from './SkeletonRute'
 import { useAnimasiMuncul } from '../../hooks/useAnimasiMuncul'
 
 export function Layout() {
@@ -35,7 +35,8 @@ export function Layout() {
         {/* key = path: setiap pindah halaman, konten baru memudar masuk. */}
         <div key={lokasi.pathname} className="animate-halaman-masuk motion-reduce:animate-none">
           <ErrorBoundary resetKey={lokasi.pathname}>
-            <Suspense fallback={<SkeletonHalaman />}>
+            {/* Selama kode halaman diunduh: kerangka yang menyerupai halaman tujuan. */}
+            <Suspense fallback={<SkeletonRute pathname={lokasi.pathname} />}>
               <Outlet />
             </Suspense>
           </ErrorBoundary>

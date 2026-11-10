@@ -13,8 +13,9 @@ export const env = {
   pakaiDataDemoAnggaran: import.meta.env.VITE_DATA_DEMO_ANGGARAN === 'true',
   /**
    * Akun demo untuk juri, ditampilkan sebagai tombol "Masuk sebagai …" di halaman masuk.
-   * Kredensial ini SENGAJA publik: akun admin demo wajib berperan 'admin_demo' (bukan 'admin')
-   * agar hanya bisa mengubah laporan demo. Kosong = tombolnya tidak tampil.
+   * Kredensial ini PUBLIK (nilai VITE_ ikut masuk bundle JavaScript). Keputusan tim: akun admin juri
+   * berperan 'admin' (bisa mengubah semua laporan) selama masa lomba; ganti kata sandinya setelah penjurian.
+   * Peran 'admin_demo' (khusus laporan demo) tetap tersedia bila ingin dibatasi. Kosong = tombolnya tidak tampil.
    */
   akunDemo: {
     warga: akun(import.meta.env.VITE_DEMO_WARGA_EMAIL, import.meta.env.VITE_DEMO_WARGA_PASSWORD),

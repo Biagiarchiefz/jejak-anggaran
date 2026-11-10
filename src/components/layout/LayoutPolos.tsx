@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { Outlet, ScrollRestoration, useLocation } from 'react-router'
 import { ErrorBoundary } from '../common/ErrorBoundary'
 import { SkeletonHalaman } from '../common/Skeleton'
+import { SkeletonMasuk } from '../../features/auth/components/SkeletonMasuk'
 
 /**
  * Layout tanpa navbar, footer, dan bottom navigation, untuk halaman yang berdiri sendiri (mis. masuk/daftar).
@@ -14,9 +15,13 @@ export function LayoutPolos() {
       <ErrorBoundary resetKey={lokasi.pathname}>
         <Suspense
           fallback={
-            <div className="mx-auto max-w-sm px-4 py-16">
-              <SkeletonHalaman baris={1} />
-            </div>
+            lokasi.pathname === '/masuk' ? (
+              <SkeletonMasuk />
+            ) : (
+              <div className="mx-auto max-w-sm px-4 py-16">
+                <SkeletonHalaman baris={1} />
+              </div>
+            )
           }
         >
           <Outlet />

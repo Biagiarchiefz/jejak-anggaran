@@ -4,6 +4,7 @@ import { Link, NavLink, useLocation } from 'react-router'
 import { MenuAkun } from '../../features/auth/components/MenuAkun'
 import { PencarianCepat } from './PencarianCepat'
 import { Laci } from '../common/Laci'
+import { Skeleton } from '../common/Skeleton'
 import { useAuth } from '../../hooks/useAuth'
 import { useDigulir } from '../../hooks/useDigulir'
 import { logger } from '../../utils/logger'
@@ -60,7 +61,7 @@ const jeda = (urutan: number) => ({ transitionDelay: `${100 + urutan * 40}ms` })
  * Di ponsel/tablet: logo + cari + tombol menu, dan navigasi utama pindah ke bottom navigation.
  */
 export function Navbar() {
-  const { pengguna } = useAuth()
+  const { pengguna, memuat: memuatAuth } = useAuth()
   const { pathname } = useLocation()
   const digulir = useDigulir()
   // Di Beranda sebelum digulir: header transparan, menyatu dengan hero yang ditarik ke belakangnya (lihat FlatProjectMap).
@@ -126,7 +127,14 @@ export function Navbar() {
             </button>
 
             {/* Sudah masuk: avatar berinisial + menu akun (semua ukuran layar). Belum: tombol Masuk (desktop). */}
-            {pengguna ? (
+            {memuatAuth ? (
+              // Status login belum diketahui: tempat tombol Masuk (desktop) dipesan agar tidak ada lompatan
+              // Masuk → avatar. Di ponsel tombol Masuk tidak tampil, jadi cukup bulatan seukuran avatar.
+              <span role="status" className="flex size-11 items-center justify-center lg:ml-2 lg:w-[92px]">
+                <span className="sr-only">Memeriksa status masuk…</span>
+                <Skeleton className="size-9 rounded-full lg:h-11 lg:w-full" />
+              </span>
+            ) : pengguna ? (
               <MenuAkun pengguna={pengguna} onKeluar={tanganiKeluar} className="lg:ml-1" />
             ) : (
               <Link

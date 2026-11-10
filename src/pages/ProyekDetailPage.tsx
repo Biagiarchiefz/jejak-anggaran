@@ -4,6 +4,7 @@ import { Link, useLocation, useParams } from 'react-router'
 import { BadgeRedFlag, IkonBendera } from '../components/common/BadgeRedFlag'
 import { BadgeStatusProyek } from '../components/common/BadgeStatus'
 import { CuplikanPeta } from '../features/proyek/components/CuplikanPeta'
+import { SkeletonProyekDetail } from '../features/proyek/components/SkeletonProyekDetail'
 import { DialogPerluMasuk } from '../features/auth/components/DialogPerluMasuk'
 import { KartuLaporan, type StatusKonfirmasi } from '../features/laporan/components/KartuLaporan'
 import { LinimasaFoto } from '../features/laporan/components/LinimasaFoto'
@@ -11,7 +12,6 @@ import { SumberData } from '../components/common/SumberData'
 import { TautanLuarTombol, TautanTombol } from '../components/common/Button'
 import { EmptyState } from '../components/common/EmptyState'
 import { ErrorState } from '../components/common/ErrorState'
-import { SkeletonHalaman } from '../components/common/Skeleton'
 import { useAuth } from '../hooks/useAuth'
 import { useProyekDetail } from '../features/proyek/hooks/useProyekDetail'
 import { useStatusPengguna } from '../features/laporan/hooks/useStatusPengguna'
@@ -323,7 +323,7 @@ export default function ProyekDetailPage() {
   const { id = '' } = useParams()
   const { data, error, memuat, muatUlang } = useProyekDetail(id)
 
-  if (memuat && !data) return <SkeletonHalaman />
+  if (memuat && !data) return <SkeletonProyekDetail />
   if (error) {
     return (
       <ErrorState

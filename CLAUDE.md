@@ -109,4 +109,4 @@ Jangan menambah dependensi baru tanpa alasan jelas. Tidak ada Redux, TanStack Qu
 - Tidak melakukan scraping SiRUP/LPSE secara otomatis. Data proyek dikurasi manual di `data/raw/`.
 - Tidak mengklaim "real-time" atau "terverifikasi AI" di UI.
 - Tidak mengedit migrasi yang sudah di-push. Buat migrasi baru.
-- Akun demo untuk juri (`VITE_DEMO_*`) kredensialnya publik: akun admin demo wajib berperan `admin_demo`, **tidak pernah** `admin`. Aturan peran ada di `src/utils/peran.ts` dan RLS migrasi `akses_admin_demo`; keduanya harus sinkron.
+- Akun demo untuk juri (`VITE_DEMO_*`) kredensialnya publik (tercantum di README dan ikut masuk bundle). Keputusan tim untuk masa lomba: akun admin juri berperan `admin` (bisa mengubah semua laporan); kata sandinya wajib diganti setelah penjurian. Peran `admin_demo` (hanya laporan `is_demo`) tetap ada sebagai opsi pembatasan. Aturan peran ada di `src/utils/peran.ts` dan RLS migrasi `akses_admin_demo`; keduanya harus sinkron.

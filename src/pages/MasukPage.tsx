@@ -3,8 +3,8 @@ import { ArrowLeft, ArrowRight, Eye, EyeOff, Lock, Mail, MailCheck, ShieldCheck,
 import { Link, Navigate, useSearchParams } from 'react-router'
 import { Button, TautanTombol } from '../components/common/Button'
 import { KELAS_GALAT, KELAS_INPUT, KELAS_LABEL } from '../components/common/gayaForm'
-import { SkeletonHalaman } from '../components/common/Skeleton'
 import { env, type AkunDemo } from '../config/env'
+import { SkeletonFormMasuk } from '../features/auth/components/SkeletonMasuk'
 import { useAuth } from '../hooks/useAuth'
 import { pesanError } from '../utils/errors'
 import { FOTO_ILUSTRASI_BAWAAN, urlFotoUnsplash } from '../utils/fotoIlustrasi'
@@ -95,11 +95,11 @@ function AksesJuri({ sibuk, onMasuk }: { sibuk: boolean; onMasuk: (akun: AkunDem
         {admin && (
           <Button type="button" varian="kedua" ukuran="sm" disabled={sibuk} onClick={() => onMasuk(admin)} className={warga ? '' : 'col-span-2'}>
             <ShieldCheck className="size-4" strokeWidth={1.5} aria-hidden />
-            Admin demo
+            Admin juri
           </Button>
         )}
       </div>
-      <p className="mt-2 text-center text-xs text-ink-subtle">Admin demo hanya bisa mengubah laporan demo.</p>
+      <p className="mt-2 text-center text-xs text-ink-subtle">Admin juri bisa memverifikasi dan mengubah status laporan.</p>
     </section>
   )
 }
@@ -168,7 +168,7 @@ export default function MasukPage() {
 
   let isi: ReactNode
   if (memuat) {
-    isi = <SkeletonHalaman baris={1} />
+    isi = <SkeletonFormMasuk />
   } else if (pengguna) {
     isi = (
       <>
