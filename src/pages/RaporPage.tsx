@@ -84,17 +84,25 @@ export default function RaporPage() {
         deskripsi="Berapa proyek dan pagu di setiap kecamatan atau dinas, berapa laporan warga yang masuk, dan seberapa cepat ditanggapi. Unduh datanya untuk analisis lanjutan."
       />
 
-      {/* Ponsel: 3 baris (pengalih, 2 saringan, 2 tombol unduh); layar lebar: satu baris membungkus. */}
+      {/* Ponsel: pengalih, 2 saringan, 2 tombol unduh, lalu Cetak selebar penuh.
+          Mulai xl semuanya satu baris (tombol di kanan); di antaranya tombol turun ke baris kedua, rata kiri. */}
       <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center print:hidden">
-        <div className="col-span-2 grid grid-cols-2 rounded-full bg-recessed p-1 sm:inline-grid" role="group" aria-label="Kelompokkan rapor">
+        <div className="relative col-span-2 grid grid-cols-2 rounded-full bg-recessed p-1 sm:inline-grid" role="group" aria-label="Kelompokkan rapor">
+          {/* Penanda pilihan meluncur ke tombol yang aktif (lebar = setengah wadah dikurangi padding). */}
+          <span
+            aria-hidden
+            className={`absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-full bg-surface shadow-edge transition-[translate] duration-300 ease-(--ease-standard) motion-reduce:transition-none ${
+              opsi.kelompok === 'satker' ? 'translate-x-full' : ''
+            }`}
+          />
           {(['kecamatan', 'satker'] as const).map((k) => (
             <button
               key={k}
               type="button"
               onClick={() => ubah({ kelompok: k })}
               aria-pressed={opsi.kelompok === k}
-              className={`min-h-9 rounded-full px-4 text-sm font-medium efek-tekan ${
-                opsi.kelompok === k ? 'bg-surface text-ink-strong shadow-edge' : 'text-ink-muted hover:text-ink-strong'
+              className={`relative min-h-9 rounded-full px-4 text-sm font-medium efek-tekan ${
+                opsi.kelompok === k ? 'text-ink-strong' : 'text-ink-muted hover:text-ink-strong'
               }`}
             >
               {LABEL_KELOMPOK[k]}
@@ -103,25 +111,19 @@ export default function RaporPage() {
         </div>
         <Pilihan label="Jenis data" labelTersembunyi nilai={opsi.jenis} opsi={OPSI_JENIS} onUbah={(jenis) => ubah({ jenis })} className="min-w-0 sm:w-40" />
         <Pilihan label="Urutan" labelTersembunyi nilai={opsi.urut} opsi={OPSI_URUT} onUbah={(urut) => ubah({ urut })} className="min-w-0 sm:w-52" />
-        <div className="col-span-2 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap lg:ml-auto">
-          <Button varian="kedua" ukuran="sm" onClick={unduhRapor} disabled={!siap} className="px-3 sm:px-4">
+        <div className="col-span-2 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap xl:ml-auto">
+          <Button varian="kedua" ukuran="sm" onClick={unduhRapor} disabled={!siap} title="Unduh rapor (CSV)" className="px-3 sm:px-4">
             <Download className="size-4" strokeWidth={1.5} aria-hidden />
-            <span className="sm:hidden">Rapor (CSV)</span>
-            <span className="hidden sm:inline">Unduh rapor (CSV)</span>
+            Rapor (CSV)
           </Button>
-          <Button varian="kedua" ukuran="sm" onClick={unduhProyek} disabled={!siap} className="px-3 sm:px-4">
+          <Button varian="kedua" ukuran="sm" onClick={unduhProyek} disabled={!siap} title="Unduh daftar proyek (CSV)" className="px-3 sm:px-4">
             <FileSpreadsheet className="size-4" strokeWidth={1.5} aria-hidden />
-            <span className="sm:hidden">Proyek (CSV)</span>
-            <span className="hidden sm:inline">Unduh daftar proyek (CSV)</span>
+            Proyek (CSV)
           </Button>
-          {/* Mencetak dari ponsel jarang; tombolnya mulai sm agar bilah alat ponsel tetap 3 baris. */}
-          {/* Dibungkus: kelas `hidden` di tombol sendiri kalah oleh `inline-flex` bawaan <Button>. */}
-          <div className="hidden sm:block">
-            <Button varian="tipis" ukuran="sm" onClick={() => window.print()} disabled={!siap}>
-              <Printer className="size-4" strokeWidth={1.5} aria-hidden />
-              Cetak / PDF
-            </Button>
-          </div>
+          <Button varian="kedua" ukuran="sm" onClick={() => window.print()} disabled={!siap} title="Cetak atau simpan sebagai PDF" className="col-span-2 px-3 sm:px-4">
+            <Printer className="size-4" strokeWidth={1.5} aria-hidden />
+            Cetak / PDF
+          </Button>
         </div>
       </div>
 
@@ -142,7 +144,8 @@ export default function RaporPage() {
           }
         />
       ) : (
-        <div className="space-y-5">
+        // Kunci = opsi aktif: tiap ganti pengalih/saringan, isi rapor dipasang ulang dan memudar masuk.
+        <div key={`${opsi.kelompok}-${opsi.jenis}-${opsi.urut}`} className="space-y-5 motion-safe:animate-ganti-mode">
           <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border shadow-edge lg:grid-cols-4">
             <Metrik label={opsi.kelompok === 'kecamatan' ? 'Kecamatan tercakup' : 'Dinas tercakup'} angka={ringkasan.jumlahKelompok}>
               {opsi.kelompok === 'kecamatan' ? 'dari 30 kecamatan di Kota Bandung' : 'satuan kerja pelaksana proyek'}

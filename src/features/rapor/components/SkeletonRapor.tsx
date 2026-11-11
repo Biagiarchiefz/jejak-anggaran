@@ -2,7 +2,7 @@ import { Skeleton, SkeletonBaris, SkeletonKepalaHalaman } from '../../../compone
 
 // Hanya bergantung pada primitif skeleton: dipakai juga sebagai fallback <Suspense> di bundle utama.
 
-/** Bilah alat rapor: pengalih kecamatan/dinas, 2 saringan, 3 tombol unduh/cetak. */
+/** Bilah alat rapor: pengalih kecamatan/dinas, 2 saringan, 3 tombol unduh/cetak (Cetak selebar penuh di ponsel). */
 export function SkeletonToolbarRapor() {
   return (
     <div aria-hidden className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
@@ -20,10 +20,10 @@ export function SkeletonToolbarRapor() {
           <Skeleton className="size-4" />
         </div>
       ))}
-      <div className="col-span-2 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap lg:ml-auto">
+      <div className="col-span-2 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap xl:ml-auto">
         <Skeleton className="h-11 rounded-full sm:w-36" />
-        <Skeleton className="h-11 rounded-full sm:w-44" />
-        <Skeleton className="hidden h-11 w-28 rounded-full sm:block" />
+        <Skeleton className="h-11 rounded-full sm:w-36" />
+        <Skeleton className="col-span-2 h-11 rounded-full sm:w-36" />
       </div>
     </div>
   )
