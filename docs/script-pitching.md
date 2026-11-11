@@ -9,7 +9,7 @@
 - **[LAYAR]** = yang ditampilkan atau direkam di layar. **NARASI** = yang Anda ucapkan.
 - Teks di dalam *[kurung miring]* jangan dibaca; itu catatan untuk Anda.
 - Rekam layar dari situs yang sudah di-deploy (https://jejak-anggaran.vercel.app), **setelah** `VITE_DATA_DEMO_ANGGARAN` di Vercel diubah ke `false` dan di-redeploy, supaya angka APBD yang tampil adalah data resmi beserta sumbernya.
-- Siapkan dua tab browser yang sudah masuk: satu sebagai **Warga demo**, satu sebagai **Admin juri**, agar tidak membuang waktu di halaman login.
+- Siapkan dua tab browser yang sudah masuk: satu sebagai **Warga demo**, satu sebagai **Admin**, agar tidak membuang waktu di halaman login.
 - Bagian demo lebih enak direkam terpisah (layar saja), lalu narasinya diisi suara (*voice-over*). Bagian pembuka dan penutup bisa memakai wajah Anda di kamera.
 - Angka per warga di halaman Anggaran dibaca langsung dari layar; jangan dihafal dari script.
 
@@ -85,7 +85,7 @@
 
 ## Bagian 6 — Demo: Tindak lanjut yang terbuka (3:05 – 3:40)
 
-**[LAYAR]** Tab **Admin juri**. Tunjukkan dashboard admin (jumlah per status, waktu respons, antrean prioritas). Ubah status satu laporan menjadi *Diverifikasi*. Kembali ke halaman proyek: riwayat status muncul. Tunjukkan juga tanda **Perlu perhatian** pada proyek demo.
+**[LAYAR]** Tab **Admin**. Tunjukkan dashboard admin (jumlah per status, waktu respons, antrean prioritas). Ubah status satu laporan menjadi *Diverifikasi*. Kembali ke halaman proyek: riwayat status muncul. Tunjukkan juga tanda **Perlu perhatian** pada proyek demo.
 
 **NARASI:**
 

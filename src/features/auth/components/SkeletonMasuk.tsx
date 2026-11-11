@@ -63,8 +63,8 @@ export function SkeletonFormMasuk() {
               <Skeleton className="h-11 rounded-full" />
               <Skeleton className="h-11 rounded-full" />
             </div>
-            <div className="mt-2 flex justify-center text-xs">
-              <SkeletonBaris className="w-56" />
+            <div className="mt-2 flex justify-center text-xs leading-relaxed">
+              <SkeletonBaris className="w-4/5" />
             </div>
           </div>
         )}

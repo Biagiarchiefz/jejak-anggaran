@@ -72,16 +72,16 @@ function Kepala({ ikon, judul, deskripsi, animasi }: { ikon?: ReactNode; judul: 
   )
 }
 
-/** Tombol satu klik untuk juri. Hanya tampil jika akun demo diatur di env. */
-function AksesJuri({ sibuk, onMasuk }: { sibuk: boolean; onMasuk: (akun: AkunDemo) => void }) {
+/** Tombol demo satu klik (warga dan admin). Hanya tampil jika akun demo diatur di env. */
+function AksesDemo({ sibuk, onMasuk }: { sibuk: boolean; onMasuk: (akun: AkunDemo) => void }) {
   const { warga, admin } = env.akunDemo
   if (!warga && !admin) return null
   return (
-    <section aria-labelledby="judul-akses-juri" className="mt-6">
+    <section aria-labelledby="judul-akses-demo" className="mt-6">
       <div className="flex items-center gap-3">
         <span className="h-px flex-1 bg-border" aria-hidden />
-        <h2 id="judul-akses-juri" className="text-xs font-medium text-ink-subtle">
-          Coba sebagai juri, tanpa mendaftar
+        <h2 id="judul-akses-demo" className="text-xs font-medium text-ink-subtle">
+          Akses masuk singkat (demo)
         </h2>
         <span className="h-px flex-1 bg-border" aria-hidden />
       </div>
@@ -95,11 +95,13 @@ function AksesJuri({ sibuk, onMasuk }: { sibuk: boolean; onMasuk: (akun: AkunDem
         {admin && (
           <Button type="button" varian="kedua" ukuran="sm" disabled={sibuk} onClick={() => onMasuk(admin)} className={warga ? '' : 'col-span-2'}>
             <ShieldCheck className="size-4" strokeWidth={1.5} aria-hidden />
-            Admin juri
+            Admin
           </Button>
         )}
       </div>
-      <p className="mt-2 text-center text-xs text-ink-subtle">Admin juri bisa memverifikasi dan mengubah status laporan.</p>
+      <p className="mt-2 text-center text-xs leading-relaxed text-ink-subtle">
+        Khusus keperluan lomba: masuk cepat ke akun demo tanpa kata sandi.
+      </p>
     </section>
   )
 }
@@ -324,7 +326,7 @@ export default function MasukPage() {
           </Button>
         </form>
 
-        <AksesJuri sibuk={mengirim} onMasuk={masukDengan} />
+        <AksesDemo sibuk={mengirim} onMasuk={masukDengan} />
       </>
     )
   }

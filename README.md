@@ -12,12 +12,12 @@ Jejak Anggaran adalah **pelengkap [LAPOR!](https://www.lapor.go.id/)**, bukan pe
 
 ## Akses untuk juri
 
-Buka halaman **Masuk** (`/masuk`). Tersedia tombol satu klik **Warga demo** dan **Admin juri**, atau ketik kredensial berikut:
+Buka halaman **Masuk** (`/masuk`). Tersedia tombol satu klik **Warga demo** dan **Admin** (akses masuk singkat untuk demo), atau ketik kredensial berikut:
 
 | Akun | Email | Kata sandi | Yang bisa dicoba |
 | --- | --- | --- | --- |
 | **Warga demo** | `warga.demo@jejakanggaran.id` | `Warga-HPVi7398-wkfV!` | Melapor kondisi proyek dengan foto, dan mengonfirmasi laporan warga lain |
-| **Admin juri** | `admin.juri@jejakanggaran.id` | `Juri-CHwY9777-YgKk!` | Panel admin: dashboard tindak lanjut, verifikasi, dan mengubah status **semua** laporan |
+| **Admin** | `admin.juri@jejakanggaran.id` | `Juri-CHwY9777-YgKk!` | Panel admin: dashboard tindak lanjut, verifikasi, dan mengubah status **semua** laporan |
 
 Tanpa masuk pun, semua data anggaran, peta, dan detail proyek bisa dibuka.
 
