@@ -6,16 +6,22 @@ import { Skeleton, SkeletonBaris, SkeletonKepalaHalaman } from '../../../compone
 export function SkeletonToolbarRapor() {
   return (
     <div aria-hidden className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
-      <div className="col-span-2 grid grid-cols-2 rounded-full bg-recessed p-1 sm:inline-grid">
-        <div className="flex min-h-9 items-center justify-center rounded-full bg-surface px-4 shadow-edge">
-          <Skeleton className="h-3.5 w-24" />
+      <div className="col-span-2 flex gap-2 sm:contents">
+        <div className="grid flex-1 grid-cols-2 rounded-full bg-recessed p-1 sm:inline-grid sm:flex-none">
+          <div className="flex min-h-9 items-center justify-center rounded-full bg-surface px-4 shadow-edge">
+            <Skeleton className="h-3.5 w-24" />
+          </div>
+          <div className="flex min-h-9 items-center justify-center px-4">
+            <Skeleton className="h-3.5 w-16" />
+          </div>
         </div>
-        <div className="flex min-h-9 items-center justify-center px-4">
-          <Skeleton className="h-3.5 w-16" />
+        {/* Ikon saringan (ponsel saja). */}
+        <div className="grid size-11 shrink-0 place-items-center rounded-md border border-border bg-surface sm:hidden">
+          <Skeleton className="size-5" />
         </div>
       </div>
       {['sm:w-40', 'sm:w-52'].map((lebar) => (
-        <div key={lebar} className={`flex min-h-11 min-w-0 items-center justify-between gap-3 rounded-md border border-border bg-surface px-3.5 ${lebar}`}>
+        <div key={lebar} className={`hidden min-h-11 min-w-0 items-center justify-between gap-3 rounded-md border border-border bg-surface px-3.5 sm:flex ${lebar}`}>
           <Skeleton className="h-3.5 w-20" />
           <Skeleton className="size-4" />
         </div>

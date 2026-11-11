@@ -8,6 +8,7 @@ import { PetaProyek, type PermintaanFokus } from '../features/proyek/components/
 import { SkeletonHasilPeta } from '../features/proyek/components/SkeletonPeta'
 import { SumberData } from '../components/common/SumberData'
 import { Button } from '../components/common/Button'
+import { Chip } from '../components/common/Chip'
 import { EmptyState } from '../components/common/EmptyState'
 import { ErrorState } from '../components/common/ErrorState'
 import { KepalaHalaman } from '../components/common/KepalaHalaman'
@@ -130,22 +131,6 @@ function DaftarProyek({ proyek, terpilihId, onPilih, sorotId, onSorot, gulirKeTe
         )
       })}
     </ul>
-  )
-}
-
-/** Chip filter (DESIGN.md §7.6): aktif bg-ink teks putih; tidak aktif putih berborder. */
-function Chip({ aktif, onClick, children }: { aktif: boolean; onClick: () => void; children: string }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={aktif}
-      className={`inline-flex min-h-11 items-center rounded-full px-4 text-sm font-medium efek-tekan ${
-        aktif ? 'bg-action text-white' : 'border border-border bg-surface text-ink hover:border-border-strong'
-      }`}
-    >
-      {children}
-    </button>
   )
 }
 

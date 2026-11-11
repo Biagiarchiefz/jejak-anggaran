@@ -18,8 +18,8 @@ const MENU: ItemMenu[] = [
   { ke: '/', label: 'Beranda', ikon: House },
   { ke: '/anggaran', label: 'Anggaran', ikon: Landmark },
   { ke: '/peta', label: 'Peta Proyek', pendek: 'Peta', ikon: IkonPeta },
-  { ke: '/rapor', label: 'Rapor', ikon: ChartColumn, diBawah: false },
-  { ke: '/tentang-data', label: 'Tentang Data', pendek: 'Data', ikon: BookOpen },
+  { ke: '/rapor', label: 'Rapor', ikon: ChartColumn },
+  { ke: '/tentang-data', label: 'Tentang Data', pendek: 'Data', ikon: BookOpen, diBawah: false },
 ]
 
 /** Logo teks + ikon sendiri (DESIGN.md §7.2). */

@@ -234,7 +234,7 @@ Pita gelap dipakai **paling banyak dua kali per halaman**. Jangan membuat seluru
 - Kiri: logo teks "Jejak Anggaran" (500, 18px) dengan ikon sederhana buatan sendiri.
 - Tengah/kanan (desktop): Beranda, Peta Proyek, Tentang Data; paling kanan tombol sekunder "Masuk" atau avatar.
 - Item aktif: teks `ink-strong` dengan garis bawah 2px `brand`.
-- Ponsel: header berisi logo + tombol menu; navigasi utama pindah ke **bottom navigation** (Beranda, Peta, Tentang Data, Akun) setinggi 64px dengan ikon + label 12px.
+- Ponsel: header berisi logo + tombol menu; navigasi utama pindah ke **bottom navigation** (Beranda, Anggaran, Peta, Rapor, Akun; Tentang Data ada di laci menu dan footer) setinggi 64px dengan ikon + label 12px.
 
 ### 7.3 Hero (Beranda)
 

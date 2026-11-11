@@ -1,11 +1,14 @@
-import type { ReactNode } from 'react'
-import { Download, FileSpreadsheet, Info, Printer } from 'lucide-react'
+import { useState, type ReactNode } from 'react'
+import { Download, FileSpreadsheet, Info, Printer, SlidersHorizontal, X } from 'lucide-react'
 import { useSearchParams } from 'react-router'
 import { Button } from '../components/common/Button'
+import { Chip } from '../components/common/Chip'
 import { EmptyState } from '../components/common/EmptyState'
 import { ErrorState } from '../components/common/ErrorState'
 import { KepalaHalaman } from '../components/common/KepalaHalaman'
+import { Laci } from '../components/common/Laci'
 import { Pilihan } from '../components/common/Pilihan'
+import { useMediaQuery } from '../hooks/useMediaQuery'
 import { SumberData } from '../components/common/SumberData'
 import { SkeletonIsiRapor } from '../features/rapor/components/SkeletonRapor'
 import { TabelRapor } from '../features/rapor/components/TabelRapor'
@@ -14,6 +17,7 @@ import { tanggalBerkas } from '../utils/csv'
 import { formatDurasiJam, formatRupiahRingkas } from '../utils/format'
 import {
   hitungRapor,
+  OPSI_RAPOR_AWAL,
   opsiRaporDariParams,
   opsiRaporKeParams,
   proyekKeCsv,
@@ -56,6 +60,11 @@ export default function RaporPage() {
   const [params, setParams] = useSearchParams()
   const opsi = opsiRaporDariParams(params)
   const ubah = (ubahan: Partial<OpsiRapor>) => setParams(opsiRaporKeParams({ ...opsi, ...ubahan }), { replace: true })
+  const [lembarSaringan, setLembarSaringan] = useState(false)
+  // Mulai `sm` saringan tampil langsung di bilah alat, jadi lembar saringan ditutup bila layar melebar.
+  const layarSm = useMediaQuery('(min-width: 640px)')
+  // Pengalih kecamatan/dinas selalu terlihat, jadi tidak dihitung sebagai saringan.
+  const jumlahAktif = Number(opsi.jenis !== OPSI_RAPOR_AWAL.jenis) + Number(opsi.urut !== OPSI_RAPOR_AWAL.urut)
 
   const baris = data ? hitungRapor(data.proyek, data.laporan, opsi) : []
   const ringkasan = data ? ringkasRapor(data.proyek, data.laporan, opsi) : null
@@ -84,33 +93,54 @@ export default function RaporPage() {
         deskripsi="Berapa proyek dan pagu di setiap kecamatan atau dinas, berapa laporan warga yang masuk, dan seberapa cepat ditanggapi. Unduh datanya untuk analisis lanjutan."
       />
 
-      {/* Ponsel: pengalih, 2 saringan, 2 tombol unduh, lalu Cetak selebar penuh.
-          Mulai xl semuanya satu baris (tombol di kanan); di antaranya tombol turun ke baris kedua, rata kiri. */}
+      {/* Ponsel: pengalih + ikon saringan (membuka lembar bawah, seperti halaman Peta), 2 tombol unduh, lalu Cetak
+          selebar penuh. Mulai sm saringan tampil langsung; mulai xl semuanya satu baris (tombol di kanan). */}
       <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center print:hidden">
-        <div className="relative col-span-2 grid grid-cols-2 rounded-full bg-recessed p-1 sm:inline-grid" role="group" aria-label="Kelompokkan rapor">
-          {/* Penanda pilihan meluncur ke tombol yang aktif (lebar = setengah wadah dikurangi padding). */}
-          <span
-            aria-hidden
-            className={`absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-full bg-surface shadow-edge transition-[translate] duration-300 ease-(--ease-standard) motion-reduce:transition-none ${
-              opsi.kelompok === 'satker' ? 'translate-x-full' : ''
-            }`}
-          />
-          {(['kecamatan', 'satker'] as const).map((k) => (
-            <button
-              key={k}
-              type="button"
-              onClick={() => ubah({ kelompok: k })}
-              aria-pressed={opsi.kelompok === k}
-              className={`relative min-h-9 rounded-full px-4 text-sm font-medium efek-tekan ${
-                opsi.kelompok === k ? 'text-ink-strong' : 'text-ink-muted hover:text-ink-strong'
+        <div className="col-span-2 flex gap-2 sm:contents">
+          <div className="relative grid flex-1 grid-cols-2 rounded-full bg-recessed p-1 sm:inline-grid sm:flex-none" role="group" aria-label="Kelompokkan rapor">
+            {/* Penanda pilihan meluncur ke tombol yang aktif (lebar = setengah wadah dikurangi padding). */}
+            <span
+              aria-hidden
+              className={`absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-full bg-surface shadow-edge transition-[translate] duration-300 ease-(--ease-standard) motion-reduce:transition-none ${
+                opsi.kelompok === 'satker' ? 'translate-x-full' : ''
               }`}
-            >
-              {LABEL_KELOMPOK[k]}
-            </button>
-          ))}
+            />
+            {(['kecamatan', 'satker'] as const).map((k) => (
+              <button
+                key={k}
+                type="button"
+                onClick={() => ubah({ kelompok: k })}
+                aria-pressed={opsi.kelompok === k}
+                className={`relative min-h-9 rounded-full px-4 text-sm font-medium efek-tekan ${
+                  opsi.kelompok === k ? 'text-ink-strong' : 'text-ink-muted hover:text-ink-strong'
+                }`}
+              >
+                {LABEL_KELOMPOK[k]}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => setLembarSaringan(true)}
+            aria-haspopup="dialog"
+            aria-label={`Saringan${jumlahAktif > 0 ? `, ${jumlahAktif} aktif` : ''}`}
+            className={`relative grid size-11 shrink-0 place-items-center rounded-md border efek-tekan sm:hidden ${
+              jumlahAktif > 0 ? 'border-brand bg-brand-soft text-action' : 'border-border bg-surface text-ink hover:border-border-strong'
+            }`}
+          >
+            <SlidersHorizontal className="size-5" strokeWidth={1.5} aria-hidden />
+            {jumlahAktif > 0 && (
+              <span
+                className="absolute -top-1.5 -right-1.5 grid size-5 place-items-center rounded-full bg-action text-[11px] font-medium text-white tabular-nums ring-2 ring-canvas"
+                aria-hidden
+              >
+                {jumlahAktif}
+              </span>
+            )}
+          </button>
         </div>
-        <Pilihan label="Jenis data" labelTersembunyi nilai={opsi.jenis} opsi={OPSI_JENIS} onUbah={(jenis) => ubah({ jenis })} className="min-w-0 sm:w-40" />
-        <Pilihan label="Urutan" labelTersembunyi nilai={opsi.urut} opsi={OPSI_URUT} onUbah={(urut) => ubah({ urut })} className="min-w-0 sm:w-52" />
+        <Pilihan label="Jenis data" labelTersembunyi nilai={opsi.jenis} opsi={OPSI_JENIS} onUbah={(jenis) => ubah({ jenis })} className="hidden sm:block sm:w-40" />
+        <Pilihan label="Urutan" labelTersembunyi nilai={opsi.urut} opsi={OPSI_URUT} onUbah={(urut) => ubah({ urut })} className="hidden sm:block sm:w-52" />
         <div className="col-span-2 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap xl:ml-auto">
           <Button varian="kedua" ukuran="sm" onClick={unduhRapor} disabled={!siap} title="Unduh rapor (CSV)" className="px-3 sm:px-4">
             <Download className="size-4" strokeWidth={1.5} aria-hidden />
@@ -126,6 +156,65 @@ export default function RaporPage() {
           </Button>
         </div>
       </div>
+
+      <Laci
+        terbuka={lembarSaringan && !layarSm}
+        onTutup={() => setLembarSaringan(false)}
+        label="Saringan rapor"
+        arah="bawah"
+        className="mx-0 mt-auto mb-0 max-h-[85dvh]! w-full overflow-y-auto rounded-t-xl p-0"
+      >
+        <div className="px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <div className="mx-auto h-1 w-10 rounded-full bg-border-strong" aria-hidden />
+          <div className="mt-2 flex items-center justify-between">
+            <h2 className="text-lg font-semibold tracking-normal">Saringan</h2>
+            <button
+              type="button"
+              onClick={() => setLembarSaringan(false)}
+              aria-label="Tutup saringan"
+              className="-mr-2 grid size-11 place-items-center rounded-full text-ink hover:bg-recessed"
+            >
+              <X className="size-5" strokeWidth={1.5} aria-hidden />
+            </button>
+          </div>
+
+          <fieldset className="mt-3">
+            <legend className="text-sm font-medium text-ink">Jenis data</legend>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {OPSI_JENIS.map((o) => (
+                <Chip key={o.nilai} aktif={opsi.jenis === o.nilai} onClick={() => ubah({ jenis: o.nilai })}>
+                  {o.label}
+                </Chip>
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset className="mt-5">
+            <legend className="text-sm font-medium text-ink">Urutan</legend>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {OPSI_URUT.map((o) => (
+                <Chip key={o.nilai} aktif={opsi.urut === o.nilai} onClick={() => ubah({ urut: o.nilai })}>
+                  {o.label}
+                </Chip>
+              ))}
+            </div>
+          </fieldset>
+
+          <div className="mt-6 flex gap-2 border-t border-border pt-4">
+            <Button
+              varian="tipis"
+              className="px-4 whitespace-nowrap"
+              onClick={() => ubah({ jenis: OPSI_RAPOR_AWAL.jenis, urut: OPSI_RAPOR_AWAL.urut })}
+              disabled={jumlahAktif === 0}
+            >
+              Atur ulang
+            </Button>
+            <Button className="flex-1 whitespace-nowrap" onClick={() => setLembarSaringan(false)}>
+              Tampilkan {baris.length} {namaKelompok}
+            </Button>
+          </div>
+        </div>
+      </Laci>
 
       {memuat && !data ? (
         <SkeletonIsiRapor />

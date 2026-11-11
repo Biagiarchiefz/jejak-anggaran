@@ -4,6 +4,7 @@ import { Link, useSearchParams } from 'react-router'
 import { Badge } from '../../../components/common/Badge'
 import { BadgeStatusLaporan } from '../../../components/common/BadgeStatus'
 import { Button } from '../../../components/common/Button'
+import { Chip } from '../../../components/common/Chip'
 import { EmptyState } from '../../../components/common/EmptyState'
 import { KELAS_GALAT, KELAS_INPUT, KELAS_LABEL } from '../../../components/common/gayaForm'
 import { KolomCari } from '../../../components/common/KolomCari'
@@ -287,22 +288,6 @@ function PanelLaporan({ laporan: l, prioritas, posisi, onPindah, onTutup, onBeru
         </section>
       </div>
     </div>
-  )
-}
-
-/** Chip pilihan di lembar saringan ponsel (DESIGN.md §7.6, sama dengan halaman Peta). */
-function Chip({ aktif, onClick, children }: { aktif: boolean; onClick: () => void; children: string }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={aktif}
-      className={`inline-flex min-h-11 items-center rounded-full px-4 text-sm font-medium efek-tekan ${
-        aktif ? 'bg-action text-white' : 'border border-border bg-surface text-ink hover:border-border-strong'
-      }`}
-    >
-      {children}
-    </button>
   )
 }
 
